@@ -1,0 +1,39 @@
+﻿<UserControl x:Class="ChessUI.View.Board"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:view="clr-namespace:ChessUI.View"
+             xmlns:viewmodel="clr-namespace:ChessUI.ViewModel"
+             xmlns:local="clr-namespace:ChessUI.View"
+             xmlns:project="clr-namespace:ChessUI"
+             xmlns:acb="clr-namespace:AttachedCommandBehavior;assembly=AttachedCommandBehavior"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Viewbox>
+        <ItemsControl ItemsSource="{Binding AllSquares}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <!--Single Square Representation-->
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid
+                        acb:CommandBehavior.Event="MouseDown" 
+                        acb:CommandBehavior.Command="{Binding ParentViewModel.MovePieceCommand}"
+                        acb:CommandBehavior.CommandParameter="{Binding SquareName}">
+                        <Border BorderBrush="{Binding SquareBorderBrush}" BorderThickness="5" Margin="0">
+                            <Grid Background="{Binding SquareColor}"  Margin="-1"  Cursor="Hand">
+                                <Image Source="{Binding Piece.PieceImageSource}" Stretch="Fill"></Image>
+                                <TextBlock Text="{Binding SquareName}"></TextBlock>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <!--Setting Layout-->
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows ="8" Columns="8" HorizontalAlignment ="Stretch" VerticalAlignment ="Stretch" FlowDirection="RightToLeft"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+    </Viewbox>
+</UserControl>
