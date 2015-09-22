@@ -7,4 +7,5 @@
 #include <stddef.h>
 #include "macros.h"
 #include "DoubleLinkedList.h"
+#include "DoubleLinkedListNode.h"
 

@@ -1,10 +1,5 @@
 #pragma once
-#include <string>
-#include <iostream>
-#include "../util/FEN.h"
-#include "..\util\util.h"
-#include "BitBoards.h"
-#include "Header\DoubleLinkedList.h"
+#include "stdafx.h"
 
 using std::string;
 namespace Checkmate {

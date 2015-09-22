@@ -1,4 +1,4 @@
-#include "FEN.h"
+#include "stdafx.h"
 
 /// <summary>
 /// The class needs to be used in a procedural manner

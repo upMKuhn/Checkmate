@@ -1,8 +1,6 @@
 #pragma once
-#include <string>
-#include "Header\DoubleLinkedList.h"
-#include "../board/piecePlacement.h"
-#include "util.h"
+#include "stdafx.h"
+
 namespace Checkmate {
 
 	/// <summary>

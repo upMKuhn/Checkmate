@@ -32,34 +32,34 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\board\BitBoards.h">
+    <ClInclude Include="Header\BitBoards.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\board\Board.h">
+    <ClInclude Include="Header\BitOperations.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\board\piecePlacement.h">
+    <ClInclude Include="Header\Board.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\board\represenation.h">
+    <ClInclude Include="Header\FEN.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\util\BitOperations.h">
+    <ClInclude Include="Header\main.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\util\FEN.h">
+    <ClInclude Include="Header\piecePlacement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\util\platform.h">
+    <ClInclude Include="Header\platform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\util\types.h">
+    <ClInclude Include="Header\represenation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\util\util.h">
+    <ClInclude Include="Header\types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\main.h">
+    <ClInclude Include="Header\stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

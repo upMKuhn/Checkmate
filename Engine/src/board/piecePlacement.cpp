@@ -1,4 +1,10 @@
-#include "piecePlacement.h"
+#include "stdafx.h"
+
+/// <summary>
+/// The Purpose of the PiecePlacement is a 
+/// instruction structure, to position pieces. 
+/// </summary>
+
 namespace Checkmate {
 
 	PiecePlacement::PiecePlacement(Square position, Piece piece)

@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Stdafx.h"
 
 #define DELETE( ptr ) \
 if (ptr != NULL)      \

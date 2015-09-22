@@ -1,10 +1,12 @@
 #pragma once
+#include "stdafx.h"
 
-#include <iostream>
-#include "..\util\types.h"
 namespace Checkmate {
-	
-
+		
+	/// <summary>
+	/// The Purpose of the PiecePlacement is a 
+	/// instruction structure, to position pieces. 
+	/// </summary>
 	struct PiecePlacement
 	{
 		Square position;

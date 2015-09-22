@@ -1,8 +1,5 @@
 #pragma once
-#include <cassert>
-#include <cctype>
-#include <climits>
-#include "..\util\util.h"
+#include "stdafx.h"
 namespace Checkmate {
 
 

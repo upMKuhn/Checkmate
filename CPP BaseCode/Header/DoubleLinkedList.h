@@ -1,6 +1,5 @@
 #pragma once
 #include "DoubleLinkedListNode.h"
-#include "Stdafx.h"
 
 
 

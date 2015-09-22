@@ -1,10 +1,9 @@
-#include "BitBoards.h"
-
+#include "stdafx.h"
 namespace Checkmate {
 	Bitboard SquareBB[SQUARE_NB];
-	namespace Bitboards {
 
-		void init()
+
+		void Bitboards::init()
 		{
 			for (Square square = SQ_A1; square < SQUARE_NB; ++square)
 			{
@@ -12,4 +11,4 @@ namespace Checkmate {
 			}
 		}
 
-}}
+}

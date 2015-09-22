@@ -1,4 +1,5 @@
-#pragma-once
+#pragma once
+#include "stdafx.h"
 
 namespace Checkmate { 
 	/*
@@ -37,9 +38,7 @@ namespace Checkmate {
 	/// -DUSE_POPCNT  | Add runtime support for use of popcnt asm-instruction. Works
 	///               | only in 64-bit mode and requires hardware with popcnt support.
 
-#include <cassert>
-#include <cctype>
-#include <climits>
+
 
 
 /// Predefined macros hell:

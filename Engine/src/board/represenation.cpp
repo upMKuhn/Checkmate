@@ -1,4 +1,6 @@
-#include "Represenation.h"
+#include "stdafx.h"
+
+//Representation of the GameBoard
 
 namespace Checkmate {
 
@@ -9,8 +11,10 @@ namespace Checkmate {
 
 	Checkmate::Represenation::Represenation(::std::string FEN)
 	{
+		using namespace DataStructs;
 		init();
 		fenToBoard(FEN);
+
 	}
 
 	Represenation::~Represenation()
@@ -26,6 +30,7 @@ namespace Checkmate {
 		castelingRights[WHITE][KING_SIDE] = true;
 		castelingRights[BLACK][KING_SIDE] = true;
 		castelingRights[BLACK][QUEEN_SIDE] = true;
+
 	}
 
 	string Represenation::boardToFEN()
