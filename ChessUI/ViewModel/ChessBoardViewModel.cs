@@ -20,7 +20,7 @@ namespace ChessUI.ViewModel
         {
             if (chessBoardRepository == null)
             {
-                throw new ArgumentNullException("chessBoardRepository");
+                throw new ArgumentNullException(nameof(chessBoardRepository));
             }
 
             this._ChessBoardRepository = chessBoardRepository;

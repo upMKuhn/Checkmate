@@ -1,7 +1,4 @@
 #include "stdafx.h"
-#include "CppUnitTest.h"
-
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 
 namespace explore {
@@ -22,17 +19,17 @@ namespace explore {
 
 }
 
+using namespace explore;
 
-namespace EngineTests
-{		
-	TEST_CLASS(UnitTest1)
-	{
-	public:
-		
-		TEST_METHOD(TestFunc_Pass6_DeductOne)
-		{
-			Assert::AreEqual(5 , explore::testFunc(6));
-		}
-
-	};
+TEST(Testaasd, blaTest)
+{
+	EXPECT_EQ(5, testFunc(6));
 }
+
+
+int main(int argc, char* argv[])
+{
+	testing::InitGoogleTest(&argc, argv);
+	return RUN_ALL_TESTS();
+}
+

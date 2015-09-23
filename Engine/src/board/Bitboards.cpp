@@ -7,7 +7,7 @@ namespace Checkmate {
 		{
 			for (Square square = SQ_A1; square < SQUARE_NB; ++square)
 			{
-				SquareBB[square] = 1 << square;
+				SquareBB[square] = (1 << square);
 			}
 		}
 

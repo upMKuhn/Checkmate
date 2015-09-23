@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
 	init();
 	
 	Represenation board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-
+	
 	system("PAUSE");
 	return 0;
 }

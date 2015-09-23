@@ -21,17 +21,7 @@ namespace Checkmate {
 	{		
 	}
 
-	void Checkmate::Represenation::init()
-	{
-		int movesSinceCapture;
-		us = WHITE; enemy = BLACK;
-		enPassant = SQUARE_NB;
-		castelingRights[WHITE][QUEEN_SIDE] = true;
-		castelingRights[WHITE][KING_SIDE] = true;
-		castelingRights[BLACK][KING_SIDE] = true;
-		castelingRights[BLACK][QUEEN_SIDE] = true;
-
-	}
+	
 
 	string Represenation::boardToFEN()
 	{
@@ -50,6 +40,59 @@ namespace Checkmate {
 		} 
 	
 
+	}
+
+#pragma region TOOL Function
+
+
+	Bitboard Represenation::getPiecebb(Piece pc)
+	{
+		return this->piecebb[pc];
+	}
+	Bitboard Represenation::getPiecebb(PieceType pt, Color c)
+	{
+		Piece pc = make_piece(c, pt);
+		return this->piecebb[pc];
+	}
+
+	Piece Represenation::getPieceAt(Square position)
+	{
+		return pieceLookup[position];
+	}
+
+	void Represenation::setPiece(Square sq, Piece pc)
+	{
+		assert(Checkmate::is_ok(sq));
+		setPiece(sq, type_of(pc), color_of(pc));
+	}
+	void Represenation::setPiece(Square sq, PieceType pt, Color c)
+	{
+		Piece pc = make_piece(c, pt);
+		piecebb[pc] |= SquareBB[sq];
+		colorbb[c] != SquareBB[sq];
+		pieceLookup[sq] = pc;
+	}
+
+	bool Represenation::canCastle(CastlingSide side)
+	{
+		return this->castelingRights[us][side];
+	}
+	bool Represenation::canCastle(CastlingSide side, Color color)
+	{
+		return this->castelingRights[us][side];;
+	}
+#pragma endregion
+
+
+	void Represenation::init()
+	{
+		movesSinceCapture = 0;
+		us = WHITE; enemy = BLACK;
+		enPassant = SQUARE_NB;
+		castelingRights[WHITE][QUEEN_SIDE] = true;
+		castelingRights[WHITE][KING_SIDE] = true;
+		castelingRights[BLACK][KING_SIDE] = true;
+		castelingRights[BLACK][QUEEN_SIDE] = true;
 	}
 
 	/// <summary>

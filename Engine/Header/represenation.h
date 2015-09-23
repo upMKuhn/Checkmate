@@ -25,41 +25,16 @@ namespace Checkmate {
 		string boardToFEN();
 		void fenToBoard(string strFEN);
 		
-		Bitboard getPiecebb(Piece pc)
-		{
-			return this->piecebb[pc];
-		}
-		Bitboard getPiecebb(PieceType pt, Color c)
-		{
-			Piece pc = make_piece(c, pt);
-			return this->piecebb[pc];
-		}
+		Bitboard getPiecebb(Piece pc);
+		Bitboard getPiecebb(PieceType pt, Color c);
 
-		void setPiece(Square sq, Piece pc)
-		{
-			assert(Checkmate::is_ok(sq));
-			Color c = color_of(pc);
-			piecebb[pc] |= SquareBB[sq];
-			colorbb[c] != SquareBB[sq];
-			pieceLookup[sq] = pc;
-		}
-		void setPiece(Square sq,PieceType pt, Color c)
-		{
-			Piece pc = make_piece(c, pt);
-			piecebb[pc] |= SquareBB[sq];
-			colorbb[c] != SquareBB[sq];
-			pieceLookup[sq] = pc;
-		}
+		Piece getPieceAt(Square position);
 
+		void setPiece(Square sq, Piece pc);
+		void setPiece(Square sq, PieceType pt, Color c);
 
-		bool canCastle(CastlingSide side)
-		{
-			return this->castelingRights[us][side];
-		}
-		bool canCastle(CastlingSide side, Color color)
-		{
-			return this->castelingRights[us][side];;
-		}
+		bool canCastle(CastlingSide side);
+		bool canCastle(CastlingSide side, Color color);
 		
 	private:
 		void init();
