@@ -10,9 +10,11 @@
 #include "platform.h"
 #include "CppBaseCode.h"
 
+
 //Project Refs
 #include "piecePlacement.h"
 #include "BitBoards.h"
+#include "BoardParser.h"
 #include "FEN.h"
 #include "represenation.h"
 

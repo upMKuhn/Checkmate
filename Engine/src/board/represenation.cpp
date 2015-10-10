@@ -30,7 +30,7 @@ namespace Checkmate {
 
 	void Represenation::fenToBoard(string strFEN)
 	{
-		FEN_Phraser fen(strFEN);
+		FEN_Parser fen(strFEN);
 		PiecePlacement *instruct;
 		fen.nextInstruction(instruct);
 		while (instruct != NULL) 
@@ -42,7 +42,7 @@ namespace Checkmate {
 
 	}
 
-#pragma region TOOL Function
+#pragma region Properties
 
 
 	Bitboard Represenation::getPiecebb(Piece pc)
@@ -53,6 +53,16 @@ namespace Checkmate {
 	{
 		Piece pc = make_piece(c, pt);
 		return this->piecebb[pc];
+	}
+
+	Bitboard Represenation::getColorbb(Piece pc)
+	{
+		return this->colorbb[pc];
+	}
+	Bitboard Represenation::getColorbb(PieceType pt, Color c)
+	{
+		Piece pc = make_piece(c, pt);
+		return this->colorbb[pc];
 	}
 
 	Piece Represenation::getPieceAt(Square position)
@@ -69,7 +79,7 @@ namespace Checkmate {
 	{
 		Piece pc = make_piece(c, pt);
 		piecebb[pc] |= SquareBB[sq];
-		colorbb[c] != SquareBB[sq];
+		colorbb[c] |= SquareBB[sq];
 		pieceLookup[sq] = pc;
 	}
 
@@ -93,6 +103,10 @@ namespace Checkmate {
 		castelingRights[WHITE][KING_SIDE] = true;
 		castelingRights[BLACK][KING_SIDE] = true;
 		castelingRights[BLACK][QUEEN_SIDE] = true;
+
+		::std::fill_n(piecebb, PIECE_NB, NO_PIECE);
+		::std::fill_n(pieceLookup, SQUARE_NB, NO_PIECE);
+		::std::fill_n(colorbb, COLOR_NB, 0);
 	}
 
 	/// <summary>
@@ -100,41 +114,41 @@ namespace Checkmate {
 	/// in this class
 	/// </summary>
 	/// <returns>result</returns>
-	bool Represenation::is_ok()
+	bool Represenation::areAllBoardsOk()
 	{
-		bool test = false;
+		bool test = true;
 		Bitboard whiteBoard = 0, blackBoard = 0;
 		
-		test |= (whiteBoard && piecebb[W_PAWN]) == 0;
-		whiteBoard = whiteBoard || piecebb[W_PAWN];
-		test |= (whiteBoard && piecebb[W_KNIGHT]) == 0;
-		whiteBoard = whiteBoard || piecebb[W_KNIGHT];
-		test |= (whiteBoard && piecebb[W_BISHOP]) == 0;
-		whiteBoard = whiteBoard || piecebb[W_BISHOP];
-		test |= (whiteBoard && piecebb[W_ROOK]) == 0;
-		whiteBoard = whiteBoard || piecebb[W_ROOK];
-		test |= (whiteBoard && piecebb[W_QUEEN]) == 0;
-		whiteBoard = whiteBoard || piecebb[W_QUEEN];
-		test |= (whiteBoard && piecebb[W_KING]) == 0;
-		whiteBoard = whiteBoard || piecebb[W_KING];
+		whiteBoard = whiteBoard | piecebb[W_PAWN];
+		whiteBoard = whiteBoard | piecebb[W_KNIGHT];
+		whiteBoard = whiteBoard | piecebb[W_BISHOP];
+		whiteBoard = whiteBoard | piecebb[W_ROOK];
+		whiteBoard = whiteBoard | piecebb[W_QUEEN];
+		whiteBoard = whiteBoard | piecebb[W_KING];
 
-		test |= (whiteBoard && piecebb[B_PAWN]) == 0;
-		blackBoard = whiteBoard || piecebb[B_PAWN];
-		test |= (whiteBoard && piecebb[B_KNIGHT]) == 0;
-		blackBoard = whiteBoard || piecebb[B_KNIGHT];
-		test |= (whiteBoard && piecebb[B_BISHOP]) == 0;
-		blackBoard = whiteBoard || piecebb[B_BISHOP];
-		test |= (whiteBoard && piecebb[B_ROOK]) == 0;
-		blackBoard = whiteBoard || piecebb[B_ROOK];
-		test |= (whiteBoard && piecebb[B_QUEEN]) == 0;
-		blackBoard = whiteBoard || piecebb[B_QUEEN];
-		test |= (whiteBoard && piecebb[B_KING]) == 0;
-		blackBoard = whiteBoard || piecebb[B_KING];
+		blackBoard = blackBoard | piecebb[B_PAWN];
+		blackBoard = blackBoard | piecebb[B_KNIGHT];
+		blackBoard = blackBoard | piecebb[B_BISHOP];
+		blackBoard = blackBoard | piecebb[B_ROOK];
+		blackBoard = blackBoard | piecebb[B_QUEEN];
+		blackBoard = blackBoard | piecebb[B_KING];
 		
-		test |= (whiteBoard && blackBoard) == 0;
-		test |= whiteBoard == colorbb[WHITE];
-		test |= blackBoard == colorbb[BLACK];
-		return ~test;
+		test &= (whiteBoard & blackBoard) == 0;
+		test &= whiteBoard == colorbb[WHITE];
+		test &= blackBoard == colorbb[BLACK];
+
+		Square sqr = SQ_A1;
+		for each (Piece piece in pieceLookup)
+		{
+			if(piece != NO_PIECE)
+			{
+				Bitboard bb = getPiecebb(piece);
+				test &= (bb & (1ULL << sqr)) > 0;
+			}
+			++sqr;
+		}
+
+		return test;
 			   
 	}
 

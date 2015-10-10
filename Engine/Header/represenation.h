@@ -24,9 +24,16 @@ namespace Checkmate {
 
 		string boardToFEN();
 		void fenToBoard(string strFEN);
+
+#pragma region Properties
 		
+		Color getSideToMove();
+
 		Bitboard getPiecebb(Piece pc);
 		Bitboard getPiecebb(PieceType pt, Color c);
+
+		Bitboard getColorbb(Piece pt);
+		Bitboard getColorbb(PieceType pt, Color c);
 
 		Piece getPieceAt(Square position);
 
@@ -35,10 +42,13 @@ namespace Checkmate {
 
 		bool canCastle(CastlingSide side);
 		bool canCastle(CastlingSide side, Color color);
-		
+
+		bool areAllBoardsOk();
+#pragma endregion
+
+
 	private:
 		void init();
-		bool is_ok();
 
 		void flipSideToMove()
 		{

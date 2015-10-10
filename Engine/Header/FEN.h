@@ -6,43 +6,30 @@ namespace Checkmate {
 	/// <summary>
 	/// Instructions to place piece on board
 	/// </summary>
-	
 
-	class FEN_Phraser
+	class FEN_Parser
 	{
 
-		
+	private:
+		::std::string m_FEN;
+		Color m_sideToMove;
+		CastlingRight canCaste[NO_COLOR][CASTLING_SIDE_NB];
+		Square enPassant;
+		int MoveCounter;
+		int halfMoveClock;
+		int FullMoveClock;
 		public:
-			FEN_Phraser(::std::string FEN);
-			~FEN_Phraser();
+			FEN_Parser(::std::string FEN);
+			~FEN_Parser();
 
 			void process();
 			void nextInstruction(PiecePlacement *&pTemp);
 		private:
-			//Extract Board
-			void extractBoard();
-			void jumpFile(int jmp);
-			void nextRank();
-			PieceType toPiece(char piece);
-			bool hasPiece();
-			PiecePlacement nextPiece();
-			bool hasNextInstruction();
-				
-			void updateFEN(::std::string FEN) { this->m_FEN = FEN; process(); }
-		private:
-			DataStructs::DoubleLinkedList<PiecePlacement> m_boardInstruction;
-			int instructionAt = 0;
-			::std::string m_FEN;
-			Square m_squareAt;
-			int m_charAt;
+			
+			BoardParser* m_boardParser = NULL;
 
-			//Properties
-	public:
-		void setFEN(::std::string FEN)
-		{
-			m_FEN = FEN;
-			process();
-		}
+			void extractStates();
+			
 	};
 
 	

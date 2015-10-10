@@ -26,5 +26,6 @@ namespace Checkmate {
 		extern Bitboard SquareBB[SQUARE_NB]; //Board that represents a Square inside a BB
 		namespace Bitboards {
 			void init();
+			const std::string pretty(Bitboard b);
 		}
 }

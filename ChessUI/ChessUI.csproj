@@ -208,12 +208,6 @@
   <ItemGroup>
     <Resource Include="Resources\WhiteRook.png" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Engine\Engine.vcxproj">
-      <Project>{6d62c22a-8271-492a-a06f-bab514daa03b}</Project>
-      <Name>Engine</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
