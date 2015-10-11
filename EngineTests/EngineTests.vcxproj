@@ -243,6 +243,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FEN_TEST.cpp" />
+    <ClCompile Include="LittleHelperTests.cpp" />
     <ClCompile Include="RepresentationTests.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

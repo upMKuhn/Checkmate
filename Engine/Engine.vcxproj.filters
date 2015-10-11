@@ -33,6 +33,9 @@
     <ClCompile Include="src\util\BoardParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\LittleHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\BitBoards.h">
@@ -71,7 +74,10 @@
     <ClInclude Include="Header\BoardParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EngineMacros.h">
+    <ClInclude Include="Header\LittleHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\EngineMacros.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
