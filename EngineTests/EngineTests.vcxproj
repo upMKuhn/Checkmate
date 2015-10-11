@@ -111,9 +111,10 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnitTests|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>$(SolutionDir)\Dependencies\$(Platform)\;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)Engine\Header\;$(SolutionDir)CPP BaseCode\Header\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)Dependencies\$(Platform)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)Engine\Header\;$(SolutionDir)Dependencies\Header\;$(SolutionDir)CPP BaseCode\Header\;$(IncludePath)</IncludePath>
     <IntDir>$(SolutionDir)Build\InterMidDir\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -187,7 +188,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>gtestd.lib;BoardParser.obj;represenation.obj;Bitboards.obj;FEN.obj;piecePlacement.obj</AdditionalDependencies>
+      <AdditionalDependencies>gmock.lib;BoardParser.obj;represenation.obj;Bitboards.obj;FEN.obj;piecePlacement.obj</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Build\InterMidDir\Engine\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -237,6 +238,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FEN_TEST.h" />
+    <ClInclude Include="MockTest.h" />
     <ClInclude Include="RepresentationTests.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -244,6 +246,7 @@
   <ItemGroup>
     <ClCompile Include="FEN_TEST.cpp" />
     <ClCompile Include="LittleHelperTests.cpp" />
+    <ClCompile Include="MockTest.cpp" />
     <ClCompile Include="RepresentationTests.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

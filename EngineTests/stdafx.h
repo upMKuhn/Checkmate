@@ -13,5 +13,6 @@
 
 
 // TODO: reference additional headers your program requires here
+#include <gmock\gmock.h>
 #include <gtest/gtest.h>
 #include <Engine_inc.h>

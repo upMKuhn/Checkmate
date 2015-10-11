@@ -7,5 +7,5 @@
 
 namespace Checkmate
 {
-	std::string& strFormat(std::string& str, char inserts[][], int length);
+	std::string& strFormat(std::string& str, char inserts[], int length);
 }
