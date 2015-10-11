@@ -21,6 +21,13 @@ namespace Checkmate {
 		delete m_boardParser;
 	}
 
+	void FEN_Parser::init()
+	{
+		sideToMove = NO_COLOR;
+		enPassant = SQ_NONE;
+		halfMoveClock = -1;
+		FullMoveClock = -1;
+	}
 
 	void FEN_Parser::nextInstruction(PiecePlacement *&pTemp)
 	{
@@ -54,11 +61,11 @@ namespace Checkmate {
 	{
 		if(tolower(m_FEN[index]) == 'w')
 		{
-			m_sideToMove = WHITE;
+			sideToMove = WHITE;
 		}
 		if (tolower(m_FEN[index]) == 'b')
 		{
-			m_sideToMove = BLACK;
+			sideToMove = BLACK;
 		}
 		jumpSpaceChars(++index);
 	}
@@ -72,16 +79,16 @@ namespace Checkmate {
 			switch (m_FEN[index])
 			{
 			case 'k':
-				m_canCaste[WHITE][KING_SIDE] = WHITE_OO;
+				castlingRights |= WHITE_OO;
 				break;
 			case 'q':
-				m_canCaste[WHITE][QUEEN_SIDE] = WHITE_OOO;
+				castlingRights |= WHITE_OOO;
 				break;
 			case 'K':
-				m_canCaste[BLACK][KING_SIDE] = BLACK_OO;
+				castlingRights |= BLACK_OO;
 				break;
 			case 'Q':
-				m_canCaste[BLACK][QUEEN_SIDE] = BLACK_OOO;
+				castlingRights |= BLACK_OOO;
 				break;
 			default:
 				Casteling = false;

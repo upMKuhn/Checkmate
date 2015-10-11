@@ -379,6 +379,12 @@ inline T& operator/=(T& d, int i) { return d = T(int(d) / i); }
 		return File(s & 7);
 	}
 
+	inline char file_tochar(File f)
+	{
+		const char files[] = { 'a','b','c','d','e','f','g','h' };
+		return files[f];
+	}
+
 	inline Rank rank_of(Square s) {
 		return Rank(s >> 3);
 	}

@@ -8,14 +8,20 @@ namespace Checkmate {
 
 	class Represenation
 	{
-	private:
-		int movesSinceCapture;
-		Color us,enemy;
+	public:
+
+		Color sideToMove;
 		Square enPassant;
+		Square kingSquare;
+		Square board[SQUARE_NB];
 		Bitboard colorbb[COLOR_NB]; //BLACK WHITE
 		Bitboard piecebb[PIECE_NB]; //WHITE_ROOK BLACK ROOK
+		Bitboard castelingPath[CASTLING_RIGHT_NB];
 		Piece pieceLookup[SQUARE_NB];
-		bool  castelingRights[COLOR_NB][CASTLING_SIDE_NB];
+		int pieceCount [COLOR_NB][PIECE_TYPE_NB];
+		int castlingRights;
+		int halfMoveClock;
+		int FullMoveClock;
 
 	public:
 		Represenation();
@@ -25,6 +31,8 @@ namespace Checkmate {
 		string boardToFEN();
 		void fenToBoard(string strFEN);
 
+		int can_castle(Color c);
+		int can_castle(CastlingRight cr);
 
 #pragma region Properties
 		
@@ -39,22 +47,24 @@ namespace Checkmate {
 		void setPiece(Square sq, Piece pc);
 		void setPiece(Square sq, PieceType pt, Color c);
 
-		bool canCastle(CastlingSide side);
-		bool canCastle(CastlingSide side, Color color);
-
 		bool areAllBoardsOk();
 #pragma endregion
 
-
 	private:
 		void init();
-
 		void flipSideToMove()
 		{
-			Color temp = enemy;
-			enemy = us;
-			us = temp;
+			sideToMove = ~sideToMove;
 		}
 	};
+	
+	inline int Represenation::can_castle(CastlingRight cr) {
+		return castlingRights & cr;
+	}
+
+	inline int Represenation::can_castle(Color c) {
+		return castlingRights & ((WHITE_OO | WHITE_OOO) << (2 * c));
+	}
 }
+
 

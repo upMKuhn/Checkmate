@@ -25,7 +25,82 @@ namespace Checkmate {
 
 	string Represenation::boardToFEN()
 	{
-		return "";
+		assert(areAllBoardsOk());
+		int jumpFiles = 0; std::string fen = "";
+		char charPieceTypes[] = {'!', 'p', 'n', 'b', 'r', 'q', 'k' };
+		for (Rank r = RANK_8; r >= RANK_1; --r)
+		{
+			for (File f = FILE_A; f <= FILE_H;++f)
+			{
+				char charPiece = ' ';
+				Piece pc = pieceLookup[make_square(f, r)];
+				if(pc != NO_PIECE)
+				{
+					//write Jump instruction
+					if (jumpFiles != 0)
+					{
+						fen += '0' + jumpFiles;
+						jumpFiles = 0;
+
+					}
+
+					charPiece = charPieceTypes[type_of(pc)];
+					charPiece = color_of(pc) == WHITE ? toupper(charPiece): tolower(charPiece);
+					fen += charPiece;
+				}else
+				{
+					jumpFiles++;
+				}
+			}
+			//write Jump instructions 
+			if (jumpFiles != 0)
+			{
+				fen += '0' + jumpFiles;
+				jumpFiles = 0;
+			}
+			if (r != RANK_1) {
+				fen += '/';
+			}
+		}
+
+		fen +=  (sideToMove == WHITE ? " w " : " b ");
+
+		//Set Castle Rights
+		if(can_castle(WHITE_OO))
+		{
+			fen += 'K';
+		}
+		if (can_castle(WHITE_OOO))
+		{
+			fen += 'Q';
+		}
+
+		if (can_castle(BLACK_OO))
+		{
+			fen += 'k';
+		}
+		if (can_castle(BLACK_OOO))
+		{
+			fen += 'q';
+		}
+		fen += ' ';
+
+		if(enPassant != SQ_NONE)
+		{
+			Rank r = rank_of(enPassant);
+			File f = file_of(enPassant);
+			fen += file_tochar(f);
+			fen += '0' + r+1;
+			fen += ' ';
+		}else
+		{
+			fen += "- ";
+		}
+
+		fen += std::to_string(halfMoveClock);
+		fen += ' ';
+		fen += std::to_string(FullMoveClock);
+		return fen;
 	}
 
 	void Represenation::fenToBoard(string strFEN)
@@ -38,7 +113,13 @@ namespace Checkmate {
 			setPiece(instruct->position, instruct->piece);
 			fen.nextInstruction(instruct);
 		} 
-	
+
+		sideToMove = fen.sideToMove;
+		castlingRights = fen.castlingRights;
+		halfMoveClock = fen.halfMoveClock;
+		FullMoveClock = fen.FullMoveClock;
+		enPassant = fen.enPassant;
+		kingSquare = SQUARE_NB;
 
 	}
 
@@ -83,26 +164,13 @@ namespace Checkmate {
 		pieceLookup[sq] = pc;
 	}
 
-	bool Represenation::canCastle(CastlingSide side)
-	{
-		return this->castelingRights[us][side];
-	}
-	bool Represenation::canCastle(CastlingSide side, Color color)
-	{
-		return this->castelingRights[us][side];;
-	}
 #pragma endregion
 
 	void Represenation::init()
 	{
-		movesSinceCapture = 0;
-		us = WHITE; enemy = BLACK;
+		sideToMove = WHITE;
 		enPassant = SQUARE_NB;
-		castelingRights[WHITE][QUEEN_SIDE] = true;
-		castelingRights[WHITE][KING_SIDE] = true;
-		castelingRights[BLACK][KING_SIDE] = true;
-		castelingRights[BLACK][QUEEN_SIDE] = true;
-
+		castlingRights = 0;
 		::std::fill_n(piecebb, PIECE_NB, NO_PIECE);
 		::std::fill_n(pieceLookup, SQUARE_NB, NO_PIECE);
 		::std::fill_n(colorbb, COLOR_NB, 0);
