@@ -111,8 +111,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnitTests|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>$(SolutionDir)Dependencies\$(Platform)\;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)Engine\Header\;$(SolutionDir)Dependencies\Header\;$(SolutionDir)CPP BaseCode\Header\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)Dependencies\$(Platform)\;$(OutDir);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)Engine\Header\;$(SolutionDir)Dependencies\Header\;$(SolutionDir)CPP BaseCode\Header\;$(SolutionDir)FormatLib\;$(IncludePath)</IncludePath>
     <IntDir>$(SolutionDir)Build\InterMidDir\$(ProjectName)\</IntDir>
     <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)\</OutDir>
   </PropertyGroup>
@@ -263,6 +263,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.vcxproj">
       <Project>{6d62c22a-8271-492a-a06f-bab514daa03b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\FormatLib\FormatLib.vcxproj">
+      <Project>{05fd5ead-69a8-4d5d-81b4-6bc27616cdee}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

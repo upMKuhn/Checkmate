@@ -235,7 +235,6 @@
     <ClInclude Include="Header\CppBaseCode.h" />
     <ClInclude Include="Header\DoubleLinkedList.h" />
     <ClInclude Include="Header\macros.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="Header\DoubleLinkedListNode.h" />
     <ClInclude Include="Header\Stdafx.h" />
   </ItemGroup>
