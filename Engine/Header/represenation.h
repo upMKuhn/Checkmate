@@ -25,10 +25,9 @@ namespace Checkmate {
 		string boardToFEN();
 		void fenToBoard(string strFEN);
 
+
 #pragma region Properties
 		
-		Color getSideToMove();
-
 		Bitboard getPiecebb(Piece pc);
 		Bitboard getPiecebb(PieceType pt, Color c);
 

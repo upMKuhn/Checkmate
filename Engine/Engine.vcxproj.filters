@@ -71,5 +71,8 @@
     <ClInclude Include="Header\BoardParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="EngineMacros.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -93,7 +93,6 @@ namespace Checkmate {
 	}
 #pragma endregion
 
-
 	void Represenation::init()
 	{
 		movesSinceCapture = 0;

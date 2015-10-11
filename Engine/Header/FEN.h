@@ -12,23 +12,31 @@ namespace Checkmate {
 
 	private:
 		::std::string m_FEN;
-		Color m_sideToMove;
-		CastlingRight canCaste[NO_COLOR][CASTLING_SIDE_NB];
-		Square enPassant;
-		int MoveCounter;
-		int halfMoveClock;
-		int FullMoveClock;
+		
 		public:
 			FEN_Parser(::std::string FEN);
 			~FEN_Parser();
 
-			void process();
+			
 			void nextInstruction(PiecePlacement *&pTemp);
+
+			Color m_sideToMove;
+			CastlingRight m_canCaste[NO_COLOR][CASTLING_SIDE_NB];
+			Square enPassant;
+			int MoveCounter;
+			int halfMoveClock;
+			int FullMoveClock;
 		private:
 			
 			BoardParser* m_boardParser = NULL;
-
+			int getEndOfRepresenation();
+			void jumpSpaceChars(int & index);
 			void extractStates();
+			void extractSideToMove(int & index);
+			void extractCastelingRights(int& index);
+			void extractEnPassant(int & index);
+			void extractMoveCounter(int& index);
+			void process();
 			
 	};
 

@@ -241,6 +241,7 @@
     <ClInclude Include="Header\represenation.h" />
     <ClInclude Include="Header\stdafx.h" />
     <ClInclude Include="Header\types.h" />
+    <ClInclude Include="EngineMacros.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

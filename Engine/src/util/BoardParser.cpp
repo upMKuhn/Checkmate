@@ -94,12 +94,7 @@ namespace Checkmate {
 
 	void BoardParser::jumpFile(int jmp)
 	{
-		File currentFile = file_of(m_squareAt);
-		Rank currentRank = rank_of(m_squareAt);
-
-		currentFile += ((File)(jmp - 1));
-		assert((currentFile <= FILE_H));
-		m_squareAt = make_square(currentFile, currentRank);
+		m_squareAt = (Square)(jmp + m_squareAt);
 	}
 
 	void BoardParser::nextRank()

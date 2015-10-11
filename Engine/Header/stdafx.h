@@ -12,6 +12,7 @@
 
 
 //Project Refs
+#include "EngineMacros.h"
 #include "piecePlacement.h"
 #include "BitBoards.h"
 #include "BoardParser.h"
