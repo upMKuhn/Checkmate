@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include <format.h>
+
 class Turtle {
 public:
 
@@ -34,15 +35,3 @@ bool testfunction(Turtle &testclass)
 
 using ::testing::AtLeast;                     // #1
 
-TEST(PainterTest, CanDrawSomething) {
-	MockTurtle turtle;                          // #2
-	EXPECT_CALL(turtle, PenDown())              // #3
-		.Times(AtLeast(2));
-	EXPECT_TRUE(testfunction(turtle));
-}
-
-TEST(FormatLibTests, strFormat)
-{
-	std::string s = fmt::format("{0}{1}{0}", "abra", "cad");
-	EXPECT_EQ("abracadabra", s);
-}

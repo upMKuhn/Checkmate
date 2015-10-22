@@ -30,7 +30,10 @@
     <ClInclude Include="FEN_TEST.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MockTest.h">
+    <ClInclude Include="IncludeTests.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TestingTools.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -47,7 +50,7 @@
     <ClCompile Include="LittleHelperTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MockTest.cpp">
+    <ClCompile Include="IncludeTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

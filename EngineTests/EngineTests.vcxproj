@@ -190,6 +190,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>gmock.lib;BoardParser.obj;represenation.obj;Bitboards.obj;FEN.obj;piecePlacement.obj</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Build\InterMidDir\Engine\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -238,15 +239,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FEN_TEST.h" />
-    <ClInclude Include="MockTest.h" />
+    <ClInclude Include="IncludeTests.h" />
     <ClInclude Include="RepresentationTests.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="TestingTools.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FEN_TEST.cpp" />
     <ClCompile Include="LittleHelperTests.cpp" />
-    <ClCompile Include="MockTest.cpp" />
+    <ClCompile Include="IncludeTests.cpp" />
     <ClCompile Include="RepresentationTests.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

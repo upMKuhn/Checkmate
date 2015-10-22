@@ -16,3 +16,5 @@
 #include <gmock\gmock.h>
 #include <gtest/gtest.h>
 #include <Engine_inc.h>
+
+#include "TestingTools.h"
