@@ -24,9 +24,10 @@ TEST_F(RepresentationTests, MakeNormalMove)
 TEST_F(RepresentationTests, MakeTwoMovesAndOnDoOneCheckFEN)
 {
 	Represenation board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-	Move mv = make<NORMAL>(SQ_A2, SQ_C3, KNIGHT);
-	Move mv = make<NORMAL>(SQ_G1, SQ_G, KNIGHT);
+	Move mv = make<NORMAL>(SQ_G1, SQ_F3, KNIGHT);
+	Move mv2 = make<NORMAL>(SQ_G7, SQ_G5, KNIGHT);
 	board.makeMove(mv);
+	board.makeMove(mv2);
 	EXPECT_EQ(board.boardToFEN(), "rnbqkbnr/pppppppp/8/8/8/4N3/PPPPPPPP/RNBQKB1R w KQkq - 0 1");
 	EXPECT_EQ(W_KNIGHT, board.getPieceAt(SQ_C3));
 }
