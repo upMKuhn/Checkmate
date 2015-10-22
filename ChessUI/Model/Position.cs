@@ -47,8 +47,8 @@ namespace ChessUI.Model
         } }
 
         public string SquareName { get {
-            char[] fileChar = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
-            return fileChar[File-1] + Rank.ToString();
+            String fileChar = "HGFEDCBA";
+            return fileChar[Rank - 1] + File.ToString();
         } }
     }
 }
