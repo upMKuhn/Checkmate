@@ -75,19 +75,19 @@ TEST_F(FEN_TEST, CHECK_BOARD_STATE)
 	EXPECT_EQ(BLACK, parser.sideToMove);
 	EXPECT_EQ(SQ_A3, parser.enPassant);
 	EXPECT_EQ((WHITE_OO | WHITE_OOO | BLACK_OO | BLACK_OOO), parser.castlingRights);
-	EXPECT_EQ(1, parser.FullMoveClock);
-	EXPECT_EQ(0, parser.halfMoveClock);
+	EXPECT_EQ(1, parser.halfMoveClock);
+	EXPECT_EQ(0, parser.FullMoveClock);
 }
 
 TEST_F(FEN_TEST, FEN_NO_CASTELING_AND_NO_EnPassant)
 {
-	FEN_TEST_DATA data("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - 13 26");
+	FEN_TEST_DATA data("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - 13 1");
 
 	FEN_Parser parser(data.fen);
 	
 	EXPECT_EQ(BLACK, parser.sideToMove);
 	EXPECT_EQ(SQ_NONE, parser.enPassant);
-	EXPECT_EQ(13, parser.halfMoveClock);
-	EXPECT_EQ(26, parser.FullMoveClock);
+	EXPECT_EQ(13, parser.FullMoveClock);
+	EXPECT_EQ(1, parser.halfMoveClock);
 
 }

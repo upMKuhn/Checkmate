@@ -385,6 +385,18 @@ inline T& operator/=(T& d, int i) { return d = T(int(d) / i); }
 		return files[f];
 	}
 
+	inline char piece_tochar(Piece p)
+	{
+		if (p != NO_PIECE)
+		{
+			const char pieces[] = { ' ', 'p' , 'n', 'b','r','q','k' };
+			return color_of(p) == WHITE ? toupper(pieces[type_of(p)]) : pieces[type_of(p)];
+		}else
+		{
+			return ' ';
+		}
+	}
+
 	inline Rank rank_of(Square s) {
 		return Rank(s >> 3);
 	}
@@ -439,5 +451,7 @@ inline T& operator/=(T& d, int i) { return d = T(int(d) / i); }
 		return from_sq(m) != to_sq(m); // Catch MOVE_NULL and MOVE_NONE
 	}
 
+	
+	
 #endif // #ifndef TYPES_H_INCLUDED
 }

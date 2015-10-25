@@ -119,11 +119,11 @@ namespace Checkmate {
 		
 		int endOfNumber = m_FEN.find_first_of(' ', index);
 		if (endOfNumber > 0) {
-			halfMoveClock = std::stoi(m_FEN.substr(index, endOfNumber - index));
+			FullMoveClock = std::stoi(m_FEN.substr(index, endOfNumber - index));
 			index = endOfNumber + 1;
 		}
 		
-		FullMoveClock = std::stoi(m_FEN.substr(index, m_FEN.length()));
+		halfMoveClock = std::stoi(m_FEN.substr(index, m_FEN.length()));
 		jumpSpaceChars(index);
 	}
 

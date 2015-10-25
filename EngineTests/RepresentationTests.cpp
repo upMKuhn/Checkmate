@@ -12,24 +12,35 @@ RepresentationTests::~RepresentationTests()
 {
 }
 
-TEST_F(RepresentationTests, MakeNormalMove)
+TEST_F(RepresentationTests, MakeLegalMove)
 {
-	Represenation board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-	Move mv = make<NORMAL>(SQ_A2, SQ_C3, KNIGHT);
+	Represenation board("rnbqkbnr/pppppppp/8/8/8/8/8/RNBQKBNR w KQkq - 0 0");
+	Move mv = make<NORMAL>(SQ_B1, SQ_C3, KNIGHT);
 	board.makeMove(mv);
-	EXPECT_EQ(board.boardToFEN(), "rnbqkbnr/pppppppp/8/8/8/4N3/PPPPPPPP/RNBQKB1R w KQkq - 0 1");
-	EXPECT_EQ(W_KNIGHT, board.getPieceAt(SQ_E2));
+	EXPECT_EQ(board.boardToFEN(), "rnbqkbnr/pppppppp/8/8/8/2N5/8/R1BQKBNR b KQkq - 0 1");
+	EXPECT_EQ(W_KNIGHT, board.piece_on(SQ_C3));
 }
 
-TEST_F(RepresentationTests, MakeTwoMovesAndOnDoOneCheckFEN)
+TEST_F(RepresentationTests, Make_illegalMove)
+{
+	Represenation board("rnbqkbnr/pppppppp/8/8/8/8/8/RNBQKBNR w KQkq - 0 0");
+	Move mv = make<NORMAL>(SQ_E1, SQ_F6, KNIGHT);
+	//EXPECT_FALSE(board.makeMove(mv));
+	//EXPECT_EQ(board.boardToFEN(), "rnbqkbnr/pppppppp/8/8/8/8/8/RNBQKBNR w KQkq - 0 1");
+}
+
+TEST_F(RepresentationTests, MoveTwo_UndoOne_CheckFen)
 {
 	Represenation board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 	Move mv = make<NORMAL>(SQ_G1, SQ_F3, KNIGHT);
 	Move mv2 = make<NORMAL>(SQ_G7, SQ_G5, KNIGHT);
 	board.makeMove(mv);
 	board.makeMove(mv2);
-	EXPECT_EQ(board.boardToFEN(), "rnbqkbnr/pppppppp/8/8/8/4N3/PPPPPPPP/RNBQKB1R w KQkq - 0 1");
-	EXPECT_EQ(W_KNIGHT, board.getPieceAt(SQ_C3));
+	//EXPECT_EQ(W_KNIGHT, board.piece_on(SQ_G5));
+	//EXPECT_EQ(NO_PIECE, board.piece_on(SQ_G7));
+	board.undoMove();
+	//EXPECT_EQ(board.boardToFEN(), "rnbqkbnr/pppppppp/8/8/8/4N3/PPPPPPPP/RNBQKB1R w KQkq - 0 1");
+	//EXPECT_EQ(W_KNIGHT, board.piece_on(SQ_G7));
 }
 
 TEST_F(RepresentationTests, INITATE_BOARD_CHECK_PIECE_COUNT)
@@ -41,10 +52,12 @@ TEST_F(RepresentationTests, INITATE_BOARD_CHECK_PIECE_COUNT)
 	expectCount[B_ROOK] = 2; expectCount[B_KNIGHT] = 2; expectCount[B_BISHOP] = 2;
 	expectCount[B_QUEEN] = 1; expectCount[B_KING] = 1; expectCount[B_PAWN] = 8;
 
-	EXPECT_TRUE(ARRAY_LENGHT(expectCount) == ARRAY_LENGHT(board.pieceCount));
-	for (int i = W_PAWN; i < ARRAY_LENGHT(expectCount); i++)
+	for (Piece i = W_PAWN; i < PIECE_NB; ++i)
 	{
-		EXPECT_EQ(expectCount[i], board.pieceCount[i]);
+		if (!(i == 8 || i == 7))
+		{
+			EXPECT_EQ(expectCount[i], board.count(i));
+		}
 	}
 }
 

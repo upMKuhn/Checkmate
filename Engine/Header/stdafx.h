@@ -5,6 +5,7 @@
 #include <climits>
 #include <string>
 #include <iostream>
+#include <sstream>
  
 #include "types.h"
 #include "platform.h"

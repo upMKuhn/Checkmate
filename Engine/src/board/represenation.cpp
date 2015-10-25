@@ -21,7 +21,6 @@ namespace Checkmate {
 	{		
 	}
 
-	
 
 	string Represenation::boardToFEN()
 	{
@@ -33,7 +32,7 @@ namespace Checkmate {
 			for (File f = FILE_A; f <= FILE_H;++f)
 			{
 				char charPiece = ' ';
-				Piece pc = pieceLookup[make_square(f, r)];
+				Piece pc = board[make_square(f, r)];
 				if(pc != NO_PIECE)
 				{
 					//write Jump instruction
@@ -97,9 +96,10 @@ namespace Checkmate {
 			fen += "- ";
 		}
 
-		fen += std::to_string(halfMoveClock);
+		fen += std::to_string((moveClock/2) - (moveClock % 2) > 0 ? (moveClock / 2) - (moveClock % 2) : 0);
 		fen += ' ';
-		fen += std::to_string(FullMoveClock);
+		fen += std::to_string(moveClock % 2);
+
 		return fen;
 	}
 
@@ -110,72 +110,130 @@ namespace Checkmate {
 		fen.nextInstruction(instruct);
 		while (instruct != NULL) 
 		{
-			setPiece(instruct->position, instruct->piece);
+			put_piece(instruct->position, instruct->piece);
 			fen.nextInstruction(instruct);
 		} 
 
 		sideToMove = fen.sideToMove;
 		castlingRights = fen.castlingRights;
-		halfMoveClock = fen.halfMoveClock;
-		FullMoveClock = fen.FullMoveClock;
+		moveClock = fen.halfMoveClock + fen.FullMoveClock*2;
 		enPassant = fen.enPassant;
-		kingSquare = SQUARE_NB;
 
+	}
+
+
+	
+	bool Represenation::makeMove(Move mv)
+	{
+		//MakeMove
+		assert(is_ok(mv));
+		Square from = from_sq(mv);
+		Square to = to_sq(mv);
+		PieceType movingPiece = type_of(piece_on(from));
+		PieceType capture = type_of(mv) == ENPASSANT? PAWN: type_of(piece_on(to));
+		MoveType mvtype = type_of(mv);
+
+		Color us = sideToMove;
+		Color them = ~us;
+		
+		if (mvtype == CASTLING)
+		{
+			bool kingSide = from > to;
+			Square rfrom = to;
+			Square rto = relative_square(us, kingSide ? SQ_D1 : SQ_F1);
+			Square to = relative_square(us, kingSide ? SQ_C1 : SQ_G1);
+			move_piece(rfrom, rto, us, ROOK);
+		}
+
+		if (mvtype == ENPASSANT)
+		{
+			assert("ENPASSNT NOT IMPLEMENTED" == 0);
+		}
+
+		if (capture != NO_PIECE && mvtype != ENPASSANT)
+		{
+			remove_piece(to, ~us, capture);
+		}
+
+		if (mvtype != PROMOTION)
+		{
+			move_piece(from, to, us, movingPiece);
+		}
+		else {
+			move_piece(from, to, us, movingPiece);
+			remove_piece(to, make_piece(us,PAWN));
+			put_piece(to, make_piece(us, promotion_type(mv)));
+		}
+
+		enPassant = mvtype == ENPASSANT ? SQ_NONE : enPassant;
+		sideToMove = ~sideToMove;
+		
+		if(movingPiece == PAWN || capture != NO_PIECE_TYPE)
+		{
+			moveClock = 0;
+		}else
+		{
+			moveClock++;
+		}
+
+		return false;
+	}
+
+	void Represenation::undoMove()
+	{
 	}
 
 #pragma region Properties
-
-
-	Bitboard Represenation::getPiecebb(Piece pc)
+	
+	/// <summary>
+	/// A State is a compact representation of the state 
+	/// positions and rights in a game position. This function 
+	/// makes a snapshot and appends the state SLL
+	/// </summary>
+	void Represenation::makeNextState(Move mv,PieceType captrue)
 	{
-		return this->piecebb[pc];
-	}
-	Bitboard Represenation::getPiecebb(PieceType pt, Color c)
-	{
-		Piece pc = make_piece(c, pt);
-		return this->piecebb[pc];
-	}
-
-	Bitboard Represenation::getColorbb(Piece pc)
-	{
-		return this->colorbb[pc];
-	}
-	Bitboard Represenation::getColorbb(PieceType pt, Color c)
-	{
-		Piece pc = make_piece(c, pt);
-		return this->colorbb[pc];
-	}
-
-	Piece Represenation::getPieceAt(Square position)
-	{
-		return pieceLookup[position];
+		BoardState* oldState = state;
+		state = new BoardState();
+		state->BLACK_BB = getColorbb(BLACK);
+		state->WHITE_BB = getColorbb(WHITE);
+		state->castlingRights = castlingRights;
+		state->enPassant = enPassant;
+		state->moveClock = moveClock;
+		state->sideToMove = sideToMove;
+		state->next = oldState;
+		state->stateIndex = oldState->stateIndex + 1;
+		oldState->lastMove = mv;
+		oldState->captrue = captrue;
 	}
 
-	void Represenation::setPiece(Square sq, Piece pc)
-	{
-		assert(Checkmate::is_ok(sq));
-		setPiece(sq, type_of(pc), color_of(pc));
-	}
-	void Represenation::setPiece(Square sq, PieceType pt, Color c)
-	{
-		Piece pc = make_piece(c, pt);
-		piecebb[pc] |= SquareBB[sq];
-		colorbb[c] |= SquareBB[sq];
-		pieceLookup[sq] = pc;
-	}
 
 #pragma endregion
 
 	void Represenation::init()
 	{
+
 		sideToMove = WHITE;
 		enPassant = SQUARE_NB;
 		castlingRights = 0;
-		::std::fill_n(piecebb, PIECE_NB, NO_PIECE);
-		::std::fill_n(pieceLookup, SQUARE_NB, NO_PIECE);
-		::std::fill_n(colorbb, COLOR_NB, 0);
+		moveClock = 0;
+		::std::fill_n(typebb, PIECE_NB, NO_PIECE);
+		::std::fill_n(board, SQUARE_NB, NO_PIECE);
+		::std::fill_n(colorbb, COLOR_NB, NO_PIECE);
+		::std::fill_n(index, SQUARE_NB, NO_PIECE);
+		
+		for (Color c = WHITE; c < NO_COLOR; ++c)
+		{
+			for (PieceType pt = ALL_PIECES; pt < PIECE_TYPE_NB; ++pt)
+			{
+				for (int i = 0; i < 16; i++)
+				{
+					pieceList[c][pt][i] = SQ_NONE;
+				}
+				pieceCount[c][pt] = 0;
+			}
+		}
 	}
-
+	
 	/// <summary>
 	/// Is_ok check if all variables hold acceptable data
 	/// in this class
@@ -184,32 +242,27 @@ namespace Checkmate {
 	bool Represenation::areAllBoardsOk()
 	{
 		bool test = true;
-		Bitboard whiteBoard = 0, blackBoard = 0;
-		
-		whiteBoard = whiteBoard | piecebb[W_PAWN];
-		whiteBoard = whiteBoard | piecebb[W_KNIGHT];
-		whiteBoard = whiteBoard | piecebb[W_BISHOP];
-		whiteBoard = whiteBoard | piecebb[W_ROOK];
-		whiteBoard = whiteBoard | piecebb[W_QUEEN];
-		whiteBoard = whiteBoard | piecebb[W_KING];
+		Bitboard allPieces = 0;
+		Bitboard Whitebb = colorbb[WHITE], Blackbb = colorbb[BLACK];
 
-		blackBoard = blackBoard | piecebb[B_PAWN];
-		blackBoard = blackBoard | piecebb[B_KNIGHT];
-		blackBoard = blackBoard | piecebb[B_BISHOP];
-		blackBoard = blackBoard | piecebb[B_ROOK];
-		blackBoard = blackBoard | piecebb[B_QUEEN];
-		blackBoard = blackBoard | piecebb[B_KING];
-		
-		test &= (whiteBoard & blackBoard) == 0;
-		test &= whiteBoard == colorbb[WHITE];
-		test &= blackBoard == colorbb[BLACK];
+		allPieces = allPieces | typebb[PAWN];
+		allPieces = allPieces | typebb[KNIGHT];
+		allPieces = allPieces | typebb[BISHOP];
+		allPieces = allPieces | typebb[ROOK];
+		allPieces = allPieces | typebb[QUEEN];
+		allPieces = allPieces | typebb[KING];
+
+		allPieces ^= Whitebb;
+		allPieces ^= Blackbb;
+
+		test &= allPieces == 0;
 
 		Square sqr = SQ_A1;
-		for each (Piece piece in pieceLookup)
+		for each (Piece piece in board)
 		{
 			if(piece != NO_PIECE)
 			{
-				Bitboard bb = getPiecebb(piece);
+				Bitboard bb = board_for(piece);
 				test &= (bb & (1ULL << sqr)) > 0;
 			}
 			++sqr;
@@ -219,5 +272,33 @@ namespace Checkmate {
 			   
 	}
 
+
+	/// operator<<(Position) returns an ASCII representation of the position
+	std::ostream& operator<<(std::ostream& os, Represenation& pos) {
+
+		os << pos.print();
+		return os;
+	}
+
+	string Represenation::print() {
+
+		string os = "\n +---+---+---+---+---+---+---+---+\n";
+
+		for (Rank r = RANK_8; r >= RANK_1; --r)
+		{
+			for (File f = FILE_A; f <= FILE_H; ++f)
+			{
+				os += " | ";
+				os += piece_tochar(piece_on(make_square(f, r)));
+			}
+
+			os += " |\n +---+---+---+---+---+---+---+---+\n";
+		}
+
+		return os;
+	}
+
+	
+	
 
 }

@@ -87,9 +87,11 @@ namespace Checkmate {
 #ifndef NOMINMAX
 #  define NOMINMAX // disable macros min() and max()
 #endif
-
 #define WIN32_LEAN_AND_MEAN
+//#define GLOG_NO_ABBREVIATED_SEVERITIES
+#define NOGDI
 #include <windows.h>
+#undef ERROR
 #undef WIN32_LEAN_AND_MEAN
 #undef NOMINMAX
 

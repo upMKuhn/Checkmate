@@ -21,8 +21,8 @@ namespace Checkmate {
 
 			//Vars
 			int castlingRights;
-			Color sideToMove;
-			Square enPassant;
+			Color sideToMove = NO_COLOR;
+			Square enPassant = SQ_NONE;
 			int halfMoveClock;
 			int FullMoveClock; 
 
