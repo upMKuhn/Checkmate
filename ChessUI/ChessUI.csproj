@@ -107,6 +107,8 @@
     <Compile Include="Model\Piece.cs" />
     <Compile Include="Model\Position.cs" />
     <Compile Include="Model\Square.cs" />
+    <Compile Include="Model\UCI\baseCommand.cs" />
+    <Compile Include="Model\UCI\UCI.cs" />
     <Compile Include="RelayCommand.cs" />
     <Compile Include="ViewModel\ChessBoardViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
