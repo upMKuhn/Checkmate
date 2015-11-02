@@ -108,6 +108,7 @@
     <LibraryPath>$(SolutionDir)\Dependencies\$(Platform)\;$(LibraryPath)</LibraryPath>
     <IncludePath>$(SolutionDir)Engine\Header\;$(SolutionDir)CPP BaseCode\Header\;$(IncludePath)</IncludePath>
     <IntDir>$(SolutionDir)Build\InterMidDir\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnitTests|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -115,6 +116,8 @@
     <IncludePath>$(SolutionDir)Engine\Header\;$(SolutionDir)Dependencies\Header\;$(SolutionDir)CPP BaseCode\Header\;$(SolutionDir)FormatLib\;$(IncludePath)</IncludePath>
     <IntDir>$(SolutionDir)Build\InterMidDir\$(ProjectName)\</IntDir>
     <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)\</OutDir>
+    <CodeAnalysisRuleSet>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Team Tools\Static Analysis Tools\Rule Sets\NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -125,6 +128,7 @@
     <LibraryPath>$(SolutionDir)\Dependencies\$(Platform)\;$(LibraryPath)</LibraryPath>
     <IncludePath>$(SolutionDir)Engine\Header\;$(SolutionDir)CPP BaseCode\Header\;$(IncludePath)</IncludePath>
     <IntDir>$(SolutionDir)Build\InterMidDir\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -167,6 +171,7 @@
       <SDLCheck>true</SDLCheck>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>$(SolutionDir)Boost\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -184,14 +189,20 @@
       <SDLCheck>true</SDLCheck>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <EnablePREfast>true</EnablePREfast>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\Header\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>gmock.lib;BoardParser.obj;represenation.obj;Bitboards.obj;FEN.obj;piecePlacement.obj</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Build\InterMidDir\Engine\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Build\InterMidDir\Engine\;$(SolutionDir)Dependencies\$(Platform)\boost\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
+    <ProjectReference>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -224,6 +235,7 @@
       <SDLCheck>true</SDLCheck>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>$(SolutionDir)Boost\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -265,6 +277,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.vcxproj">
       <Project>{6d62c22a-8271-492a-a06f-bab514daa03b}</Project>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
     </ProjectReference>
     <ProjectReference Include="..\FormatLib\FormatLib.vcxproj">
       <Project>{05fd5ead-69a8-4d5d-81b4-6bc27616cdee}</Project>

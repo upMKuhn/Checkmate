@@ -15,6 +15,8 @@ namespace ChessUI.Model.UCI
 
         public string Command { get;}
 
+        public bool Stop { get; set; }
+
         public abstract void noteResponse(string str);
 
         public abstract string getReponse();

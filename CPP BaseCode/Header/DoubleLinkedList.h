@@ -105,7 +105,7 @@ namespace DataStructs {
 				{
 					old = temp;
 					temp = temp->getSuccessor();
-					DELETE(old)
+					DELETE_PTR(old)
 					this->m_length--;
 				}
 

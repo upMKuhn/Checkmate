@@ -1,7 +1,11 @@
 #pragma once
 #include "stdafx.h"
 #include <format.h>
-
+#include <boost\algorithm\algorithm.hpp>
+#include <boost\tokenizer.hpp>
+#include <boost\thread.hpp>
+#include <boost\log\trivial.hpp>
+#include <boost\log\utility\setup.hpp>
 class Turtle {
 public:
 

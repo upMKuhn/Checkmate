@@ -175,7 +175,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir)CPP BaseCode\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir)CPP BaseCode\Header;$(SolutionDir)Boost\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
@@ -216,6 +216,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\BaseCommand.cpp" />
     <ClCompile Include="src\board\Bitboards.cpp" />
     <ClCompile Include="src\board\piecePlacement.cpp" />
     <ClCompile Include="src\board\represenation.cpp" />
@@ -223,6 +224,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\util\BoardParser.cpp" />
     <ClCompile Include="src\util\FEN.cpp" />
+    <ClCompile Include="src\UCI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CPP BaseCode\CPP BaseCode.vcxproj">
@@ -230,6 +232,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Header\BaseCommand.h" />
     <ClInclude Include="Header\BitBoards.h" />
     <ClInclude Include="Header\BitOperations.h" />
     <ClInclude Include="Header\Board.h" />
@@ -244,6 +247,7 @@
     <ClInclude Include="Header\represenation.h" />
     <ClInclude Include="Header\stdafx.h" />
     <ClInclude Include="Header\types.h" />
+    <ClInclude Include="Header\UCI.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

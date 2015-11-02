@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <vector>
  
 #include "types.h"
 #include "platform.h"
@@ -20,4 +21,4 @@
 #include "FEN.h"
 #include "represenation.h"
 
-
+#include "UCI.h"

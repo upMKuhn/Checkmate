@@ -18,8 +18,8 @@ namespace ChessUI.Model.UCI
             this.m_psi = new ProcessStartInfo(@"C:\Users\martin_kuhn\Documents\Visual Studio 2015\Projects\Checkmate\Build\UnitTests\x64\engine.exe");
             thread = new Thread(start);
             m_app = new Process();
-            m_cmdsToExecute = new Queue<UCI_Command>();
-            m_reponse = new Queue<UCI_Command>();
+            m_cmdsToExecute = new Queue<BaseCommand>();
+            m_reponse = new Queue<BaseCommand>();
             m_app.StartInfo = m_psi;
         }
 
@@ -69,8 +69,6 @@ namespace ChessUI.Model.UCI
 
 
         public Thread thread { get; }
-        public event FEN_Update FEN;
-        public delegate void FEN_Update(string FEN);
 
         public void Abort()
         {
@@ -78,10 +76,19 @@ namespace ChessUI.Model.UCI
             m_app.Close();
         }
 
-        private Queue<BaseCommand> m_cmdsToExecute;
-        private Queue<BaseCommand> m_reponse;
+        
+        public BaseCommand CurrentCommand {
+            get
+            {
+                lock (thread)
+                {
+                    return _CurrentCommand;
+                }
+            }
+        }
+        
 
-        private void QueueCommand(BaseCommand cmd)
+        public void QueueCommand(BaseCommand cmd)
         {
             lock (thread)
             {
@@ -97,13 +104,18 @@ namespace ChessUI.Model.UCI
                 if (m_cmdsToExecute.Count > 0)
                 {
                     cmd = m_cmdsToExecute.Dequeue();
+                    _CurrentCommand = cmd;
                 }
             }
             return cmd;
         }
 
+        private Queue<BaseCommand> m_cmdsToExecute;
+        private Queue<BaseCommand> m_reponse;
+
         private Process m_app;
         private ProcessStartInfo m_psi;
+        private BaseCommand _CurrentCommand;
 
         //can't be bother to type m_stw for such a heavily used var
         StreamWriter stw;

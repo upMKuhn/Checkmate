@@ -25,8 +25,8 @@ TEST_F(RepresentationTests, Make_illegalMove)
 {
 	Represenation board("rnbqkbnr/pppppppp/8/8/8/8/8/RNBQKBNR w KQkq - 0 0");
 	Move mv = make<NORMAL>(SQ_E1, SQ_F6, KNIGHT);
-	//EXPECT_FALSE(board.makeMove(mv));
-	//EXPECT_EQ(board.boardToFEN(), "rnbqkbnr/pppppppp/8/8/8/8/8/RNBQKBNR w KQkq - 0 1");
+	EXPECT_FALSE(board.makeMove(mv));
+	EXPECT_EQ(board.boardToFEN(), "rnbqkbnr/pppppppp/8/8/8/8/8/RNBQKBNR w KQkq - 0 1");
 }
 
 TEST_F(RepresentationTests, MoveTwo_UndoOne_CheckFen)
@@ -36,11 +36,11 @@ TEST_F(RepresentationTests, MoveTwo_UndoOne_CheckFen)
 	Move mv2 = make<NORMAL>(SQ_G7, SQ_G5, KNIGHT);
 	board.makeMove(mv);
 	board.makeMove(mv2);
-	//EXPECT_EQ(W_KNIGHT, board.piece_on(SQ_G5));
-	//EXPECT_EQ(NO_PIECE, board.piece_on(SQ_G7));
+	EXPECT_EQ(W_KNIGHT, board.piece_on(SQ_G5));
+	EXPECT_EQ(NO_PIECE, board.piece_on(SQ_G7));
 	board.undoMove();
-	//EXPECT_EQ(board.boardToFEN(), "rnbqkbnr/pppppppp/8/8/8/4N3/PPPPPPPP/RNBQKB1R w KQkq - 0 1");
-	//EXPECT_EQ(W_KNIGHT, board.piece_on(SQ_G7));
+	EXPECT_EQ(board.boardToFEN(), "rnbqkbnr/pppppppp/8/8/8/4N3/PPPPPPPP/RNBQKB1R w KQkq - 0 1");
+	EXPECT_EQ(W_KNIGHT, board.piece_on(SQ_G7));
 }
 
 TEST_F(RepresentationTests, INITATE_BOARD_CHECK_PIECE_COUNT)
