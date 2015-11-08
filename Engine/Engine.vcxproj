@@ -102,36 +102,39 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)\</OutDir>
-    <IncludePath>$(SolutionDir)CPP BaseCode\Header\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)CPP BaseCode\Header\;$(SolutionDir)\Dependencies\Header\;$(IncludePath)</IncludePath>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <IntDir>$(SolutionDir)Build\InterMidDir\$(ProjectName)\</IntDir>
+    <LibraryPath>$(SolutionDir)Dependencies\$(Platform)\;$(SolutionDir)Dependencies\$(Platform)\boost\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnitTests|x64'">
     <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)\</OutDir>
-    <IncludePath>$(SolutionDir)CPP BaseCode\Header\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)CPP BaseCode\Header\;$(SolutionDir)\Dependencies\Header\;$(IncludePath)</IncludePath>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <IntDir>$(SolutionDir)Build\InterMidDir\$(ProjectName)\</IntDir>
     <SourcePath>$(ProjectDir)src\util\;$(SourcePath)</SourcePath>
+    <LibraryPath>$(SolutionDir)Dependencies\$(Platform)\;$(SolutionDir)Dependencies\$(Platform)\boost\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)\</OutDir>
-    <IncludePath>$(SolutionDir)CPP BaseCode\Header\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)CPP BaseCode\Header\;$(SolutionDir)\Dependencies\Header\;$(IncludePath)</IncludePath>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <IntDir>$(SolutionDir)Build\InterMidDir\$(ProjectName)\</IntDir>
+    <LibraryPath>$(SolutionDir)Dependencies\$(Platform)\;$(SolutionDir)Dependencies\$(Platform)\boost\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)\</OutDir>
-    <IncludePath>$(SolutionDir)CPP BaseCode\Header\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)CPP BaseCode\Header\;$(SolutionDir)\Dependencies\Header\;$(IncludePath)</IncludePath>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnitTests|Win32'">
     <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)\</OutDir>
-    <IncludePath>$(SolutionDir)CPP BaseCode\Header\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)CPP BaseCode\Header\;$(SolutionDir)\Dependencies\Header\;$(IncludePath)</IncludePath>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)\</OutDir>
-    <IncludePath>$(SolutionDir)CPP BaseCode\Header\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)CPP BaseCode\Header\;$(SolutionDir)\Dependencies\Header\;$(IncludePath)</IncludePath>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -141,6 +144,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir)CPP BaseCode\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Create</PrecompiledHeader>
+      <AdditionalOptions>-Zm250 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -153,6 +157,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir)CPP BaseCode\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Create</PrecompiledHeader>
+      <AdditionalOptions>-Zm250 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -165,6 +170,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir)CPP BaseCode\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Create</PrecompiledHeader>
+      <AdditionalOptions>-Zm250 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -178,6 +184,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir)CPP BaseCode\Header;$(SolutionDir)Boost\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalOptions>-Zm250 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -192,6 +199,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir)CPP BaseCode\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Create</PrecompiledHeader>
+      <AdditionalOptions>-Zm250 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -208,6 +216,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir)CPP BaseCode\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Create</PrecompiledHeader>
+      <AdditionalOptions>-Zm250 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -216,7 +225,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\BaseCommand.cpp" />
+    <ClCompile Include="src\MoveGen.cpp" />
     <ClCompile Include="src\board\Bitboards.cpp" />
     <ClCompile Include="src\board\piecePlacement.cpp" />
     <ClCompile Include="src\board\represenation.cpp" />
@@ -232,22 +241,23 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Header\BaseCommand.h" />
     <ClInclude Include="Header\BitBoards.h" />
-    <ClInclude Include="Header\BitOperations.h" />
-    <ClInclude Include="Header\Board.h" />
+    <ClInclude Include="Header\bitcount.h" />
     <ClInclude Include="Header\BoardParser.h" />
     <ClInclude Include="Header\Engine_inc.h" />
     <ClInclude Include="Header\FEN.h" />
     <ClInclude Include="Header\EngineMacros.h" />
     <ClInclude Include="Header\LittleHelper.h" />
+    <ClInclude Include="Header\Logger.h" />
     <ClInclude Include="Header\main.h" />
+    <ClInclude Include="Header\misc.h" />
     <ClInclude Include="Header\piecePlacement.h" />
     <ClInclude Include="Header\platform.h" />
     <ClInclude Include="Header\represenation.h" />
     <ClInclude Include="Header\stdafx.h" />
     <ClInclude Include="Header\types.h" />
     <ClInclude Include="Header\UCI.h" />
+    <ClInclude Include="Header\MoveGen.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

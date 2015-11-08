@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "LittleHelper.h"
+
 
 namespace Checkmate {
 	std::string& strFormat(std::string& str, std::string inserts[], int length)

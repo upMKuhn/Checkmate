@@ -27,6 +27,7 @@ namespace Checkmate {
 		enPassant = SQ_NONE;
 		halfMoveClock = -1;
 		FullMoveClock = -1;
+		castlingRights = 0;
 	}
 
 	void FEN_Parser::nextInstruction(PiecePlacement *&pTemp)
@@ -41,7 +42,7 @@ namespace Checkmate {
 		{
 			m_boardParser = new BoardParser(m_FEN);
 		}
-
+		init();
 		m_boardParser->extractBoard();
 		extractStates();
 	}
@@ -119,11 +120,11 @@ namespace Checkmate {
 		
 		int endOfNumber = m_FEN.find_first_of(' ', index);
 		if (endOfNumber > 0) {
-			FullMoveClock = std::stoi(m_FEN.substr(index, endOfNumber - index));
+			halfMoveClock = std::stoi(m_FEN.substr(index, endOfNumber - index));
 			index = endOfNumber + 1;
 		}
 		
-		halfMoveClock = std::stoi(m_FEN.substr(index, m_FEN.length()));
+		FullMoveClock = std::stoi(m_FEN.substr(index, m_FEN.length()));
 		jumpSpaceChars(index);
 	}
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+
 
 namespace Checkmate { 
 	/*
@@ -52,8 +52,10 @@ namespace Checkmate {
 #if defined(_WIN64) && !defined(IS_64BIT) // Last condition means Makefile is not used
 #  include <intrin.h> // MSVC popcnt and bsfq instrinsics
 #  define IS_64BIT
-#  define USE_BSFQ
 #endif
+
+#  define USE_BSFQ
+#  define USE_POPCNT 
 
 #if defined(USE_POPCNT) && defined(__INTEL_COMPILER) && defined(_MSC_VER)
 #  include <nmmintrin.h> // Intel header for _mm_popcnt_u64() intrinsic
@@ -385,6 +387,11 @@ inline T& operator/=(T& d, int i) { return d = T(int(d) / i); }
 		return files[f];
 	}
 
+	inline bool is_our(Color us, Piece p)
+	{
+		return us == color_of(p);
+	}
+
 	inline char piece_tochar(Piece p)
 	{
 		if (p != NO_PIECE)
@@ -420,6 +427,10 @@ inline T& operator/=(T& d, int i) { return d = T(int(d) / i); }
 
 	inline Square pawn_push(Color c) {
 		return c == WHITE ? DELTA_N : DELTA_S;
+	}
+
+	inline bool pawn_canjump(Color c,Square s) {
+		return c == WHITE ? rank_of(s) == RANK_2 : rank_of(s) == RANK_7;
 	}
 
 	inline Square from_sq(Move m) {

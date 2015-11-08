@@ -9,3 +9,12 @@ if (ptr != NULL)            \
     delete[] ptr;           \
     ptr = NULL;             \
 }
+
+
+
+#define DELETE_PTR( ptr ) \
+if (ptr != NULL)            \
+{                           \
+    delete ptr;           \
+    ptr = NULL;             \
+}

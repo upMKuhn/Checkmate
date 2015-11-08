@@ -8,13 +8,38 @@ namespace Checkmate {
 	{
 		init();
 	}
-
-	Checkmate::Represenation::Represenation(::std::string FEN)
+	
+	Represenation::Represenation(::std::string FEN)
 	{
 		using namespace DataStructs;
 		init();
 		fenToBoard(FEN);
 
+	}
+
+	void Represenation::init()
+	{
+
+		sideToMove = WHITE;
+		enPassant = SQUARE_NB;
+		castlingRights = 0;
+		moveClock = 0;
+		::std::fill_n(typebb, PIECE_NB, NO_PIECE);
+		::std::fill_n(board, SQUARE_NB, NO_PIECE);
+		::std::fill_n(colorbb, COLOR_NB, NO_PIECE);
+		::std::fill_n(index, SQUARE_NB, NO_PIECE);
+
+		for (Color c = WHITE; c < NO_COLOR; ++c)
+		{
+			for (PieceType pt = ALL_PIECES; pt < PIECE_TYPE_NB; ++pt)
+			{
+				for (int i = 0; i < 16; i++)
+				{
+					pieceList[c][pt][i] = SQ_NONE;
+				}
+				pieceCount[c][pt] = 0;
+			}
+		}
 	}
 
 	Represenation::~Represenation()
@@ -96,9 +121,9 @@ namespace Checkmate {
 			fen += "- ";
 		}
 
-		fen += std::to_string((moveClock/2) - (moveClock % 2) > 0 ? (moveClock / 2) - (moveClock % 2) : 0);
+		fen += std::to_string((moveClock));
 		fen += ' ';
-		fen += std::to_string(moveClock % 2);
+		fen += std::to_string(moveCounter);
 
 		return fen;
 	}
@@ -107,6 +132,7 @@ namespace Checkmate {
 	{
 		FEN_Parser fen(strFEN);
 		PiecePlacement *instruct;
+		init();
 		fen.nextInstruction(instruct);
 		while (instruct != NULL) 
 		{
@@ -116,13 +142,12 @@ namespace Checkmate {
 
 		sideToMove = fen.sideToMove;
 		castlingRights = fen.castlingRights;
-		moveClock = fen.halfMoveClock + fen.FullMoveClock*2;
+		moveClock = fen.halfMoveClock;
+		moveCounter = fen.FullMoveClock;
 		enPassant = fen.enPassant;
 
 	}
 
-
-	
 	bool Represenation::makeMove(Move mv)
 	{
 		//MakeMove
@@ -176,63 +201,16 @@ namespace Checkmate {
 			moveClock++;
 		}
 
+		moveCounter = us == BLACK ? moveCounter + 1 : moveCounter;
+
 		return false;
 	}
 
 	void Represenation::undoMove()
 	{
+
 	}
 
-#pragma region Properties
-	
-	/// <summary>
-	/// A State is a compact representation of the state 
-	/// positions and rights in a game position. This function 
-	/// makes a snapshot and appends the state SLL
-	/// </summary>
-	void Represenation::makeNextState(Move mv,PieceType captrue)
-	{
-		BoardState* oldState = state;
-		state = new BoardState();
-		state->BLACK_BB = getColorbb(BLACK);
-		state->WHITE_BB = getColorbb(WHITE);
-		state->castlingRights = castlingRights;
-		state->enPassant = enPassant;
-		state->moveClock = moveClock;
-		state->sideToMove = sideToMove;
-		state->next = oldState;
-		state->stateIndex = oldState->stateIndex + 1;
-		oldState->lastMove = mv;
-		oldState->captrue = captrue;
-	}
-
-
-#pragma endregion
-
-	void Represenation::init()
-	{
-
-		sideToMove = WHITE;
-		enPassant = SQUARE_NB;
-		castlingRights = 0;
-		moveClock = 0;
-		::std::fill_n(typebb, PIECE_NB, NO_PIECE);
-		::std::fill_n(board, SQUARE_NB, NO_PIECE);
-		::std::fill_n(colorbb, COLOR_NB, NO_PIECE);
-		::std::fill_n(index, SQUARE_NB, NO_PIECE);
-		
-		for (Color c = WHITE; c < NO_COLOR; ++c)
-		{
-			for (PieceType pt = ALL_PIECES; pt < PIECE_TYPE_NB; ++pt)
-			{
-				for (int i = 0; i < 16; i++)
-				{
-					pieceList[c][pt][i] = SQ_NONE;
-				}
-				pieceCount[c][pt] = 0;
-			}
-		}
-	}
 	
 	/// <summary>
 	/// Is_ok check if all variables hold acceptable data
@@ -275,12 +253,11 @@ namespace Checkmate {
 
 	/// operator<<(Position) returns an ASCII representation of the position
 	std::ostream& operator<<(std::ostream& os, Represenation& pos) {
-
-		os << pos.print();
+		os << pos.to_string();
 		return os;
 	}
 
-	string Represenation::print() {
+	string Represenation::to_string() {
 
 		string os = "\n +---+---+---+---+---+---+---+---+\n";
 
@@ -297,8 +274,31 @@ namespace Checkmate {
 
 		return os;
 	}
+	
+#pragma region Utillity
 
-	
-	
+	/// <summary>
+	/// A State is a compact representation of the state 
+	/// positions and rights in a game position. This function 
+	/// makes a snapshot and appends the state SLL
+	/// </summary>
+	void Represenation::makeNextState(Move mv, PieceType captrue)
+	{
+		BoardState* oldState = state;
+		state = new BoardState();
+		state->BLACK_BB = getColorbb(BLACK);
+		state->WHITE_BB = getColorbb(WHITE);
+		state->castlingRights = castlingRights;
+		state->enPassant = enPassant;
+		state->moveClock = moveClock;
+		state->sideToMove = sideToMove;
+		state->next = oldState;
+		state->stateIndex = oldState->stateIndex + 1;
+		oldState->lastMove = mv;
+		oldState->captrue = captrue;
+	}
+
+
+#pragma endregion
 
 }

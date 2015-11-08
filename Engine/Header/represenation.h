@@ -10,6 +10,7 @@ namespace Checkmate {
 	{
 		int castlingRights = 0;
 		int moveClock = 0;
+		int moveCounter = 0;
 		int stateIndex = 0;
 
 		Color sideToMove = NO_COLOR;
@@ -37,8 +38,8 @@ namespace Checkmate {
 		int pieceCount[COLOR_NB][PIECE_TYPE_NB];
 		int index[SQUARE_NB];
 		int castlingRights;
-		int moveClock;
-
+		int moveClock = 0;
+		int moveCounter = 0;
 		
 
 	public:
@@ -56,7 +57,7 @@ namespace Checkmate {
 		bool makeMove(Move mv);
 		void undoMove();
 
-		string print();
+		string to_string();
 #pragma region Properties
 		
 		Bitboard board_for(Piece pc);
@@ -71,6 +72,7 @@ namespace Checkmate {
 		void put_piece(Square sq, Color c, PieceType pt);
 
 		int count(Piece p);
+		int count(Color c);
 
 		Piece opposite_color(Piece p);
 
@@ -145,6 +147,7 @@ namespace Checkmate {
 		//Replace Piece to be removed with last
 		pieceList[c][pt][listIndex] = pieceList[c][pt][lastIndex];
 		pieceList[c][pt][lastIndex] = SQ_NONE;
+		--pieceCount[c][ALL_PIECES];
 	
 	}
 
@@ -162,11 +165,17 @@ namespace Checkmate {
 		board[sq] = pc;
 		pieceList[c][pt][pieceCount[c][pt]] = sq;
 		++pieceCount[c][pt];
+		++pieceCount[c][ALL_PIECES];
 	}
 
 	inline int Represenation::count(Piece p)
 	{
 		return pieceCount[color_of(p)][type_of(p)];
+	}
+
+	inline int Represenation::count(Color c)
+	{
+		return pieceCount[c][ALL_PIECES];
 	}
 	
 	inline void Represenation::move_piece(Square from, Square to,Color c, PieceType pt)

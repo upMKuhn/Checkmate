@@ -39,18 +39,12 @@
     <ClCompile Include="src\UCI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\BaseCommand.cpp">
+    <ClCompile Include="src\MoveGen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\BitBoards.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\BitOperations.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\Board.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Header\FEN.h">
@@ -89,7 +83,16 @@
     <ClInclude Include="Header\UCI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Header\BaseCommand.h">
+    <ClInclude Include="Header\MoveGen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Logger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\misc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\bitcount.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
