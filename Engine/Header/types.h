@@ -360,6 +360,11 @@ inline T& operator/=(T& d, int i) { return d = T(int(d) / i); }
 		return Square((r << 3) | f);
 	}
 
+	inline Bitboard setSquare(Square at)
+	{
+		return Bitboard(1ULL << at);
+	}
+
 	inline Piece make_piece(Color c, PieceType pt) {
 		return Piece((c << 3) | pt);
 	}
@@ -420,6 +425,14 @@ inline T& operator/=(T& d, int i) { return d = T(int(d) / i); }
 		return relative_rank(c, rank_of(s));
 	}
 
+	inline File relative_file(Color c, File r) {
+		return File(r ^ (c * 7));
+	}
+
+	inline File relative_file(Color c, Square s) {
+		return relative_file(c, file_of(s));
+	}
+
 	inline bool opposite_colors(Square s1, Square s2) {
 		int s = int(s1) ^ int(s2);
 		return ((s >> 3) ^ s) & 1;
@@ -455,7 +468,7 @@ inline T& operator/=(T& d, int i) { return d = T(int(d) / i); }
 
 	template<MoveType T>
 	inline Move make(Square from, Square to, PieceType pt = KNIGHT) {
-		return Move(to | (from << 6) | T | ((pt - KNIGHT) << 12));
+		return Move(to | (from << 6) | T | (pt - KNIGHT << 12));
 	}
 
 	inline bool is_ok(Move m) {

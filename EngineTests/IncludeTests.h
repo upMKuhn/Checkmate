@@ -1,11 +1,23 @@
 #pragma once
 #include "stdafx.h"
 #include <format.h>
+#include <string>
+#include <vector>
+#include <iostream>
+#include <iterator>
+#include <functional>
 #include <boost\algorithm\algorithm.hpp>
 #include <boost\tokenizer.hpp>
 #include <boost\thread.hpp>
 #include <boost\log\trivial.hpp>
 #include <boost\log\utility\setup.hpp>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/find_iterator.hpp>
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost\algorithm\string.hpp>
+#include <vector>
+
 class Turtle {
 public:
 

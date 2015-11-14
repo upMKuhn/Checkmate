@@ -139,6 +139,7 @@ namespace Checkmate {
 				return i+1;
 			}
 		}
+		return -1;
 	}
 
 	void FEN_Parser::jumpSpaceChars(int& index)

@@ -24,7 +24,7 @@ namespace Checkmate {
 	{
 		while (hasPiece())
 		{
-			PiecePlacement temp = nextPiece();
+			PiecePlacement* temp = nextPiece();
 			m_boardInstruction.appendHead(temp);
 		}
 	}
@@ -34,7 +34,7 @@ namespace Checkmate {
 		
 		if (hasNextInstruction())
 		{
-			pTemp = &m_boardInstruction.getNode(m_instructionAt++)->getValue();
+			pTemp = m_boardInstruction.getNode(m_instructionAt++)->getValue();
 		}else
 		{
 			pTemp = NULL;
@@ -60,10 +60,10 @@ namespace Checkmate {
 		return (bool)(m_FEN.size() > m_charAt && m_FEN.at(m_charAt) != END_OF_BOARD);
 	}
 
-	PiecePlacement BoardParser::nextPiece()
+	PiecePlacement* BoardParser::nextPiece()
 	{
 		char currentChar = m_FEN.at(m_charAt);
-		PiecePlacement phrase;
+		PiecePlacement* phrase = new PiecePlacement();
 
 		if (NEXT_RANK == currentChar)
 		{
@@ -82,8 +82,8 @@ namespace Checkmate {
 		if (toPiece(currentChar) != NO_PIECE_TYPE)
 		{
 			Color c = isupper(currentChar) ? WHITE : BLACK;
-			phrase.piece = make_piece(c, toPiece(currentChar));
-			phrase.position = m_squareAt;
+			phrase->piece = make_piece(c, toPiece(currentChar));
+			phrase->position = m_squareAt;
 			++m_squareAt;
 			m_charAt++;
 		}

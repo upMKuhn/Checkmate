@@ -10,8 +10,9 @@ namespace Checkmate {
 	{
 		int castlingRights = 0;
 		int moveClock = 0;
-		int moveCounter = 0;
 		int stateIndex = 0;
+
+		Key zorbist = 0;
 
 		Color sideToMove = NO_COLOR;
 		Square enPassant = SQ_NONE;
@@ -21,7 +22,8 @@ namespace Checkmate {
 		Bitboard BLACK_BB = 0;
 		BoardState* next;
 	};
-
+	
+	
 
 	class Represenation
 	{
@@ -39,7 +41,6 @@ namespace Checkmate {
 		int index[SQUARE_NB];
 		int castlingRights;
 		int moveClock = 0;
-		int moveCounter = 0;
 		
 
 	public:
@@ -53,6 +54,8 @@ namespace Checkmate {
 
 		int can_castle(Color c);
 		int can_castle(CastlingRight cr);
+		int revoke_castling(Color c, CastlingRight cr);
+		int revoke_castling(Color c);
 
 		bool makeMove(Move mv);
 		void undoMove();
@@ -91,12 +94,22 @@ namespace Checkmate {
 		void makeNextState(Move mv, PieceType captrue);
 };
 	
+
+
 	inline int Represenation::can_castle(CastlingRight cr) {
 		return castlingRights & cr;
 	}
 
 	inline int Represenation::can_castle(Color c) {
 		return castlingRights & ((WHITE_OO | WHITE_OOO) << (2 * c));
+	}
+
+	inline int Represenation::revoke_castling(Color c, CastlingRight cr) {
+		return castlingRights &= ~cr;
+	}
+
+	inline int Represenation::revoke_castling(Color c) {
+		return castlingRights &= ~((WHITE_OO | WHITE_OOO) << (2 * c));
 	}
 
 
@@ -138,12 +151,12 @@ namespace Checkmate {
 	{
 		assert(Checkmate::is_ok(sq));
 		int listIndex = index[sq];
-		int lastIndex = pieceList[c][pt][--pieceCount[c][pt]];
+		int lastIndex = --pieceCount[c][pt];
 		typebb[pt] ^= SquareBB[sq];
 		typebb[ALL_PIECES] ^= SquareBB[sq];
 		colorbb[c] ^= SquareBB[sq];
 		board[sq] = NO_PIECE;
-		index[sq] = SQ_NONE;
+		index[sq] = PIECE_NB;
 		//Replace Piece to be removed with last
 		pieceList[c][pt][listIndex] = pieceList[c][pt][lastIndex];
 		pieceList[c][pt][lastIndex] = SQ_NONE;
@@ -164,6 +177,7 @@ namespace Checkmate {
 		colorbb[c] |= SquareBB[sq];
 		board[sq] = pc;
 		pieceList[c][pt][pieceCount[c][pt]] = sq;
+		index[sq] = pieceCount[c][pt];
 		++pieceCount[c][pt];
 		++pieceCount[c][ALL_PIECES];
 	}
@@ -186,6 +200,9 @@ namespace Checkmate {
 		typebb[pt] ^= from_to_bb;
 		typebb[ALL_PIECES] ^= from_to_bb;
 		colorbb[c] ^= from_to_bb;
+		pieceList[c][pt][index[from]] = to;
+		index[to] = index[from];
+		index[from] = PIECE_NB;
 
 		board[from] = NO_PIECE;
 		board[to] = p;

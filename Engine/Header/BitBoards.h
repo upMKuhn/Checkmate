@@ -121,75 +121,86 @@ namespace Checkmate {
 				: 0ULL;
 		}
 
-		inline Bitboard generatePawnAttack(Square sqr, Color c)
-		{
-			return c == WHITE ? 
-				shift_bb(SquareBB[sqr], DELTA_NE) | shift_bb(SquareBB[sqr], DELTA_NW) :
-				shift_bb(SquareBB[sqr], DELTA_SE) | shift_bb(SquareBB[sqr], DELTA_SW);
-		}
+		namespace Bitboards {
 
-		inline Bitboard generateKingAttack(Square sqr)
-		{
-			return 	shift_bb(SquareBB[sqr], DELTA_NE) | shift_bb(SquareBB[sqr], DELTA_NW) |
-				shift_bb(SquareBB[sqr], DELTA_SE) | shift_bb(SquareBB[sqr], DELTA_SW) |
-				shift_bb(SquareBB[sqr], DELTA_S) | shift_bb(SquareBB[sqr], DELTA_N)|
-				shift_bb(SquareBB[sqr], DELTA_W) | shift_bb(SquareBB[sqr], DELTA_E);
-		}
-
-		inline Bitboard generateKnightAttack(Square sqr)
-		{
-			const Bitboard leftIgnore = 0xc0c0c0c0c0c0c0c0ULL;
-			const Bitboard rightIgnore = 0x303030303030303ULL;
-
-			Bitboard right = (sqr + 17 < 63 ? (1ULL << (sqr + 17)) : 0) |
-				(sqr + 10 < 63 ? (1ULL << (sqr + 10)) : 0) |
-				(sqr - 15 > 0 ? 1ULL << (sqr - 15) : 0) |
-				(sqr - 6 > 0 ? 1ULL << (sqr - 6) : 0);
-
-			Bitboard left = (sqr + 15 < 63 ? (1ULL << (sqr + 15)) : 0) |
-				(sqr + 6 < 63 ? (1ULL << (sqr + 6)) : 0) |
-				(sqr - 17 > 0 ? 1ULL << (sqr - 17) : 0) |
-				(sqr - 10 > 0 ? 1ULL << (sqr - 10) : 0);
-
-			return (left & ~leftIgnore) | (right & ~rightIgnore);
-		}
-
-		inline Bitboard generateRookAttack(Square sqr)
-		{
-			return (filebb[file_of(sqr)] | rankbb[rank_of(sqr)]) & ~SquareBB[sqr];
-		}
-
-		inline Bitboard sliding_attack(Square square, Square delta[], int len, Bitboard occupency)
-		{
-			Bitboard attack = 0;
-			Bitboard lastSqr = SQ_NONE;
-			for (int i = 0; i < len; ++i)
+			inline Bitboard generatePawnAttack(Square sqr, Color c)
 			{
-				for (Square s = square; s >= SQ_A1 && s <= SQ_H8 && lastSqr;	s += delta[i])
-				{
-					lastSqr = shift_bb(SquareBB[s], delta[i]);
-					attack |= lastSqr;
-
-					if (occupency & lastSqr)
-						break;
-				}
-				lastSqr = SQ_NONE;
+				return c == WHITE ?
+					shift_bb(SquareBB[sqr], DELTA_NE) | shift_bb(SquareBB[sqr], DELTA_NW) :
+					shift_bb(SquareBB[sqr], DELTA_SE) | shift_bb(SquareBB[sqr], DELTA_SW);
 			}
-			return attack;
+
+			inline Bitboard generateKingAttack(Square sqr)
+			{
+				return 	shift_bb(SquareBB[sqr], DELTA_NE) | shift_bb(SquareBB[sqr], DELTA_NW) |
+					shift_bb(SquareBB[sqr], DELTA_SE) | shift_bb(SquareBB[sqr], DELTA_SW) |
+					shift_bb(SquareBB[sqr], DELTA_S) | shift_bb(SquareBB[sqr], DELTA_N) |
+					shift_bb(SquareBB[sqr], DELTA_W) | shift_bb(SquareBB[sqr], DELTA_E);
+			}
+
+			inline Bitboard generateKnightAttack(Square sqr)
+			{
+				const Bitboard leftIgnore = 0xc0c0c0c0c0c0c0c0ULL;
+				const Bitboard rightIgnore = 0x303030303030303ULL;
+
+				Bitboard right = (sqr + 17 < 63 ? (1ULL << (sqr + 17)) : 0) |
+					(sqr + 10 < 63 ? (1ULL << (sqr + 10)) : 0) |
+					(sqr - 15 > 0 ? 1ULL << (sqr - 15) : 0) |
+					(sqr - 6 > 0 ? 1ULL << (sqr - 6) : 0);
+
+				Bitboard left = (sqr + 15 < 63 ? (1ULL << (sqr + 15)) : 0) |
+					(sqr + 6 < 63 ? (1ULL << (sqr + 6)) : 0) |
+					(sqr - 17 > 0 ? 1ULL << (sqr - 17) : 0) |
+					(sqr - 10 > 0 ? 1ULL << (sqr - 10) : 0);
+
+				return (left & ~leftIgnore) | (right & ~rightIgnore);
+			}
+
+			inline Bitboard generateRookAttack(Square sqr)
+			{
+				return (filebb[file_of(sqr)] | rankbb[rank_of(sqr)]) & ~SquareBB[sqr];
+			}
+
+			inline Bitboard pawn_moves(Square sqr, Color c, Bitboard occupancy)
+			{
+				Bitboard b = shift_bb(SquareBB[sqr], pawn_push(c));
+				return pawn_canjump(c, sqr) ? b | shift_bb(SquareBB[sqr], pawn_push(c) * 2) : b;
+			}
+
+			inline Bitboard sliding_attack(Square square, Square delta[], int len, Bitboard occupency)
+			{
+				Bitboard attack = 0;
+				Bitboard lastSqr = SQ_NONE;
+				for (int i = 0; i < len; ++i)
+				{
+					for (Square s = square; s >= SQ_A1 && s <= SQ_H8 && lastSqr; s += delta[i])
+					{
+						lastSqr = shift_bb(SquareBB[s], delta[i]);
+						attack |= lastSqr;
+
+						if (occupency & lastSqr)
+							break;
+					}
+					lastSqr = SQ_NONE;
+				}
+				return attack;
+			}
+
 		}
 
-		template<PieceType Pt>
-		inline Bitboard attacks_from(Square from, Square to, Color us, Bitboard occupied)
+		inline Bitboard moves_for(PieceType Pt,Square from, Color us, Bitboard occupied)
 		{
-			return (Pt == ROOK ? RookAttack[square][magic_index<Pt>(square, occupied)] :
-				Pt == BISHOP ? BISHOP[square][magic_index<Pt>(square, occupied)] :
-				Pt == QUEEN ? attacks_from<ROOK>(from, to, us, occupied) | attacks_from<BISHOP>(from, to, us, occupied) :
-				stepAttacks[make_piece(us,Pt)][from]) & occupied;
+			using namespace Bitboards;
+			return Pt == ROOK ? RookAttack[from][magic_index<ROOK>(from, occupied)]
+				: Pt == BISHOP ? BishopAttack[from][magic_index<BISHOP>(from, occupied)]
+				: Pt == QUEEN ? moves_for(ROOK,from, us, occupied) | moves_for(BISHOP,from, us, occupied)
+				: Pt == PAWN ? (stepAttacks[make_piece(us, Pt)][from] & occupied) | pawn_moves(from,us,occupied)
+				: stepAttacks[make_piece(us,Pt)][from];
 		}
-		template<PieceType Pt>
-		inline Bitboard attacks_from(Square from,Color us, Bitboard occupied)
+		
+		inline Bitboard attacks_from(PieceType Pt,Square from,Color us, Bitboard occupied)
 		{
-			return stepAttacks[make_piece(us, Pt)][from] & occupied;
+			return moves_for(Pt,from,us,occupied) & occupied;
 		}
 
 

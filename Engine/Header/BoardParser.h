@@ -17,11 +17,11 @@ namespace Checkmate {
 		void nextRank();
 		PieceType toPiece(char piece);
 		bool hasPiece();
-		PiecePlacement nextPiece();
+		PiecePlacement* nextPiece();
 		
 
 	private: //Operation vars 
-		DataStructs::DoubleLinkedList<PiecePlacement> m_boardInstruction;
+		DataStructs::DoubleLinkedList<PiecePlacement*> m_boardInstruction;
 		::std::string m_FEN;
 		int m_instructionAt = 0;
 		Square m_squareAt;

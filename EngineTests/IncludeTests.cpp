@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "IncludeTests.h"
 
-
 TEST(GoogleMockWorks, TestForLinkerErrors) {
 	MockTurtle turtle;                          // #2
 	EXPECT_CALL(turtle, PenDown())              // #3
@@ -12,10 +11,13 @@ TEST(GoogleMockWorks, TestForLinkerErrors) {
 
 TEST(Boost, TestForLinkerErrors)
 {
-	std::string str = ";;Hello|world||-foo--bar;yow;baz|";
-	typedef boost::tokenizer<boost::char_separator<char> >
-		tokenizer;
-	EXPECT_TRUE(true);
+	using namespace boost; using namespace boost::algorithm;
+
+	string line("Hello World !");
+	std::vector<std::string> strs;
+	boost::split(strs, line, boost::is_any_of(" "));
+	EXPECT_EQ(3, strs.size());
+	EXPECT_EQ("Hello",strs.at(0));
 }
 
 namespace logging = boost::log;

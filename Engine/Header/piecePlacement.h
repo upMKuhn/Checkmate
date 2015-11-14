@@ -11,6 +11,8 @@ namespace Checkmate {
 	{
 		Square position;
 		Piece piece;
+		int index = 0;
+		PiecePlacement* next;
 
 		PiecePlacement()
 		{
@@ -20,6 +22,11 @@ namespace Checkmate {
 		PiecePlacement(Square position, Piece piece);
 
 		static PiecePlacement create();
+
+		inline PiecePlacement* append()
+		{
+			
+		}
 
 		bool isValid() {
 			return position != SQUARE_NB || piece != NO_PIECE;

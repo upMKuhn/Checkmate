@@ -99,6 +99,7 @@ namespace Checkmate {
 
 	void init_magics(Bitboard table[], Bitboard* attacks[], Bitboard magics[],
 		Bitboard masks[], unsigned shifts[], Square deltas[], Fn index) {
+		using namespace Bitboards;
 
 		int seeds[][RANK_NB] = { { 8977, 44560, 54343, 38998,  5731, 95205, 104912, 17020 },
 		{ 728, 10316, 55013, 32803, 12281, 15100,  16645,   255 } };
@@ -127,7 +128,7 @@ namespace Checkmate {
 			b = size = 0;
 			do {
 				occupancy[size] = b;
-				reference[size] = sliding_attack(s, deltas, 4, 0);
+				reference[size] = sliding_attack(s, deltas, 4, b);
 
 				if (HasPext)
 					attacks[s][pext(b, masks[s])] = reference[size];

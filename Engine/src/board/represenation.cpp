@@ -3,10 +3,11 @@
 //Representation of the GameBoard
 
 namespace Checkmate {
-
+	
 	Represenation::Represenation()
 	{
 		init();
+		fenToBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 	}
 	
 	Represenation::Represenation(::std::string FEN)
@@ -24,10 +25,11 @@ namespace Checkmate {
 		enPassant = SQUARE_NB;
 		castlingRights = 0;
 		moveClock = 0;
+		state = new BoardState();
 		::std::fill_n(typebb, PIECE_NB, NO_PIECE);
 		::std::fill_n(board, SQUARE_NB, NO_PIECE);
 		::std::fill_n(colorbb, COLOR_NB, NO_PIECE);
-		::std::fill_n(index, SQUARE_NB, NO_PIECE);
+		::std::fill_n(index, SQUARE_NB, PIECE_NB);
 
 		for (Color c = WHITE; c < NO_COLOR; ++c)
 		{
@@ -49,7 +51,7 @@ namespace Checkmate {
 
 	string Represenation::boardToFEN()
 	{
-		assert(areAllBoardsOk());
+		CHECKS_ENABLED(assert(areAllBoardsOk()));
 		int jumpFiles = 0; std::string fen = "";
 		char charPieceTypes[] = {'!', 'p', 'n', 'b', 'r', 'q', 'k' };
 		for (Rank r = RANK_8; r >= RANK_1; --r)
@@ -121,10 +123,9 @@ namespace Checkmate {
 			fen += "- ";
 		}
 
-		fen += std::to_string((moveClock));
+		fen += std::to_string((moveClock % 2));
 		fen += ' ';
-		fen += std::to_string(moveCounter);
-
+		fen += std::to_string(moveClock / 2);
 		return fen;
 	}
 
@@ -142,20 +143,19 @@ namespace Checkmate {
 
 		sideToMove = fen.sideToMove;
 		castlingRights = fen.castlingRights;
-		moveClock = fen.halfMoveClock;
-		moveCounter = fen.FullMoveClock;
+		moveClock = fen.FullMoveClock * 2 + fen.halfMoveClock ;
 		enPassant = fen.enPassant;
-
+		makeNextState(MOVE_NONE, NO_PIECE_TYPE);
 	}
 
 	bool Represenation::makeMove(Move mv)
 	{
 		//MakeMove
-		assert(is_ok(mv));
+		CHECKS_ENABLED(assert(is_ok(mv)));
 		Square from = from_sq(mv);
 		Square to = to_sq(mv);
 		PieceType movingPiece = type_of(piece_on(from));
-		PieceType capture = type_of(mv) == ENPASSANT? PAWN: type_of(piece_on(to));
+		PieceType capture = type_of(mv) == ENPASSANT ? PAWN: type_of(piece_on(to));
 		MoveType mvtype = type_of(mv);
 
 		Color us = sideToMove;
@@ -166,13 +166,14 @@ namespace Checkmate {
 			bool kingSide = from > to;
 			Square rfrom = to;
 			Square rto = relative_square(us, kingSide ? SQ_D1 : SQ_F1);
-			Square to = relative_square(us, kingSide ? SQ_C1 : SQ_G1);
+			to = relative_square(us, kingSide ? SQ_C1 : SQ_G1);
 			move_piece(rfrom, rto, us, ROOK);
+			capture = NO_PIECE_TYPE;
 		}
 
 		if (mvtype == ENPASSANT)
 		{
-			assert("ENPASSNT NOT IMPLEMENTED" == 0);
+			remove_piece(enPassant, make_piece(them, PAWN));
 		}
 
 		if (capture != NO_PIECE && mvtype != ENPASSANT)
@@ -180,35 +181,107 @@ namespace Checkmate {
 			remove_piece(to, ~us, capture);
 		}
 
-		if (mvtype != PROMOTION)
+		if (mvtype == PROMOTION)
 		{
+			//Make Promotion
 			move_piece(from, to, us, movingPiece);
-		}
-		else {
-			move_piece(from, to, us, movingPiece);
-			remove_piece(to, make_piece(us,PAWN));
+			remove_piece(to, make_piece(us, PAWN));
 			put_piece(to, make_piece(us, promotion_type(mv)));
 		}
+		else{
+			//Handle other move types
+			move_piece(from, to, us, movingPiece);
+		}
 
-		enPassant = mvtype == ENPASSANT ? SQ_NONE : enPassant;
+		if(movingPiece == ROOK)
+		{
+			CastlingRight cr = (CastlingRight)((relative_file(WHITE, from) == FILE_A ? WHITE_OOO
+				: relative_file(WHITE, from) == FILE_H ? WHITE_OO : CASTLING_SIDE_NB) << (2 * us)) ;
+			revoke_castling(us, cr);
+		}else if(movingPiece == KING)
+		{
+			revoke_castling(us);
+		}
+
+		enPassant = relative_rank(us,from) == relative_rank(WHITE, SQ_A2)
+					&& relative_rank(us, to) == relative_rank(WHITE, SQ_A4)
+					? to : SQ_NONE;
+
 		sideToMove = ~sideToMove;
 		
 		if(movingPiece == PAWN || capture != NO_PIECE_TYPE)
 		{
-			moveClock = 0;
+			moveClock = 1;
 		}else
 		{
 			moveClock++;
 		}
 
-		moveCounter = us == BLACK ? moveCounter + 1 : moveCounter;
+		makeNextState(mv, capture);
+
+		CHECKS_ENABLED(assert(Zorbist::make_zorbist(pieceList) != state->next->zorbist));
 
 		return false;
 	}
 
 	void Represenation::undoMove()
 	{
+		CHECKS_ENABLED(assert(state->stateIndex > 0));
+		BoardState* oldState = state->next;
 
+		Move  mv = oldState->lastMove;
+		Square to = from_sq(mv);
+		Square from = to_sq(mv);
+		PieceType movingPiece = type_of(piece_on(from));
+		PieceType capture = oldState->captrue;
+		MoveType mvtype = type_of(mv);
+
+		Color us = oldState->sideToMove;
+		Color them = ~us;
+
+		if (mvtype == CASTLING)
+		{
+			bool kingSide = to > from;
+			Square rto = relative_square(us, kingSide ? SQ_A1 : SQ_H1);
+			Square rfrom = relative_square(us, kingSide ? SQ_D1 : SQ_F1);
+			from = relative_square(us, kingSide ? SQ_C1 : SQ_G1);
+			move_piece(rfrom, rto, us, ROOK);
+			movingPiece = KING;
+		}
+
+		if (mvtype == ENPASSANT)
+		{
+			put_piece(oldState->enPassant, make_piece(them, PAWN));
+		}
+
+		if (mvtype == PROMOTION)
+		{
+			move_piece(from, to, us, movingPiece);
+			put_piece(to, make_piece(us, PAWN));
+			remove_piece(to, make_piece(us, promotion_type(mv)));
+		}
+		else {
+			//Handle Any other move
+			move_piece(from, to, us, movingPiece);
+		}
+
+		if (capture != NO_PIECE && mvtype != ENPASSANT)
+		{
+			put_piece(from, them, capture);
+		}
+
+		castlingRights = oldState->castlingRights;
+		enPassant = oldState->enPassant;
+		sideToMove = ~sideToMove;
+
+		moveClock = oldState->moveClock;
+
+		CHECKS_ENABLED(assert(Zorbist::make_zorbist(pieceList) == oldState->zorbist));
+
+		BoardState* bs = state;
+		state = oldState;
+		delete bs;
+		
 	}
 
 	
@@ -271,7 +344,7 @@ namespace Checkmate {
 
 			os += " |\n +---+---+---+---+---+---+---+---+\n";
 		}
-
+		os += "\n\nKey: " + std::to_string(Zorbist::make_zorbist(pieceList)) + "\n";
 		return os;
 	}
 	
@@ -286,6 +359,7 @@ namespace Checkmate {
 	{
 		BoardState* oldState = state;
 		state = new BoardState();
+		state->zorbist = Zorbist::make_zorbist(pieceList);
 		state->BLACK_BB = getColorbb(BLACK);
 		state->WHITE_BB = getColorbb(WHITE);
 		state->castlingRights = castlingRights;
@@ -298,6 +372,8 @@ namespace Checkmate {
 		oldState->captrue = captrue;
 	}
 
+
+	
 
 #pragma endregion
 

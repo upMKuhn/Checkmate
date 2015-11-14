@@ -50,6 +50,7 @@ namespace DataStructs {
 			{
 				successor = NULL;
 				predecessor = NULL;
+				delete this->value;
 			}
 
 			template<class NodeValue>

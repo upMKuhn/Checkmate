@@ -19,15 +19,18 @@
 	#include "CppBaseCode.h"
 	#include "misc.h"
 	#include "bitcount.h"
+		
 
 	//Project Refs
 	#include "LittleHelper.h"
 	#include "EngineMacros.h"
 	#include "piecePlacement.h"
 	#include "BitBoards.h"
+	#include "Zorbist.h"
 	#include "BoardParser.h"
 	#include "FEN.h"
 	#include "represenation.h"
+	#include "MoveList.hpp"
 	#include "MoveGen.h"
 
 	#include "UCI.h"

@@ -16,34 +16,56 @@ namespace Checkmate {
 
 	}
 
-	 MoveList* MoveGen::generate_pawnMoves(Color us, MoveList* mvlist)
+	MoveList* MoveGen::generate_all(Color us, MoveList* mvlist, Represenation& rep)
 	{
-		Bitboard our = mvlist->rep->getColorbb(us); Bitboard them = mvlist->rep->getColorbb(~us);
-		Bitboard occupied = our | them;
-		Bitboard move;
-		Square* list = mvlist->rep->pieceList[us][PAWN];
-		MoveInfo& mi = MoveInfo(our, PAWN, NORMAL, SQ_A1);
-		for (int i = 0; i < 16 && list[i] != SQ_NONE; i++)
+		mvlist = generate_normal(us,mvlist,rep);
+		mvlist = generate_captures(us, mvlist, rep);
+
+		return mvlist;
+	}
+
+
+	MoveList * MoveGen::generate_normal(Color us, MoveList * mvlist, Represenation & rep)
+	{
+		Bitboard our = rep.getColorbb(us);
+		Bitboard occupancy = our | rep.getColorbb(~us);
+
+		for (PieceType Pt = PAWN; Pt < PIECE_TYPE_NB; ++Pt)
 		{
-			Bitboard move = 0; Square from = list[i];
-			move |= shift_bb(SquareBB[from], pawn_push(us)) &  ~occupied;
-			move |= move > 0 && pawn_canjump(us, from) ? shift_bb(SquareBB[from], pawn_push(us) * 2) &  ~occupied : 0;
-			move |= attacks_from<PAWN>(from, us, occupied) & ~our;
-
-			mi.destionations = move; mi.from = from;
-			mvlist = mvlist << mi;
+			MoveInfo* mi = new MoveInfo(occupancy, us, Pt, NORMAL, SQ_NONE);
+			for each(Square sqr in rep.pieceList[us][Pt])
+			{
+				if (sqr == SQ_NONE) { break; }
+				mi->from = sqr;
+				mi->destionations = moves_for(Pt, sqr, us, occupancy) & ~occupancy;
+				mvlist = mvlist << *mi;
+				
+			}
+			delete mi;
 		}
-
-		return mvlist->node;
+		return mvlist;
 	}
 
-	template<GenerationType Captures, Color us>
-	inline void generate(Represenation& rep, MoveList& mvlist)
+	MoveList * MoveGen::generate_captures(Color us, MoveList * mvlist, Represenation & rep)
 	{
+		Bitboard enemy = rep.getColorbb(~us);
+		Bitboard occupancy = enemy | rep.getColorbb(us);
 
-
-
+		for (PieceType Pt = PAWN; Pt < PIECE_TYPE_NB; ++Pt)
+		{
+			MoveInfo* mi = new MoveInfo(occupancy, us, Pt, NORMAL, SQ_NONE);
+			for each(Square sqr in rep.pieceList[us][Pt])
+			{
+				if (sqr == SQ_NONE) { break; }
+				mi->from = sqr;
+				mi->destionations = moves_for(Pt, sqr, us, occupancy) & enemy;
+				mvlist = mvlist << *mi;
+			}
+			delete mi;
+		}
+		return mvlist;
 	}
+
 
 
 }

@@ -8,13 +8,13 @@
 // associated with an assembly.
 //
 [assembly:AssemblyTitleAttribute(L"CPPBaseCode")];
-[assembly:AssemblyDescriptionAttribute(L"")];
-[assembly:AssemblyConfigurationAttribute(L"")];
-[assembly:AssemblyCompanyAttribute(L"")];
+[assembly:AssemblyDescriptionAttribute(L"a")];
+[assembly:AssemblyConfigurationAttribute(L"a")];
+[assembly:AssemblyCompanyAttribute(L"a")];
 [assembly:AssemblyProductAttribute(L"CPPBaseCode")];
 [assembly:AssemblyCopyrightAttribute(L"Copyright (c)  2015")];
-[assembly:AssemblyTrademarkAttribute(L"")];
-[assembly:AssemblyCultureAttribute(L"")];
+[assembly:AssemblyTrademarkAttribute(L"a")];
+[assembly:AssemblyCultureAttribute(L"a")];
 
 //
 // Version information for an assembly consists of the following four values:

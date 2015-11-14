@@ -75,8 +75,8 @@ TEST_F(FEN_TEST, CHECK_BOARD_STATE)
 	EXPECT_EQ(BLACK, parser.sideToMove);
 	EXPECT_EQ(SQ_A3, parser.enPassant);
 	EXPECT_EQ((WHITE_OO | WHITE_OOO | BLACK_OO | BLACK_OOO), parser.castlingRights);
-	EXPECT_EQ(1, parser.halfMoveClock);
-	EXPECT_EQ(0, parser.FullMoveClock);
+	EXPECT_EQ(0, parser.halfMoveClock);
+	EXPECT_EQ(1, parser.FullMoveClock);
 }
 
 TEST_F(FEN_TEST, FEN_NO_CASTELING_AND_NO_EnPassant)
@@ -87,7 +87,7 @@ TEST_F(FEN_TEST, FEN_NO_CASTELING_AND_NO_EnPassant)
 	
 	EXPECT_EQ(BLACK, parser.sideToMove);
 	EXPECT_EQ(SQ_NONE, parser.enPassant);
-	EXPECT_EQ(13, parser.FullMoveClock);
-	EXPECT_EQ(1, parser.halfMoveClock);
+	EXPECT_EQ(13, parser.halfMoveClock);
+	EXPECT_EQ(1, parser.FullMoveClock);
 
 }
