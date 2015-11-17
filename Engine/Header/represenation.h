@@ -61,6 +61,7 @@ namespace Checkmate {
 		void undoMove();
 
 		string to_string();
+		Square king_sqr(Color c);
 #pragma region Properties
 		
 		Bitboard board_for(Piece pc);
@@ -94,7 +95,10 @@ namespace Checkmate {
 		void makeNextState(Move mv, PieceType captrue);
 };
 	
-
+	inline Square Represenation::king_sqr(Color c)
+	{
+		return pieceList[c][KING][0];
+	}
 
 	inline int Represenation::can_castle(CastlingRight cr) {
 		return castlingRights & cr;
@@ -150,17 +154,20 @@ namespace Checkmate {
 	inline void Represenation::remove_piece(Square sq, Color c ,PieceType pt)
 	{
 		assert(Checkmate::is_ok(sq));
-		int listIndex = index[sq];
-		int lastIndex = --pieceCount[c][pt];
-		typebb[pt] ^= SquareBB[sq];
-		typebb[ALL_PIECES] ^= SquareBB[sq];
-		colorbb[c] ^= SquareBB[sq];
-		board[sq] = NO_PIECE;
-		index[sq] = PIECE_NB;
-		//Replace Piece to be removed with last
-		pieceList[c][pt][listIndex] = pieceList[c][pt][lastIndex];
-		pieceList[c][pt][lastIndex] = SQ_NONE;
-		--pieceCount[c][ALL_PIECES];
+		if (board[sq] != NO_PIECE)
+		{
+			int listIndex = index[sq];
+			int lastIndex = --pieceCount[c][pt];
+			typebb[pt] ^= SquareBB[sq];
+			typebb[ALL_PIECES] ^= SquareBB[sq];
+			colorbb[c] ^= SquareBB[sq];
+			board[sq] = NO_PIECE;
+			index[sq] = PIECE_NB;
+			//Replace Piece to be removed with last
+			pieceList[c][pt][listIndex] = pieceList[c][pt][lastIndex];
+			pieceList[c][pt][lastIndex] = SQ_NONE;
+			--pieceCount[c][ALL_PIECES];
+		}
 	
 	}
 

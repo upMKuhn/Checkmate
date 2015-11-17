@@ -11,31 +11,41 @@ using namespace Checkmate;
 
 		void Zorbist::init()
 		{
+
 			for (Square s = SQ_A1; s < SQUARE_NB; ++s)
 			{
 				PRNG rng((rank_of(s)+1 * 0xE4591) ^ file_of(s)+1 * 0xA82F31);
 				SquareKey[s] = rng.sparse_rand<uint64_t>();
-			}
-		}
-
-		Key Checkmate::Zorbist::make_zorbist(Square pieceList[NO_COLOR][PIECE_TYPE_NB][16])
-		{
-			#if MAKE_ZORBIST
-				Key key = 0;
-				for (Color c = WHITE; c <= BLACK; ++c) {
-					for(PieceType pt = PAWN; pt < PIECE_TYPE_NB; ++pt)
+				//contains identical
+				bool test = true;
+				while (test)
+				{
+					test = false;
+					for (Square sqr = SQ_A1; sqr < s; ++sqr)
 					{
-						for each(Square s in pieceList[c][pt])
+						if (SquareKey[s] == SquareKey[sqr])
 						{
-							if (s == SQ_NONE) { break; }
-							key ^= SquareKey[s];
-							key ^= PieceKey[make_piece(c, pt)];
+							test = true;
+							SquareKey[s] ^= rng.sparse_rand<uint64_t>();
 						}
 					}
 				}
-				return key;
+			}
+		}
+
+		Key Zorbist::make_zorbist(Represenation* rep)
+		{
+			Key key = 0;
+			#if MAKE_ZORBIST
+				Square s = SQ_NONE;
+				Bitboard bb = rep->colorbb[BLACK] | rep->colorbb[WHITE];
+				while (s = pop_lsb(bb), is_ok(s))
+				{
+					key ^= SquareKey[s];
+					key ^= PieceKey[rep->piece_on(s)];
+				}
 			#endif
-			return 0;
+			return key;
 		}
 
 

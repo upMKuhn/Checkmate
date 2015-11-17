@@ -9,17 +9,22 @@ void init()
 
 }
 
+
+
 void performanceTest()
 {
-	string startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+	string startFen = "rnbqkbnr/P7/8/5PpP/8/4p3/4pP1P/RNBQK2R w KQkq G5 0 1";
 	Represenation* board = new Represenation(startFen);
-	MoveList* mvlist = new MoveList(*board);
-	MoveGen* movgen = new MoveGen();
+	
+	MoveGen movegen = MoveGen(*board);
+	MoveList* mvlist;
 
 	long long time = 0;
 	int count = 0;
 	int total = 0;
-	while (total < 100000000)
+
+	const int stoppAt = 100000000;
+	while (count < stoppAt && total < stoppAt)
 	{
 		
 		if(Checkmate::system_time_to_msec() - time >= 1000)
@@ -30,8 +35,10 @@ void performanceTest()
 			count = 0;
 		}
 
+		movegen.generate_all(WHITE);
+		mvlist = movegen.m_moveGeninfo.move_list;
 		count += mvlist->index;
-
+		
 		while (mvlist->index > 0)
 		{
 			board->makeMove(mvlist->m);
@@ -40,32 +47,36 @@ void performanceTest()
 			delete todelete;
 			board->undoMove();
 		}
-		delete mvlist;
-		mvlist = new MoveList(*board);
-		mvlist = movgen->generate_all(WHITE, mvlist, *board);
 	}
+	std::cout << "END PERFORMANCE TEST " << std::endl;
 }
 
 
-void ShowBoard()
+void ShowBoard(Color c)
 {
 	using namespace Checkmate; using namespace DataStructs; using namespace std;
 	string token, cmd;
-	string startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-	Represenation* board = new Represenation(startFen);
-	
-	MoveList* mvlist = new MoveList(*board);
-	MoveGen* movgen = new MoveGen();
+	string startFen =  c == WHITE ?"rnbqkbnr/P7/8/5PpP/8/4p3/4pP1P/RNBQK2R w KQkq G5 0 1" 
+							: "rnbqkbnr/P7/8/5PpP/4Q3/4p3/4pP1P/RNBQK2R b KQkq G5 0 1";
+	Represenation& board = *(new Represenation(startFen));
+	Represenation& br = *(new Represenation(board));
+	Represenation* bp = new Represenation(board);
 
-	mvlist = movgen->generate_all(WHITE, mvlist, *board);
+
+
+	MoveList* mvlist = new MoveList();
+	MoveGen& movgen = *(new MoveGen(board));
+
+	mvlist = movgen.generate_all(c).move_list;
 	
+	std::cout << "to move: " << (c == WHITE ? "WHITE" : "BLACK") << std::endl;
 
 	while(mvlist->index > 0)
 	{
-		board->makeMove(mvlist->m);
-		std::cout << board->to_string() << std::endl;
+		board.makeMove(mvlist->m);
+		std::cout << board.to_string() << std::endl;
 		mvlist = mvlist->node;
-		board->undoMove();
+		board.undoMove();
 		getline(cin, cmd);
 	}
 
@@ -77,8 +88,10 @@ int main(int argc, char* argv[]) {
 	using namespace Checkmate; using namespace DataStructs; using namespace std;
 	string token, cmd;
 	Represenation board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-	performanceTest();
-	ShowBoard();
+	//performanceTest();
+	ShowBoard(BLACK);
+	ShowBoard(WHITE);
+	
 	std::cout << board.to_string() << std::endl;
 	system("PAUSE");
 	for (int i = 1; i < argc; ++i)

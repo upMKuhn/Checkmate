@@ -26,11 +26,14 @@
 	#include "EngineMacros.h"
 	#include "piecePlacement.h"
 	#include "BitBoards.h"
-	#include "Zorbist.h"
+	
 	#include "BoardParser.h"
 	#include "FEN.h"
 	#include "represenation.h"
+		
 	#include "MoveList.hpp"
+	#include "MoveGenInfo.hpp"	
+	#include "Zorbist.h"
 	#include "MoveGen.h"
 
 	#include "UCI.h"

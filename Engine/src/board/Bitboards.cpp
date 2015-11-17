@@ -40,18 +40,11 @@ namespace Checkmate {
 
 		void Bitboards::initAttacks()
 		{
-			Bitboard mask[SQUARE_NB];
-
 			//isRook = 1 -> delta 1
 			Square deltas[][RANK_NB] = {
 				{DELTA_NE,DELTA_NW, DELTA_SE, DELTA_SW},
 				{DELTA_N,DELTA_S, DELTA_W, DELTA_E}
 			};
-
-			int size;
-			Bitboard occupancy[4096], reference[4096], edges, b;
-			b = size = 0;
-
 
 			for (Square sqr = SQ_A1; sqr < SQUARE_NB; ++sqr)
 			{

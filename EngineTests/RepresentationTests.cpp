@@ -114,5 +114,5 @@ TEST_F(RepresentationTests, BOARDS_ARE_IN_SYNC)
 TEST_F(RepresentationTests, BOARD_TO_FEN_ACCURATE)
 {
 	Represenation board("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq a3 0 1");
-	EXPECT_EQ("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq a3 0 1", board.boardToFEN());
+	EXPECT_EQ("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq A3 0 1", board.boardToFEN());
 }

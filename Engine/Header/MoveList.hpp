@@ -3,16 +3,14 @@
 namespace Checkmate {
 	struct MoveInfo
 	{
-		MoveInfo(Bitboard destionations, Color Us, PieceType mving_pt, MoveType movetype, Square from)
-			: destionations(destionations),
-			Us(Us),
-			mvingPt(mving_pt),
-			movetype(movetype),
-			from(from)
-		{
-		}
 
-		Bitboard destionations = 0;
+		MoveInfo(Color Us, Square from, PieceType mving_pt, MoveType movetype,Represenation& refRep)
+			: Us(Us),mvingPt(mving_pt),	movetype(movetype),	from(from), rep(Represenation(refRep)){}
+
+		MoveInfo(Color Us, Square from, Bitboard destionations, PieceType mving_pt, MoveType movetype, Represenation& refRep)
+			: destionations(destionations),	Us(Us),	mvingPt(mving_pt),movetype(movetype), from(from), rep(Represenation(refRep)) {}
+		Represenation& rep;
+		Bitboard destionations = 0ULL;
 		PieceType mvingPt = NO_PIECE_TYPE;
 		PieceType promotion = NO_PIECE_TYPE;
 		MoveType movetype = NORMAL;
@@ -21,15 +19,10 @@ namespace Checkmate {
 	};
 
 	struct MoveList {
-		MoveList(Represenation& r)
-		{
-			rep = &r;
-		}
 		int index = 0;
 		Move m = MOVE_NONE;
+		Piece capture = NO_PIECE;
 		MoveList* node;
-		Represenation* rep;
-
 
 		void clear()
 		{
@@ -38,7 +31,7 @@ namespace Checkmate {
 
 		MoveList* makeNext()
 		{
-			MoveList* nnode = new MoveList(*rep);
+			MoveList* nnode = new MoveList();
 			nnode->node = &*this;
 			nnode->index = index + 1;
 			return nnode;
@@ -46,30 +39,28 @@ namespace Checkmate {
 
 		MoveList* append(Square from, Square to, MoveInfo& mi)
 		{
-			Color Us = mi.Us; 
-			Piece caputre = rep->piece_on(from);
-			PieceType caputrePt = (caputre != NO_PIECE) && !is_our(Us, caputre) ? type_of(caputre) : NO_PIECE_TYPE;
-			
+			return append(from, to, mi, NO_PIECE);
+		}
+		MoveList* append(Square from, Square to, MoveInfo& mi, Piece capture)
+		{
+			Color Us = mi.Us;
 			assert(Us != NO_COLOR);
 			MoveList* mvlist = makeNext();
-
+			mvlist->capture = capture;
 			mvlist->m = mi.movetype == CASTLING ? make<CASTLING>(from, to) :
 				mi.movetype == PROMOTION ? make<PROMOTION>(from, to, mi.promotion) :
-				mi.movetype == ENPASSANT ?	make<ENPASSANT>(from, to) 
+				mi.movetype == ENPASSANT ? make<ENPASSANT>(from, to)
 				: make<NORMAL>(from, to);
-			type_of(mvlist->m);
 			return mvlist;
 		}
 
 	};
 
-
 	inline MoveList* extract_moves(MoveList* mvlist, MoveInfo& mi)
 	{
 		Square to = SQ_NONE; Square from = mi.from;
 		Bitboard& bb = mi.destionations;
-		Represenation*  rep = mvlist->rep;
-		Color us = color_of(rep->piece_on(from));
+		Color us = color_of(mi.rep.piece_on(from));
 		
 		while (to = pop_lsb(bb), is_ok(to))
 		{
@@ -79,9 +70,9 @@ namespace Checkmate {
 	}
 
 
-	inline MoveList* operator<<(MoveList* mvlist, MoveInfo& mi)
+	inline MoveList* operator<<(MoveList*& mvlist, MoveInfo& mi)
 	{
-		mvlist = &*extract_moves(mvlist,mi);
+		mvlist = extract_moves(mvlist,mi);
 		return mvlist;
 	}
 

@@ -8,7 +8,7 @@ namespace Checkmate
 
 		
 		void init();
-		Key make_zorbist(Square pieceList[NO_COLOR][PIECE_TYPE_NB][16]);
+		Key make_zorbist(Represenation* rep);
 		
 	}
 }

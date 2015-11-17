@@ -155,12 +155,14 @@ namespace Checkmate {
 		Square from = from_sq(mv);
 		Square to = to_sq(mv);
 		PieceType movingPiece = type_of(piece_on(from));
-		PieceType capture = type_of(mv) == ENPASSANT ? PAWN: type_of(piece_on(to));
+		PieceType capture = type_of(mv) == ENPASSANT ? NO_PIECE_TYPE: type_of(piece_on(to));
 		MoveType mvtype = type_of(mv);
 
 		Color us = sideToMove;
 		Color them = ~us;
 		
+
+
 		if (mvtype == CASTLING)
 		{
 			bool kingSide = from > to;
@@ -171,21 +173,20 @@ namespace Checkmate {
 			capture = NO_PIECE_TYPE;
 		}
 
+		if (capture != NO_PIECE_TYPE)
+		{
+			remove_piece(to, ~us, capture);
+		}
+
 		if (mvtype == ENPASSANT)
 		{
 			remove_piece(enPassant, make_piece(them, PAWN));
 		}
 
-		if (capture != NO_PIECE && mvtype != ENPASSANT)
-		{
-			remove_piece(to, ~us, capture);
-		}
-
 		if (mvtype == PROMOTION)
 		{
 			//Make Promotion
-			move_piece(from, to, us, movingPiece);
-			remove_piece(to, make_piece(us, PAWN));
+			remove_piece(from, make_piece(us, PAWN));
 			put_piece(to, make_piece(us, promotion_type(mv)));
 		}
 		else{
@@ -219,7 +220,7 @@ namespace Checkmate {
 
 		makeNextState(mv, capture);
 
-		CHECKS_ENABLED(assert(Zorbist::make_zorbist(pieceList) != state->next->zorbist));
+		CHECKS_ENABLED(assert(state->zorbist != state->next->zorbist));
 
 		return false;
 	}
@@ -247,6 +248,7 @@ namespace Checkmate {
 			from = relative_square(us, kingSide ? SQ_C1 : SQ_G1);
 			move_piece(rfrom, rto, us, ROOK);
 			movingPiece = KING;
+			capture = NO_PIECE_TYPE;
 		}
 
 		if (mvtype == ENPASSANT)
@@ -256,10 +258,10 @@ namespace Checkmate {
 
 		if (mvtype == PROMOTION)
 		{
-			move_piece(from, to, us, movingPiece);
-			put_piece(to, make_piece(us, PAWN));
-			remove_piece(to, make_piece(us, promotion_type(mv)));
+			remove_piece(from, us, movingPiece);
+			put_piece(to, us, PAWN);
 		}
+
 		else {
 			//Handle Any other move
 			move_piece(from, to, us, movingPiece);
@@ -276,7 +278,7 @@ namespace Checkmate {
 
 		moveClock = oldState->moveClock;
 
-		CHECKS_ENABLED(assert(Zorbist::make_zorbist(pieceList) == oldState->zorbist));
+		CHECKS_ENABLED(assert(Zorbist::make_zorbist(this) == oldState->zorbist));
 
 		BoardState* bs = state;
 		state = oldState;
@@ -344,7 +346,7 @@ namespace Checkmate {
 
 			os += " |\n +---+---+---+---+---+---+---+---+\n";
 		}
-		os += "\n\nKey: " + std::to_string(Zorbist::make_zorbist(pieceList)) + "\n";
+		os += "\n\nKey: " + std::to_string(Zorbist::make_zorbist(this)) + "\n";
 		return os;
 	}
 	
@@ -359,7 +361,7 @@ namespace Checkmate {
 	{
 		BoardState* oldState = state;
 		state = new BoardState();
-		state->zorbist = Zorbist::make_zorbist(pieceList);
+		state->zorbist = Zorbist::make_zorbist(this);
 		state->BLACK_BB = getColorbb(BLACK);
 		state->WHITE_BB = getColorbb(WHITE);
 		state->castlingRights = castlingRights;

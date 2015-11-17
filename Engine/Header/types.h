@@ -196,6 +196,7 @@ namespace Checkmate {
 		MidgameLimit = 15581, EndgameLimit = 3998
 	};
 
+	#define isSlidingPiece(x) (x > KNIGHT && x != KING)
 	enum PieceType {
 		NO_PIECE_TYPE, PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING,
 		ALL_PIECES = 0,
@@ -343,6 +344,10 @@ inline T& operator/=(T& d, int i) { return d = T(int(d) / i); }
 	inline Square operator~(Square s) {
 		return Square(s ^ SQ_A8); // Vertical flip SQ_A1 -> SQ_A8
 	}
+	
+	inline Piece operator~(Piece p) {
+		return Piece(p ^ (BLACK << 3)); // Vertical flip SQ_A1 -> SQ_A8
+	}
 
 	inline CastlingRight operator|(Color c, CastlingSide s) {
 		return CastlingRight(WHITE_OO << ((s == QUEEN_SIDE) + 2 * c));
@@ -388,7 +393,7 @@ inline T& operator/=(T& d, int i) { return d = T(int(d) / i); }
 
 	inline char file_tochar(File f)
 	{
-		const char files[] = { 'a','b','c','d','e','f','g','h' };
+		const char files[] = { 'A','B','C','D','E','F','G','H' };
 		return files[f];
 	}
 

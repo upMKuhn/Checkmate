@@ -104,5 +104,8 @@
     <ClInclude Include="Header\Zorbist.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Header\MoveGenInfo.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

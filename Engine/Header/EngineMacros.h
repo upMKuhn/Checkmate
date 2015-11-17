@@ -5,7 +5,7 @@
 
 #define ENABLE_CHECKS true
 
-#define MAKE_ZORBIST false | ENABLE_CHECKS
+#define MAKE_ZORBIST true | ENABLE_CHECKS
 
 
 #if ENABLE_CHECKS
