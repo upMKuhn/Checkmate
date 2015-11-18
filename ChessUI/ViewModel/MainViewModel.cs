@@ -14,7 +14,7 @@ namespace ChessUI.ViewModel
 
         public MainViewModel()
         {
-            string startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+            string startFEN = "K7/8/8/2kN4/2Nr1N2/8/3N4/8 b - - 0 1";
             _ChessBoardRepository = new ChessBoardRepository(startFEN);
             //Create an instance of our ViewModel and add it to
             //Collection

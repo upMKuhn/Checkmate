@@ -61,6 +61,7 @@ namespace Checkmate {
 		void undoMove();
 
 		string to_string();
+		string lastMove_tostring();
 		Square king_sqr(Color c);
 #pragma region Properties
 		
@@ -88,6 +89,7 @@ namespace Checkmate {
 
 	private:
 		void init();
+
 		void flipSideToMove()
 		{
 			sideToMove = ~sideToMove;

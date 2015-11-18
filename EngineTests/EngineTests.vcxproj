@@ -292,7 +292,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>gmock.lib;BoardParser.obj;represenation.obj;Bitboards.obj;FEN.obj;piecePlacement.obj;Zorbist.obj</AdditionalDependencies>
+      <AdditionalDependencies>gmock.lib;BoardParser.obj;represenation.obj;Bitboards.obj;FEN.obj;piecePlacement.obj;Zorbist.obj;MoveGen.obj</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Build\InterMidDir\Engine\;$(SolutionDir)Dependencies\$(Platform)\boost\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
@@ -425,6 +425,7 @@
     <ClCompile Include="FEN_TEST.cpp" />
     <ClCompile Include="LittleHelperTests.cpp" />
     <ClCompile Include="IncludeTests.cpp" />
+    <ClCompile Include="MoveGenTests.cpp" />
     <ClCompile Include="MoveListTests.cpp" />
     <ClCompile Include="RepresentationTests.cpp" />
     <ClCompile Include="stdafx.cpp">

@@ -63,7 +63,7 @@ namespace Checkmate {
 	PiecePlacement* BoardParser::nextPiece()
 	{
 		char currentChar = m_FEN.at(m_charAt);
-		PiecePlacement* phrase = new PiecePlacement();
+		PiecePlacement* phrase = nullptr;
 
 		if (NEXT_RANK == currentChar)
 		{
@@ -82,6 +82,7 @@ namespace Checkmate {
 		if (toPiece(currentChar) != NO_PIECE_TYPE)
 		{
 			Color c = isupper(currentChar) ? WHITE : BLACK;
+			phrase = new PiecePlacement();
 			phrase->piece = make_piece(c, toPiece(currentChar));
 			phrase->position = m_squareAt;
 			++m_squareAt;

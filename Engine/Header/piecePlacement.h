@@ -9,16 +9,12 @@ namespace Checkmate {
 	/// </summary>
 	struct PiecePlacement
 	{
-		Square position;
-		Piece piece;
+		Square position = SQ_NONE;
+		Piece piece = NO_PIECE;
 		int index = 0;
 		PiecePlacement* next;
 
-		PiecePlacement()
-		{
-			int i = 5;
-			i++;
-		}
+		PiecePlacement(){}
 		PiecePlacement(Square position, Piece piece);
 
 		static PiecePlacement create();

@@ -93,7 +93,6 @@ namespace Checkmate {
 				break;
 			default:
 				Casteling = false;
-				index--;
 			}
 			index++;
 		}

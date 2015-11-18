@@ -15,6 +15,7 @@ namespace ChessUI.ViewModel
         private ChessBoardRepository _ChessBoardRepository;
         private ObservableCollection<SquareViewModel> _boardView;
         private Board myBoard;
+        private string _fen ;
 
         public ChessBoardViewModel(ChessBoardRepository chessBoardRepository)
         {
@@ -34,10 +35,17 @@ namespace ChessUI.ViewModel
             private set;
         }
 
-        public ObservableCollection<PieceViewModel> AllPieces
-        {
-            get;
-            private set;
+        public ObservableCollection<PieceViewModel> AllPieces { get; private set;
+        }
+
+        public String FEN {
+            get { return _fen; }
+            set
+            {
+                _fen = value;
+                myBoard.FenToBoard(value);
+
+            }
         }
 
         public SquareViewModel findSquare(string pos)

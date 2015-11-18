@@ -92,7 +92,8 @@ namespace Checkmate {
 	MoveGenInfo& MoveGen::generate_all(Color us)
 	{
 		Color them = ~us; 
-		
+		m_moveGeninfo.move_list->clear();
+		m_moveGeninfo.move_list = new MoveList();
 		//What can my enemy do?
 		switchColorUsTo(them); m_kingCheckfilter = ~0ULL;
 		generate_lookupData(them);

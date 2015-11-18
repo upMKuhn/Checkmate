@@ -42,6 +42,21 @@ namespace ChessUI.Model
             }
             else { throw new Exception("From Square was null!"); }
         }
+
+        public void FenToBoard(string fen)
+        {
+            int s = 5;
+        }
+
+        private void clearAllPieces()
+        {
+            foreach (Square s in _board)
+            {
+                s.Piece = null;
+            }
+        }
+
+
     }
     public struct Move
     {

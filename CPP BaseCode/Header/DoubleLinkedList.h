@@ -39,14 +39,16 @@ namespace DataStructs {
 		template<class NodeValue>
 		void DoubleLinkedList<NodeValue>::appendHead(NodeValue val)
 		{
-			DoubleLinkedListNode<NodeValue>* temp = new DoubleLinkedListNode<NodeValue>(val);
-
-			if (head != NULL)
+			if (val != NULL || val != nullptr)
 			{
-				temp->insertAfter(head);
+				DoubleLinkedListNode<NodeValue>* temp = new DoubleLinkedListNode<NodeValue>(val);
+				if(head != NULL)
+				{
+					temp->insertAfter(head);
+				}
+				head = temp;
+				this->m_length++;
 			}
-			head = temp;
-			this->m_length++;
 		}
 
 		template<class NodeValue>

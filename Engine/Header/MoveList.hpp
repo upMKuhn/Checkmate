@@ -4,11 +4,11 @@ namespace Checkmate {
 	struct MoveInfo
 	{
 
-		MoveInfo(Color Us, Square from, PieceType mving_pt, MoveType movetype,Represenation& refRep)
-			: Us(Us),mvingPt(mving_pt),	movetype(movetype),	from(from), rep(Represenation(refRep)){}
+		MoveInfo(Color Us, Square from, PieceType mving_pt, MoveType movetype, Represenation& refRep)
+			: Us(Us),mvingPt(mving_pt),	movetype(movetype),	from(from), rep(refRep){}
 
-		MoveInfo(Color Us, Square from, Bitboard destionations, PieceType mving_pt, MoveType movetype, Represenation& refRep)
-			: destionations(destionations),	Us(Us),	mvingPt(mving_pt),movetype(movetype), from(from), rep(Represenation(refRep)) {}
+		MoveInfo(Color Us, Square from, Bitboard destionations, PieceType mving_pt, MoveType movetype,  Represenation& refRep)
+			: destionations(destionations),	Us(Us),	mvingPt(mving_pt),movetype(movetype), from(from), rep(refRep) {}
 		Represenation& rep;
 		Bitboard destionations = 0ULL;
 		PieceType mvingPt = NO_PIECE_TYPE;
@@ -23,12 +23,6 @@ namespace Checkmate {
 		Move m = MOVE_NONE;
 		Piece capture = NO_PIECE;
 		MoveList* node;
-
-		void clear()
-		{
-			m = MOVE_NONE;
-		}
-
 		MoveList* makeNext()
 		{
 			MoveList* nnode = new MoveList();
@@ -53,7 +47,21 @@ namespace Checkmate {
 				: make<NORMAL>(from, to);
 			return mvlist;
 		}
-
+		void clear()
+		{
+			MoveList* ml = node;
+			MoveList* temp;
+			while(index > 0 && ml->index)
+			{
+				temp = ml->node;
+				delete ml;
+				ml = temp;
+			}
+			
+			index = 0;
+			capture = NO_PIECE;
+			m = MOVE_NONE;
+		}
 	};
 
 	inline MoveList* extract_moves(MoveList* mvlist, MoveInfo& mi)

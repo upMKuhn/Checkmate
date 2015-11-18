@@ -18,6 +18,10 @@ namespace Checkmate {
 
 	}
 
+	Represenation::~Represenation()
+	{		
+	}
+
 	void Represenation::init()
 	{
 
@@ -44,10 +48,26 @@ namespace Checkmate {
 		}
 	}
 
-	Represenation::~Represenation()
-	{		
-	}
+	void Represenation::fenToBoard(string strFEN)
+	{
+		FEN_Parser fen(strFEN);
+		PiecePlacement *instruct;
+		init();
+		fen.nextInstruction(instruct);
+		while (instruct != NULL)
+		{
+			if (instruct->piece != NO_PIECE && instruct->position != SQ_NONE) {
+				put_piece(instruct->position, instruct->piece);
+				fen.nextInstruction(instruct);
+			}
+		}
 
+		sideToMove = fen.sideToMove;
+		castlingRights = fen.castlingRights;
+		moveClock = fen.FullMoveClock * 2 + fen.halfMoveClock;
+		enPassant = fen.enPassant;
+		makeNextState(MOVE_NONE, NO_PIECE_TYPE);
+	}
 
 	string Represenation::boardToFEN()
 	{
@@ -109,6 +129,12 @@ namespace Checkmate {
 		{
 			fen += 'q';
 		}
+
+		if(castlingRights == NULL)
+		{
+			fen += '-';
+		}
+
 		fen += ' ';
 
 		if(enPassant != SQ_NONE)
@@ -127,25 +153,6 @@ namespace Checkmate {
 		fen += ' ';
 		fen += std::to_string(moveClock / 2);
 		return fen;
-	}
-
-	void Represenation::fenToBoard(string strFEN)
-	{
-		FEN_Parser fen(strFEN);
-		PiecePlacement *instruct;
-		init();
-		fen.nextInstruction(instruct);
-		while (instruct != NULL) 
-		{
-			put_piece(instruct->position, instruct->piece);
-			fen.nextInstruction(instruct);
-		} 
-
-		sideToMove = fen.sideToMove;
-		castlingRights = fen.castlingRights;
-		moveClock = fen.FullMoveClock * 2 + fen.halfMoveClock ;
-		enPassant = fen.enPassant;
-		makeNextState(MOVE_NONE, NO_PIECE_TYPE);
 	}
 
 	bool Represenation::makeMove(Move mv)
@@ -208,8 +215,6 @@ namespace Checkmate {
 					&& relative_rank(us, to) == relative_rank(WHITE, SQ_A4)
 					? to : SQ_NONE;
 
-		sideToMove = ~sideToMove;
-		
 		if(movingPiece == PAWN || capture != NO_PIECE_TYPE)
 		{
 			moveClock = 1;
@@ -219,6 +224,7 @@ namespace Checkmate {
 		}
 
 		makeNextState(mv, capture);
+		sideToMove = ~sideToMove;
 
 		CHECKS_ENABLED(assert(state->zorbist != state->next->zorbist));
 
@@ -261,7 +267,6 @@ namespace Checkmate {
 			remove_piece(from, us, movingPiece);
 			put_piece(to, us, PAWN);
 		}
-
 		else {
 			//Handle Any other move
 			move_piece(from, to, us, movingPiece);
@@ -274,7 +279,7 @@ namespace Checkmate {
 
 		castlingRights = oldState->castlingRights;
 		enPassant = oldState->enPassant;
-		sideToMove = ~sideToMove;
+		sideToMove = oldState->sideToMove;
 
 		moveClock = oldState->moveClock;
 
@@ -286,7 +291,34 @@ namespace Checkmate {
 		
 	}
 
-	
+
+#pragma region Utillity
+
+	/// <summary>
+	/// A State is a compact representation of the state 
+	/// positions and rights in a game position. This function 
+	/// makes a snapshot and appends the state SLL
+	/// </summary>
+	void Represenation::makeNextState(Move mv, PieceType captrue)
+	{
+		BoardState* oldState = state;
+		oldState->lastMove = mv;
+		oldState->captrue = captrue;
+		oldState->sideToMove = sideToMove;
+		state = new BoardState();
+		state->zorbist = Zorbist::make_zorbist(this);
+		state->BLACK_BB = getColorbb(BLACK);
+		state->WHITE_BB = getColorbb(WHITE);
+		state->castlingRights = castlingRights;
+		state->enPassant = enPassant;
+		state->moveClock = moveClock;
+		state->sideToMove = sideToMove;
+		state->next = oldState;
+		state->stateIndex = oldState->stateIndex + 1;
+		
+
+	}
+
 	/// <summary>
 	/// Is_ok check if all variables hold acceptable data
 	/// in this class
@@ -313,7 +345,7 @@ namespace Checkmate {
 		Square sqr = SQ_A1;
 		for each (Piece piece in board)
 		{
-			if(piece != NO_PIECE)
+			if (piece != NO_PIECE)
 			{
 				Bitboard bb = board_for(piece);
 				test &= (bb & (1ULL << sqr)) > 0;
@@ -322,14 +354,32 @@ namespace Checkmate {
 		}
 
 		return test;
-			   
+
 	}
-
-
+	
 	/// operator<<(Position) returns an ASCII representation of the position
 	std::ostream& operator<<(std::ostream& os, Represenation& pos) {
 		os << pos.to_string();
 		return os;
+	}
+
+	string square_toString(Square s)
+	{
+		string st = string();
+		st += file_tochar(file_of(s));
+		st += '0' + rank_of(s)+1;
+		return st;
+	}
+
+	string move_tostring(Move m)
+	{
+		string st = string();
+		st += "From: ";
+		st += square_toString(from_sq(m));
+		st += "\nTo: ";
+		st += square_toString(to_sq(m));
+		st += "\n";
+		return st;
 	}
 
 	string Represenation::to_string() {
@@ -343,39 +393,24 @@ namespace Checkmate {
 				os += " | ";
 				os += piece_tochar(piece_on(make_square(f, r)));
 			}
-
+			
 			os += " |\n +---+---+---+---+---+---+---+---+\n";
+
+
 		}
+		os += lastMove_tostring();
 		os += "\n\nKey: " + std::to_string(Zorbist::make_zorbist(this)) + "\n";
 		return os;
 	}
-	
-#pragma region Utillity
 
-	/// <summary>
-	/// A State is a compact representation of the state 
-	/// positions and rights in a game position. This function 
-	/// makes a snapshot and appends the state SLL
-	/// </summary>
-	void Represenation::makeNextState(Move mv, PieceType captrue)
+	string Represenation::lastMove_tostring()
 	{
-		BoardState* oldState = state;
-		state = new BoardState();
-		state->zorbist = Zorbist::make_zorbist(this);
-		state->BLACK_BB = getColorbb(BLACK);
-		state->WHITE_BB = getColorbb(WHITE);
-		state->castlingRights = castlingRights;
-		state->enPassant = enPassant;
-		state->moveClock = moveClock;
-		state->sideToMove = sideToMove;
-		state->next = oldState;
-		state->stateIndex = oldState->stateIndex + 1;
-		oldState->lastMove = mv;
-		oldState->captrue = captrue;
+		if(state->stateIndex > 0)
+		{
+			return move_tostring(state->next->lastMove);
+		}
+		return string();
 	}
-
-
-	
 
 #pragma endregion
 
