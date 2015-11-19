@@ -2,6 +2,12 @@
 
 //Representation of the GameBoard
 
+#ifdef CHECKS_ENABLED
+#define DEBUG_CHECK_MOVE(x) checkMove(x)
+#else
+#define DEBUG_CHECK_MOVE(x)
+#endif
+
 namespace Checkmate {
 	
 	Represenation::Represenation()
@@ -141,7 +147,7 @@ namespace Checkmate {
 		{
 			Rank r = rank_of(enPassant);
 			File f = file_of(enPassant);
-			fen += file_tochar(f);
+			fen += tolower(file_tochar(f));
 			fen += '0' + r+1;
 			fen += ' ';
 		}else
@@ -157,18 +163,15 @@ namespace Checkmate {
 
 	bool Represenation::makeMove(Move mv)
 	{
-		//MakeMove
-		CHECKS_ENABLED(assert(is_ok(mv)));
+		DEBUG_CHECK_MOVE(mv);
 		Square from = from_sq(mv);
 		Square to = to_sq(mv);
-		PieceType movingPiece = type_of(piece_on(from));
-		PieceType capture = type_of(mv) == ENPASSANT ? NO_PIECE_TYPE: type_of(piece_on(to));
+		PieceType movingPiece = moving_type(mv);
+		PieceType capture = capture_type(mv);
 		MoveType mvtype = type_of(mv);
 
 		Color us = sideToMove;
 		Color them = ~us;
-		
-
 
 		if (mvtype == CASTLING)
 		{
@@ -291,8 +294,62 @@ namespace Checkmate {
 		
 	}
 
+	void Represenation::move_piece(Square from, Square to, Color c, PieceType pt)
+	{
+		Bitboard from_to_bb = SquareBB[from] | SquareBB[to];
+		Piece p = make_piece(c, pt);
 
-#pragma region Utillity
+		typebb[pt] ^= from_to_bb;
+		typebb[ALL_PIECES] ^= from_to_bb;
+		colorbb[c] ^= from_to_bb;
+		pieceList[c][pt][index[from]] = to;
+		index[to] = index[from];
+		index[from] = PIECE_NB;
+
+		board[from] = NO_PIECE;
+		board[to] = p;
+	}
+
+	void Represenation::put_piece(Square sq, Piece pc)
+	{
+		put_piece(sq, color_of(pc), type_of(pc));
+	}
+
+	void Represenation::put_piece(Square sq, Color c, PieceType pt)
+	{
+		assert(Checkmate::is_ok(sq));
+		Piece pc = make_piece(c, pt);
+		typebb[pt] |= SquareBB[sq];
+		typebb[ALL_PIECES] |= SquareBB[sq];
+		colorbb[c] |= SquareBB[sq];
+		board[sq] = pc;
+		pieceList[c][pt][pieceCount[c][pt]] = sq;
+		index[sq] = pieceCount[c][pt];
+		++pieceCount[c][pt];
+		++pieceCount[c][ALL_PIECES];
+	}
+
+	inline void Represenation::remove_piece(Square sq, Color c, PieceType pt)
+	{
+		assert(Checkmate::is_ok(sq));
+		if (board[sq] != NO_PIECE)
+		{
+			int listIndex = index[sq];
+			int lastIndex = --pieceCount[c][pt];
+			typebb[pt] ^= SquareBB[sq];
+			typebb[ALL_PIECES] ^= SquareBB[sq];
+			colorbb[c] ^= SquareBB[sq];
+			board[sq] = NO_PIECE;
+			index[sq] = PIECE_NB;
+			//Replace Piece to be removed with last
+			pieceList[c][pt][listIndex] = pieceList[c][pt][lastIndex];
+			pieceList[c][pt][lastIndex] = SQ_NONE;
+			--pieceCount[c][ALL_PIECES];
+		}
+
+	}
+
+#pragma region DebugInfo
 
 	/// <summary>
 	/// A State is a compact representation of the state 
@@ -347,14 +404,52 @@ namespace Checkmate {
 		{
 			if (piece != NO_PIECE)
 			{
+				Color c = color_of(piece);
+				PieceType pt = type_of(piece);
 				Bitboard bb = board_for(piece);
 				test &= (bb & (1ULL << sqr)) > 0;
+				test &= pieceList[c][pt][index[sqr]] == sqr;
 			}
 			++sqr;
 		}
 
 		return test;
 
+	}
+
+	void Represenation::checkMove(Move mv)
+	{
+		Square from = from_sq(mv);
+		Square to = to_sq(mv);
+		PieceType movingPiece = moving_type(mv);
+		PieceType capture = capture_type(mv);
+		MoveType mvtype = type_of(mv);
+
+		Color us = sideToMove;
+		Color them = ~us;
+
+
+		assert(is_ok(mv));
+		assert((piece_on(from) == make_piece(us, movingPiece)));
+
+		if (mvtype == NORMAL || mvtype == PROMOTION)
+		{
+			//NORMAL && PROMOTION CHECK
+			assert((piece_on(to) == make_piece(them, capture)));
+		}
+		
+		if(mvtype == CASTLING)
+		{
+			assert((piece_on(to) == make_piece(us, ROOK)));
+		}
+		else if(mvtype == ENPASSANT)
+		{
+			assert(piece_on(enPassant) == make_piece(them, PAWN));
+		}
+		else if(mvtype == PROMOTION)
+		{
+			assert(NO_PIECE_TYPE < promotion_type(mv)  && promotion_type(mv) < PIECE_TYPE_NB);
+		}
 	}
 	
 	/// operator<<(Position) returns an ASCII representation of the position
@@ -371,14 +466,57 @@ namespace Checkmate {
 		return st;
 	}
 
+	string movetype_tostring(Move m)
+	{
+		string st = string();
+		switch(type_of(m))
+		{
+		case NORMAL:
+			st = "NORMAL";
+			break;
+		case PROMOTION:
+			st = "PROMOTION";
+			break;
+		case CAPTURE:
+			st = "CAPTURE";
+			break;
+		case CASTLING:
+			st = "CASTELING";
+			break;
+		case ENPASSANT:
+			st = "ENPASSANT";
+			break;
+		default:
+			st = "UNDEFINED!";
+			break;
+		}
+		return st;
+	}
+
 	string move_tostring(Move m)
 	{
 		string st = string();
-		st += "From: ";
-		st += square_toString(from_sq(m));
-		st += "\nTo: ";
-		st += square_toString(to_sq(m));
-		st += "\n";
+		st += "Type: " + movetype_tostring(m) + "\n";
+		st += "From: " + square_toString(from_sq(m)) + "\n";
+		st += "To: " + square_toString(to_sq(m)) + "\n";
+
+		Piece capture = make_piece(WHITE, capture_type(m));
+		Piece promotion = make_piece(WHITE, promotion_type(m));
+
+		if(capture != NO_PIECE)
+		{
+			st += "Capture Type: ";
+			st += piece_tochar(capture);
+			st += "\n";
+		}
+
+		if (promotion != NO_PIECE)
+		{
+			st += "Promotion Type: ";
+			st += piece_tochar(promotion);
+			st += "\n";
+		}
+
 		return st;
 	}
 
@@ -411,6 +549,8 @@ namespace Checkmate {
 		}
 		return string();
 	}
+
+
 
 #pragma endregion
 

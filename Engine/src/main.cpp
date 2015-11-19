@@ -21,7 +21,7 @@ void performanceTest()
 
 	long long time = 0;
 	UINT64 count = 0;
-	int total = 0;
+	UINT64 total = 0;
 
 	const UINT64 stoppAt = 0xffffffffffffffffULL;
 	Color tomove = WHITE;
@@ -87,7 +87,7 @@ int main(int argc, char* argv[]) {
 	string token, cmd;
 	Represenation board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 	
-	performanceTest();
+	//performanceTest();
 	
 	ShowBoard(BLACK);
 	ShowBoard(WHITE);

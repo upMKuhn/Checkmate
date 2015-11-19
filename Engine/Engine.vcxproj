@@ -295,6 +295,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir)CPP BaseCode\Header;$(SolutionDir)Boost\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <AssemblerOutput>All</AssemblerOutput>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -375,6 +376,7 @@
     <ClCompile Include="src\board\represenation.cpp" />
     <ClCompile Include="src\LittleHelper.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\tools.cpp" />
     <ClCompile Include="src\util\BoardParser.cpp" />
     <ClCompile Include="src\util\FEN.cpp" />
     <ClCompile Include="src\UCI.cpp" />

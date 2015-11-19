@@ -108,8 +108,10 @@ namespace Checkmate {
 	///
 	/// bit  0- 5: destination square (from 0 to 63)
 	/// bit  6-11: origin square (from 0 to 63)
-	/// bit 12-13: promotion piece type - 2 (from KNIGHT-2 to QUEEN-2)
-	/// bit 14-15: special move flag: promotion (1), en passant (2), castling (3)
+	/// bit 12-16: Moving piece
+	/// bit 17-21: Capture piece
+	/// bit 22 - 26: Capture piece
+	/// bit 27-30: special move flag: promotion (1), en passant (2), castling (3) Capture(4)
 	/// NOTE: EN-PASSANT bit is set only when a pawn can be captured
 	///
 	/// Special cases are MOVE_NONE and MOVE_NULL. We can sneak these in because in
@@ -123,9 +125,10 @@ namespace Checkmate {
 
 	enum MoveType {
 		NORMAL,
-		PROMOTION = 1 << 14,
-		ENPASSANT = 2 << 14,
-		CASTLING = 3 << 14
+		PROMOTION = 1 << 27,
+		ENPASSANT = 2 << 27,
+		CASTLING = 3 << 27,
+		CAPTURE = 4 << 27
 	};
 
 	enum Color {
@@ -320,8 +323,8 @@ inline T& operator/=(T& d, int i) { return d = T(int(d) / i); }
 #undef ENABLE_FULL_OPERATORS_ON
 #undef ENABLE_BASE_OPERATORS_ON
 
-		/// Additional operators to add integers to a Value
-		inline Value operator+(Value v, int i) { return Value(int(v) + i); }
+	/// Additional operators to add integers to a Value
+	inline Value operator+(Value v, int i) { return Value(int(v) + i); }
 	inline Value operator-(Value v, int i) { return Value(int(v) - i); }
 	inline Value& operator+=(Value& v, int i) { return v = v + i; }
 	inline Value& operator-=(Value& v, int i) { return v = v - i; }
@@ -371,7 +374,8 @@ inline T& operator/=(T& d, int i) { return d = T(int(d) / i); }
 	}
 
 	inline Piece make_piece(Color c, PieceType pt) {
-		return Piece((c << 3) | pt);
+		return pt != NO_PIECE_TYPE ? 
+			Piece((c << 3) | pt) : NO_PIECE;
 	}
 
 	inline PieceType type_of(Piece pc) {
@@ -460,20 +464,43 @@ inline T& operator/=(T& d, int i) { return d = T(int(d) / i); }
 	}
 
 	inline MoveType type_of(Move m) {
-		return MoveType(m & (3 << 14));
+		return MoveType(m & (7 << 27));
+	}
+
+	inline PieceType moving_type(Move m) {
+		return PieceType((m >> 12) & 7);
+	}
+	
+	inline PieceType capture_type(Move m) {
+		return PieceType((m >> 17) & 7);
 	}
 
 	inline PieceType promotion_type(Move m) {
-		return PieceType(((m >> 12) & 3) + 2);
+		return PieceType((m >> 22) & 7);
 	}
+
 
 	inline Move make_move(Square from, Square to) {
 		return Move(to | (from << 6));
 	}
 
 	template<MoveType T>
-	inline Move make(Square from, Square to, PieceType pt = KNIGHT) {
-		return Move(to | (from << 6) | T | (pt - KNIGHT << 12));
+	inline Move make(Square from, Square to, PieceType movingPt, PieceType capture = NO_PIECE_TYPE) {
+		return Move(to | (from << 6) | T | (movingPt << 12) | (capture << 17));
+	}
+	
+	template<>
+	inline Move make<PROMOTION>(Square from, Square to, PieceType movingPt, PieceType promotion) {
+		return Move(to | (from << 6) | PROMOTION | (movingPt << 12) | (promotion << 22));
+	}
+
+	template<>
+	inline Move make<CAPTURE>(Square from, Square to, PieceType movingPt, PieceType capture) {
+		return Move(to | (from << 6) | CAPTURE | (movingPt << 12) | (capture << 17));
+	}
+
+	inline Move make_promotion_withCapture_move(Square from, Square to, PieceType movingPt, PieceType promotion, PieceType capture) {
+		return Move(to | (from << 6) | PROMOTION | (movingPt << 12) | (promotion << 22) | (capture << 17));
 	}
 
 	inline bool is_ok(Move m) {

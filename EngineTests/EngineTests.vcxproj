@@ -423,6 +423,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FEN_TEST.cpp" />
+    <ClCompile Include="HelperFunctionTests.cpp" />
     <ClCompile Include="LittleHelperTests.cpp" />
     <ClCompile Include="IncludeTests.cpp" />
     <ClCompile Include="MoveGenTests.cpp" />

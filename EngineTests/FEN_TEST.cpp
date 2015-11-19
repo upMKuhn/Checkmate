@@ -81,7 +81,7 @@ TEST_F(FEN_TEST, CHECK_BOARD_STATE)
 
 TEST_F(FEN_TEST, FEN_NO_CASTELING_AND_NO_EnPassant)
 {
-	FEN_TEST_DATA data("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - 13 1");
+	FEN_TEST_DATA data("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b - - 13 1");
 
 	FEN_Parser parser(data.fen);
 	

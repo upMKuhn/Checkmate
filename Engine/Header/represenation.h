@@ -27,7 +27,7 @@ namespace Checkmate {
 
 	class Represenation
 	{
-	public:
+	public: //Fields Exposed
 
 		BoardState* state;
 		Color sideToMove;
@@ -48,26 +48,24 @@ namespace Checkmate {
 		Represenation(::std::string FEN);
 		~Represenation();
 
-		
-		string boardToFEN();
-		void fenToBoard(string strFEN);
-
-		int can_castle(Color c);
-		int can_castle(CastlingRight cr);
-		int revoke_castling(Color c, CastlingRight cr);
-		int revoke_castling(Color c);
-
-		bool makeMove(Move mv);
-		void undoMove();
-
 		string to_string();
-		string lastMove_tostring();
+		string boardToFEN();
 		Square king_sqr(Color c);
-#pragma region Properties
+		string lastMove_tostring();
+
+		void undoMove();
+		void fenToBoard(string strFEN);
 		
+		int can_castle(Color c);
+		bool makeMove(Move mv);
+
+
+	public:
+		#pragma region Properties
+
 		Bitboard board_for(Piece pc);
 		Bitboard board_for(PieceType pt);
-		Bitboard board_for(Color c,PieceType pt);
+		Bitboard board_for(Color c, PieceType pt);
 
 		Bitboard getColorbb(Color c);
 		Piece piece_on(Square position);
@@ -80,143 +78,102 @@ namespace Checkmate {
 		int count(Color c);
 
 		Piece opposite_color(Piece p);
-
 		void remove_piece(Square sq, Piece pc);
 
 		void move_piece(Square from, Square to, Color c, PieceType pt);
 		bool areAllBoardsOk();
-#pragma endregion
+	#pragma endregion
 
 	private:
-		void init();
+		#pragma region small_helper
+				void init();
 
-		void flipSideToMove()
-		{
-			sideToMove = ~sideToMove;
-		}
-		void makeNextState(Move mv, PieceType captrue);
+				void flipSideToMove();
+				void makeNextState(Move mv, PieceType captrue);
+
+				void checkMove(Move m);
+
+				int can_castle(CastlingRight cr);
+				int revoke_castling(Color c, CastlingRight cr);
+				int revoke_castling(Color c);
+		#pragma endregion
 };
 	
-	inline Square Represenation::king_sqr(Color c)
-	{
-		return pieceList[c][KING][0];
-	}
+	#pragma region inline_helper
 
-	inline int Represenation::can_castle(CastlingRight cr) {
-		return castlingRights & cr;
-	}
+			inline void Represenation::flipSideToMove()
+			{
+				sideToMove = ~sideToMove;
+			}
 
-	inline int Represenation::can_castle(Color c) {
-		return castlingRights & ((WHITE_OO | WHITE_OOO) << (2 * c));
-	}
+			inline Square Represenation::king_sqr(Color c)
+			{
+				return pieceList[c][KING][0];
+			}
 
-	inline int Represenation::revoke_castling(Color c, CastlingRight cr) {
-		return castlingRights &= ~cr;
-	}
+			inline int Represenation::can_castle(CastlingRight cr) {
+				return castlingRights & cr;
+			}
 
-	inline int Represenation::revoke_castling(Color c) {
-		return castlingRights &= ~((WHITE_OO | WHITE_OOO) << (2 * c));
-	}
+			inline int Represenation::can_castle(Color c) {
+				return castlingRights & ((WHITE_OO | WHITE_OOO) << (2 * c));
+			}
 
+			inline int Represenation::revoke_castling(Color c, CastlingRight cr) {
+				return castlingRights &= ~cr;
+			}
 
-	inline Bitboard Represenation::board_for(Piece pc)
-	{
-		return board_for(color_of(pc), type_of(pc));
-	}
-	inline Bitboard Represenation::board_for(PieceType pt)
-	{
-		return this->typebb[pt];
-	}
-
-	inline Bitboard Represenation::board_for(Color c,PieceType pt)
-	{
-		return this->typebb[pt] & colorbb[c];
-	}
-
-	inline Bitboard Represenation::getColorbb(Color c)
-	{
-		return this->colorbb[c];
-	}
+			inline int Represenation::revoke_castling(Color c) {
+				return castlingRights &= ~((WHITE_OO | WHITE_OOO) << (2 * c));
+			}
 
 
-	inline Piece Represenation::piece_on(Square position)
-	{
-		return board[position];
-	}
+			inline Bitboard Represenation::board_for(Piece pc)
+			{
+				return board_for(color_of(pc), type_of(pc));
+			}
+			inline Bitboard Represenation::board_for(PieceType pt)
+			{
+				return this->typebb[pt];
+			}
+			inline Bitboard Represenation::board_for(Color c,PieceType pt)
+			{
+				return this->typebb[pt] & colorbb[c];
+			}
 
-	inline Piece Represenation::opposite_color(Piece p)
-	{
-		return make_piece(~color_of(p), type_of(p));
-	}
+			inline Bitboard Represenation::getColorbb(Color c)
+			{
+				return this->colorbb[c];
+			}
 
-	inline void Represenation::remove_piece(Square sq, Piece pc)
-	{
-		remove_piece(sq, color_of(pc), type_of(pc));
-	}
-	inline void Represenation::remove_piece(Square sq, Color c ,PieceType pt)
-	{
-		assert(Checkmate::is_ok(sq));
-		if (board[sq] != NO_PIECE)
-		{
-			int listIndex = index[sq];
-			int lastIndex = --pieceCount[c][pt];
-			typebb[pt] ^= SquareBB[sq];
-			typebb[ALL_PIECES] ^= SquareBB[sq];
-			colorbb[c] ^= SquareBB[sq];
-			board[sq] = NO_PIECE;
-			index[sq] = PIECE_NB;
-			//Replace Piece to be removed with last
-			pieceList[c][pt][listIndex] = pieceList[c][pt][lastIndex];
-			pieceList[c][pt][lastIndex] = SQ_NONE;
-			--pieceCount[c][ALL_PIECES];
-		}
+
+			inline Piece Represenation::piece_on(Square position)
+			{
+				return board[position];
+			}
+
+			inline Piece Represenation::opposite_color(Piece p)
+			{
+				return make_piece(~color_of(p), type_of(p));
+			}
+
+			inline void Represenation::remove_piece(Square sq, Piece pc)
+			{
+				remove_piece(sq, color_of(pc), type_of(pc));
+			}
 	
-	}
 
-	inline void Represenation::put_piece(Square sq, Piece pc)
-	{
-		put_piece(sq, color_of(pc), type_of(pc));
-	}
-	inline void Represenation::put_piece(Square sq, Color c ,PieceType pt )
-	{
-		assert(Checkmate::is_ok(sq));
-		Piece pc = make_piece(c, pt);
-		typebb[pt] |= SquareBB[sq];
-		typebb[ALL_PIECES] |= SquareBB[sq];
-		colorbb[c] |= SquareBB[sq];
-		board[sq] = pc;
-		pieceList[c][pt][pieceCount[c][pt]] = sq;
-		index[sq] = pieceCount[c][pt];
-		++pieceCount[c][pt];
-		++pieceCount[c][ALL_PIECES];
-	}
+			inline int Represenation::count(Piece p)
+			{
+				return pieceCount[color_of(p)][type_of(p)];
+			}
 
-	inline int Represenation::count(Piece p)
-	{
-		return pieceCount[color_of(p)][type_of(p)];
-	}
+			inline int Represenation::count(Color c)
+			{
+				return pieceCount[c][ALL_PIECES];
+			}
 
-	inline int Represenation::count(Color c)
-	{
-		return pieceCount[c][ALL_PIECES];
-	}
-	
-	inline void Represenation::move_piece(Square from, Square to,Color c, PieceType pt)
-	{
-		Bitboard from_to_bb = SquareBB[from] | SquareBB[to];
-		Piece p = make_piece(c,pt);
-		
-		typebb[pt] ^= from_to_bb;
-		typebb[ALL_PIECES] ^= from_to_bb;
-		colorbb[c] ^= from_to_bb;
-		pieceList[c][pt][index[from]] = to;
-		index[to] = index[from];
-		index[from] = PIECE_NB;
-
-		board[from] = NO_PIECE;
-		board[to] = p;
-	}
-
+	#pragma endregion
 }
 
 

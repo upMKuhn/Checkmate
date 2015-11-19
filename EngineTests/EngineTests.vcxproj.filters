@@ -59,6 +59,9 @@
     <ClCompile Include="MoveGenTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="HelperFunctionTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

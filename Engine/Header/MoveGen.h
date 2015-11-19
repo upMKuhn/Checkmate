@@ -36,10 +36,9 @@ public:
 	MoveGenInfo& generate_castleing(Color us);
 	MoveGenInfo& generate_enpassant(Color us);
 	MoveGenInfo& generate_promotion(Color us);
-	void generate_lookupData(Color us, bool appendToList = false);
+	void generate_attacks(Color us, bool appendToList = false);
 
 private:
-	void init();
 	void resetLookups();
 	void switchColorUsTo(Color us);
 	void makeCheckFilter(Color us);
