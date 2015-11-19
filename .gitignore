@@ -212,3 +212,6 @@ _Pvt_Extensions/
 ModelManifest.xml
 /UnitTest/gmock
 /UnitTest/gtest
+/CPP BaseCode/PerformanceTest/CPP BaseCode.tlog
+/Engine/PerformanceTest/Engine.tlog
+*.idb
