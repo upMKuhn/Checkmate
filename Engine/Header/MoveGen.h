@@ -3,12 +3,6 @@
 
 namespace Checkmate {
 	
-	enum GenerationType
-	{
-		Captures,EnPassant, Normal, Checks, Xray
-	};
-
-	
 
 class MoveGen
 {
@@ -44,6 +38,7 @@ private:
 	void makeCheckFilter(Color us);
 	void collectAttackInfoFrom(Color us,Square from,PieceType pt ,Bitboard moves);
 	void collectAttackInfoTo(Color us, Square from, PieceType pt = PAWN, bool appendTolist = false);
+	void appendAttacksToMoveList(Square from);
 
 	Bitboard inline check_filter(PieceType pt)
 	{

@@ -292,7 +292,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>gmock.lib;BoardParser.obj;represenation.obj;Bitboards.obj;FEN.obj;piecePlacement.obj;Zorbist.obj;MoveGen.obj</AdditionalDependencies>
+      <AdditionalDependencies>gmock.lib;BoardParser.obj;represenation.obj;Bitboards.obj;FEN.obj;piecePlacement.obj;Zorbist.obj;MoveGen.obj;MoveList.obj;ChachedMoveList.obj;SimpleMoveList.obj</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Build\InterMidDir\Engine\;$(SolutionDir)Dependencies\$(Platform)\boost\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
@@ -417,6 +417,7 @@
     <ClInclude Include="FEN_TEST.h" />
     <ClInclude Include="IncludeTests.h" />
     <ClInclude Include="RepresentationTests.h" />
+    <ClInclude Include="SinglyLLTests.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TestingTools.h" />
@@ -429,6 +430,7 @@
     <ClCompile Include="MoveGenTests.cpp" />
     <ClCompile Include="MoveListTests.cpp" />
     <ClCompile Include="RepresentationTests.cpp" />
+    <ClCompile Include="SinglyLLTests.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='UnitTests|Win32'">Create</PrecompiledHeader>

@@ -8,3 +8,5 @@
 #include "macros.h"
 #include "DoubleLinkedList.h"
 #include "DoubleLinkedListNode.h"
+#include "SLL.hpp"
+#include "tools.h"

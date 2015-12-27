@@ -259,7 +259,7 @@ namespace Checkmate {
 	enum Rank {
 		RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8, RANK_NB
 	};
-
+	
 
 	/// Score enum stores a middlegame and an endgame value in a single integer.
 	/// The least significant 16 bits are used to store the endgame value and
@@ -272,6 +272,7 @@ namespace Checkmate {
 		SCORE_ENSURE_INTEGER_SIZE_N = INT_MIN
 	};
 
+	
 	inline Score make_score(int mg, int eg) {
 		return Score((mg << 16) + eg);
 	}
@@ -291,24 +292,6 @@ namespace Checkmate {
 		return Value(eg.s);
 	}
 
-#define ENABLE_BASE_OPERATORS_ON(T)                             \
-inline T operator+(T d1, T d2) { return T(int(d1) + int(d2)); } \
-inline T operator-(T d1, T d2) { return T(int(d1) - int(d2)); } \
-inline T operator*(int i, T d) { return T(i * int(d)); }        \
-inline T operator*(T d, int i) { return T(int(d) * i); }        \
-inline T operator-(T d) { return T(-int(d)); }                  \
-inline T& operator+=(T& d1, T d2) { return d1 = d1 + d2; }      \
-inline T& operator-=(T& d1, T d2) { return d1 = d1 - d2; }      \
-inline T& operator*=(T& d, int i) { return d = T(int(d) * i); }
-
-#define ENABLE_FULL_OPERATORS_ON(T)                             \
-ENABLE_BASE_OPERATORS_ON(T)                                     \
-inline T& operator++(T& d) { return d = T(int(d) + 1); }        \
-inline T& operator--(T& d) { return d = T(int(d) - 1); }        \
-inline T operator/(T d, int i) { return T(int(d) / i); }        \
-inline int operator/(T d1, T d2) { return int(d1) / int(d2); }  \
-inline T& operator/=(T& d, int i) { return d = T(int(d) / i); }
-
 	ENABLE_FULL_OPERATORS_ON(Value)
 		ENABLE_FULL_OPERATORS_ON(PieceType)
 		ENABLE_FULL_OPERATORS_ON(Piece)
@@ -317,11 +300,9 @@ inline T& operator/=(T& d, int i) { return d = T(int(d) / i); }
 		ENABLE_FULL_OPERATORS_ON(Square)
 		ENABLE_FULL_OPERATORS_ON(File)
 		ENABLE_FULL_OPERATORS_ON(Rank)
-
 		ENABLE_BASE_OPERATORS_ON(Score)
 
-#undef ENABLE_FULL_OPERATORS_ON
-#undef ENABLE_BASE_OPERATORS_ON
+
 
 	/// Additional operators to add integers to a Value
 	inline Value operator+(Value v, int i) { return Value(int(v) + i); }

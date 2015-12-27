@@ -55,47 +55,48 @@ namespace Checkmate {
 	{
 		Square to = SQ_NONE; Color them = ~us;
 		MoveInfo& mi = *(new MoveInfo(us, from, pt, NORMAL, m_rep));
-		while (to = pop_lsb(m_moveGeninfo.pinned_from[us][from]), to != SQ_NONE)
+
+		Bitboard Checks = m_moveGeninfo.checker_from[us][from];
+		Bitboard Captures = m_moveGeninfo.attacks_from[us][from];
+		Bitboard pinned = m_moveGeninfo.pinned_from[us][from];
+		Bitboard attacks = m_moveGeninfo.attacks_from[us][from];
+		Bitboard xray = m_moveGeninfo.xray_from[us][from];
+		Bitboard blocker = m_moveGeninfo.blocker_from[us][from];
+
+		while (to = pop_lsb(pinned), to != SQ_NONE)
 		{
 			m_moveGeninfo.pinned_to[them][to] |= SquareBB[from];
 		}
 		
-		while (to = pop_lsb(m_moveGeninfo.checker_from[us][from]), to != SQ_NONE)
+		while (to = pop_lsb(Checks), to != SQ_NONE)
 		{
 			m_moveGeninfo.checker_to[them][to] |= SquareBB[from];
-			m_moveGeninfo.move_list = appendTolist && !m_moveGeninfo.is_pinned(us, from) ?
-				m_moveGeninfo.move_list->append(from, to, mi, m_rep.piece_on(to))
-				: m_moveGeninfo.move_list;
 		}
 
 		mi.movetype = CAPTURE;
-		while (to = pop_lsb(m_moveGeninfo.attacks_from[us][from]), to != SQ_NONE)
+		while (to = pop_lsb(attacks), to != SQ_NONE)
 		{
 			m_moveGeninfo.attacks_to[them][to] |= SquareBB[from];
-			//if piece is not pinned
-			m_moveGeninfo.move_list = appendTolist && !m_moveGeninfo.is_pinned(us,from)?
-				m_moveGeninfo.move_list->append(from, to, mi, m_rep.piece_on(to))
-				: m_moveGeninfo.move_list;
-			
 		}
 		mi.movetype = NORMAL;
 
-		while (to = pop_lsb(m_moveGeninfo.xray_from[us][from]), to != SQ_NONE)
+		while (to = pop_lsb(xray), to != SQ_NONE)
 		{
 			m_moveGeninfo.xray_to[them][to] |= SquareBB[from];
 		}
 
-		while (to = pop_lsb(m_moveGeninfo.blocker_from[us][from]), to != SQ_NONE)
+		while (to = pop_lsb(blocker), to != SQ_NONE)
 		{
 			m_moveGeninfo.blocker_to[them][to] |= SquareBB[from];
 		}
 		delete &mi;
 	}
-	
+
 	MoveGenInfo& MoveGen::generate_all(Color us)
 	{
 		Color them = ~us; 
-		m_moveGeninfo.move_list->clear();
+		m_moveGeninfo.OnGeneratingNewMoves(m_rep.state->lastMove);
+
 		//What can my enemy do?
 		switchColorUsTo(them); m_kingCheckfilter = ~0ULL;
 		generate_attacks(them);
@@ -115,7 +116,7 @@ namespace Checkmate {
 
 	MoveGenInfo& MoveGen::generate_normal(Color us)
 	{
-		MoveList* mvls = m_moveGeninfo.move_list;
+		MoveListBase* mvls = m_moveGeninfo.move_list;
 		MoveInfo* mi; Square from = SQ_NONE;
 		for (PieceType Pt = PAWN; Pt < PIECE_TYPE_NB; ++Pt)
 		{
@@ -125,9 +126,10 @@ namespace Checkmate {
 				{
 					mi->from = from;
 					mi->destionations = (moves_for(Pt, from, us, occupancy) & ~occupancy) & check_filter(Pt);
-					if (mi->destionations > 0)
+					if (mi->destionations != 0)
 					{
-						mvls = mvls << *mi;
+
+						mvls->Append(*mi);
 					}
 				}
 			}
@@ -148,21 +150,24 @@ namespace Checkmate {
 							 | SquareBB[relative_square(us, SQ_C1)]
 							 | SquareBB[relative_square(us, SQ_D1)];
 
-		MoveList* mvls = m_moveGeninfo.move_list;
+		MoveListBase* mvls = m_moveGeninfo.move_list;
 		MoveInfo* mi = new MoveInfo(us, SQ_NONE, KING, CASTLING, m_rep);
+
+		mi->from = kingsqr;
+		mi->destionations = 0ULL;
 
 		if ((castlerRights & WHITE_OO) > 0 && (kingSidebb & occupancy) == 0 
 			&& ((SquareBB[relative_square(us, SQ_G1)]) & check_filter(KING)) > 0)
 		{
-			mvls = mvls->append(kingsqr, relative_square(us, SQ_H1), *mi);
+			mi->destionations |= SquareBB[relative_square(us, SQ_H1)];
 		}
 
 		if ((castlerRights & WHITE_OOO) > 0 && (queenSidebb & occupancy) == 0 
 			&& ((SquareBB[relative_square(us, SQ_C1)]) & check_filter(KING)) > 0)
 		{
-			mvls = mvls->append(kingsqr, relative_square(us, SQ_A1), *mi);
+			mi->destionations |= SquareBB[relative_square(us, SQ_A1)];
 		}
-
+		mvls->Append(*mi);
 		delete mi;
 		m_moveGeninfo.move_list = mvls;
 		return m_moveGeninfo;
@@ -173,18 +178,19 @@ namespace Checkmate {
 		Square en = m_rep.enPassant; Color them = ~us;
 		if (en != SQ_NONE)
 		{
-			Square to = en + pawn_push(us); Square from = SQ_NONE;
+			Square from = SQ_NONE;
+			Square to = en + pawn_push(us); 
 			Bitboard moves = SquareBB[en];
-			MoveList* mvls = m_moveGeninfo.move_list;
+			MoveListBase* mvls = m_moveGeninfo.move_list;
 			moves = (shift_bb(moves, DELTA_W) | shift_bb(moves,DELTA_E)) & ourbb;
 			
 			while (from = pop_lsb(moves), from != SQ_NONE)
 			{
-				MoveInfo* mi = new MoveInfo(us, from, PAWN, ENPASSANT,m_rep);
-				mvls = mvls->append(from,to,*mi,m_rep.piece_on(en));
+				MoveInfo* mi = new MoveInfo(us, from, PAWN, MoveType::ENPASSANT,m_rep);
+				mi->destionations = SquareBB[to];
+				mvls->Append(*mi);
 				delete mi;
 			}
-			m_moveGeninfo.move_list = mvls; //just making sure
 		}
 		
 		return m_moveGeninfo;
@@ -195,7 +201,7 @@ namespace Checkmate {
 		Bitboard moves;
 		Square from = SQ_NONE; 
 		MoveInfo* mi;
-		MoveList* mvls = m_moveGeninfo.move_list;
+		MoveListBase* mvls = m_moveGeninfo.move_list;
 		for (int i = 0; i < 16 && (from = m_rep.pieceList[us][PAWN][i], from != SQ_NONE); i++)
 		{
 			moves = moves_for(PAWN, from, us, occupancy) & ~ourbb & check_filter(PAWN);
@@ -203,10 +209,10 @@ namespace Checkmate {
 			{
 				mi = new MoveInfo(us, from, moves, PAWN, PROMOTION,m_rep);
 				mi->promotion = QUEEN;
-				mvls = mvls << *mi; 
+				mvls->Append(*mi); 
 				mi->promotion = KNIGHT;
 				mi->destionations = moves;
-				mvls = mvls << *mi;
+				mvls->Append(*mi);
 				delete mi;
 			}
 		}
@@ -266,8 +272,30 @@ namespace Checkmate {
 					moves = moves_for(pt, from, us, occupancy);
 					collectAttackInfoFrom(us, from, pt, moves);
 					collectAttackInfoTo(us, from, pt, appendToList);
+					if(appendToList)
+					{
+						appendAttacksToMoveList(from);
+					}
 				}
 			}
+		}
+	}
+
+	void MoveGen::appendAttacksToMoveList(Square from)
+	{
+		Color us = color_of(m_rep.piece_on(from));
+		PieceType pt = type_of(m_rep.piece_on(from));
+		MoveListBase* mvls = m_moveGeninfo.move_list;
+		Bitboard Checks = m_moveGeninfo.checker_from[us][from];
+		Bitboard Captures = m_moveGeninfo.attacks_from[us][from];
+
+		if((Checks || Captures) && !m_moveGeninfo.is_pinned(us,from))
+		{
+			MoveInfo* mi = new MoveInfo(us, from, pt, NORMAL, m_rep);
+			mi->destionations = Checks | Captures;
+			mi->movetype = CAPTURE;
+			mvls->Append(*mi);
+			delete mi;
 		}
 	}
 

@@ -17,7 +17,7 @@ void performanceTest()
 	Represenation board(startFen);
 	
 	MoveGen movegen = MoveGen(board);
-	MoveList* mvlist;
+	MoveListBase* mvlist;
 
 	long long time = 0;
 	UINT64 count = 0;
@@ -25,6 +25,7 @@ void performanceTest()
 
 	const UINT64 stoppAt = 0xffffffffffffffffULL;
 	Color tomove = WHITE;
+	Move m = MOVE_NONE;
 	while (count < stoppAt)
 	{
 		
@@ -38,15 +39,14 @@ void performanceTest()
 
 		movegen.generate_all(tomove);
 		mvlist = movegen.m_moveGeninfo.move_list;
-		count += mvlist->index;
+		count += mvlist->length();
 		
-		while (mvlist->index > 0)
+		while (m = mvlist->getNextOrDefault(tomove), m != MOVE_NONE)
 		{
-			board.makeMove(mvlist->m);
-			mvlist = mvlist->node;
+			board.makeMove(m);
 			board.undoMove();
 		}
-		mvlist->clear();
+
 		tomove = ~tomove;
 		board.sideToMove = ~(board.sideToMove);
 	}
@@ -54,29 +54,26 @@ void performanceTest()
 }
 
 
-void ShowBoard(Color c)
+void ShowBoard(Color c, string fen)
 {
 	using namespace Checkmate; using namespace DataStructs; using namespace std;
-	string token, cmd;
-	string startFen =  c == WHITE ?"rnbqkbnr/P7/8/5PpP/8/4p3/4pP1P/RNBQK2R w KQkq G5 0 1" 
-							: "rnbqkbnr/P7/8/5PpP/4Q3/4p3/4pP1P/RNBQK2R b KQkq G5 0 1";
-	Represenation& board = *(new Represenation(startFen));
-
-	MoveList* mvlist = new MoveList();
+	Represenation& board = *(new Represenation(fen));
 	MoveGen& movgen = *(new MoveGen(board));
+	MoveListBase* mvlist = CreateNewMoveList();
+	string token, cmd;
+	Move m;
 
 	mvlist = movgen.generate_all(c).move_list;
 	
-	std::cout << "to move: " << (c == WHITE ? "WHITE" : "BLACK") << std::endl;
-
-	while(mvlist->index > 0)
+	while(m = mvlist->getNextOrDefault(c), m != MOVE_NONE)
 	{
-		board.makeMove(mvlist->m);
+		board.makeMove(m);
 		std::cout << board.to_string() << std::endl;
-		mvlist = mvlist->node;
+		std::cout << "to move: " << (c == WHITE ? "WHITE" : "BLACK") << std::endl;
 		board.undoMove();
 		getline(cin, cmd);
 	}
+	mvlist->ResetGetNext();
 
 }
 
@@ -87,10 +84,10 @@ int main(int argc, char* argv[]) {
 	string token, cmd;
 	Represenation board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 	
-	//performanceTest();
+	performanceTest();
 	
-	ShowBoard(BLACK);
-	ShowBoard(WHITE);
+	ShowBoard(BLACK, "rnbqkbnr/P7/8/5PpP/4Q3/4p3/4pP1P/RNBQK2R b KQkq G5 0 1");
+	ShowBoard(WHITE, "rnbqkbnr/P7/8/5PpP/8/4p3/4pP1P/RNBQK2R w KQkq G5 0 1");
 	
 	std::cout << board.to_string() << std::endl;
 	system("PAUSE");

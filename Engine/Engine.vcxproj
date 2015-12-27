@@ -370,6 +370,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\SimpleMoveList.cpp" />
+    <ClCompile Include="src\ChachedMoveList.cpp" />
     <ClCompile Include="src\MoveGen.cpp" />
     <ClCompile Include="src\board\Bitboards.cpp" />
     <ClCompile Include="src\board\piecePlacement.cpp" />
@@ -383,6 +385,8 @@
     <ClCompile Include="src\Zorbist.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Header\MoveList.h" />
+    <ClInclude Include="Header\MoveListBase.h" />
     <ClInclude Include="Header\BitBoards.h" />
     <ClInclude Include="Header\bitcount.h" />
     <ClInclude Include="Header\BoardParser.h" />
@@ -394,6 +398,7 @@
     <ClInclude Include="Header\main.h" />
     <ClInclude Include="Header\misc.h" />
     <ClInclude Include="Header\MoveGenInfo.hpp" />
+    <ClInclude Include="Header\MoveInfo.h" />
     <ClInclude Include="Header\piecePlacement.h" />
     <ClInclude Include="Header\platform.h" />
     <ClInclude Include="Header\represenation.h" />
@@ -401,8 +406,12 @@
     <ClInclude Include="Header\types.h" />
     <ClInclude Include="Header\UCI.h" />
     <ClInclude Include="Header\MoveGen.h" />
-    <ClInclude Include="Header\MoveList.hpp" />
+    <ClInclude Include="Header\ChachedMoveList.h" />
     <ClInclude Include="Header\Zorbist.h" />
+    <ClInclude Include="Header\SimpleMoveList.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Engine.ruleset" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

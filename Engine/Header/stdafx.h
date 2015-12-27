@@ -14,7 +14,9 @@
 	#include <iomanip>
 	#include <math.h>
 
+
 	#include "platform.h"
+	#include "EngineMacros.h"
 	#include "types.h"	
 	#include "CppBaseCode.h"
 	#include "misc.h"
@@ -23,7 +25,6 @@
 
 	//Project Refs
 	#include "LittleHelper.h"
-	#include "EngineMacros.h"
 	#include "piecePlacement.h"
 	#include "BitBoards.h"
 	
@@ -31,7 +32,12 @@
 	#include "FEN.h"
 	#include "represenation.h"
 		
-	#include "MoveList.hpp"
+	#include "MoveInfo.h"
+	#include "MoveListBase.h"
+	#include "ChachedMoveList.h"
+	#include "SimpleMoveList.h"
+	#include "MoveList.h"
+
 	#include "MoveGenInfo.hpp"	
 	#include "Zorbist.h"
 	#include "MoveGen.h"

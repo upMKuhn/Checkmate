@@ -22,7 +22,7 @@ struct MoveGenInfo
 			protectPieces[c] = 0ULL;
 			attackableSquares[c] = 0ULL;
 		}
-		move_list = new MoveList();
+		move_list = CreateNewMoveList();
 	}
 
 	inline bool is_pinned(Color us, Square s)
@@ -30,11 +30,15 @@ struct MoveGenInfo
 		return pinned_from[us][s] > 0;
 	}
 
-
+	inline void OnGeneratingNewMoves(Move m)
+	{
+		if (m != MOVE_NONE)
+			move_list->OnGeneratingNewMoves(m);
+	}
 
 
 	bool isCheck = false;
-	MoveList* move_list;
+	MoveListBase* move_list;
 
 	Bitboard protectPieces[NO_COLOR];
 	Bitboard attackableSquares[NO_COLOR];

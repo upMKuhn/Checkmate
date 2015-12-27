@@ -384,6 +384,8 @@
     <ClInclude Include="Header\macros.h" />
     <ClInclude Include="Header\DoubleLinkedListNode.h" />
     <ClInclude Include="Header\Stdafx.h" />
+    <ClInclude Include="Header\SLL.hpp" />
+    <ClInclude Include="Header\tools.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Stdafx.cpp" />
