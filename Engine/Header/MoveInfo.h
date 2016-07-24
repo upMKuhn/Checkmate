@@ -3,7 +3,7 @@
 
 namespace Checkmate {
 
-	struct MoveInfo
+	struct Engine_API MoveInfo
 	{
 
 		MoveInfo(Color Us, Square from, PieceType mving_pt, MoveType movetype, Represenation& refRep)

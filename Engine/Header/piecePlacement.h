@@ -7,7 +7,7 @@ namespace Checkmate {
 	/// The Purpose of the PiecePlacement is a 
 	/// instruction structure, to position pieces. 
 	/// </summary>
-	struct PiecePlacement
+	struct Engine_API PiecePlacement
 	{
 		Square position = SQ_NONE;
 		Piece piece = NO_PIECE;
@@ -21,7 +21,7 @@ namespace Checkmate {
 
 		inline PiecePlacement* append()
 		{
-			
+			return new PiecePlacement();
 		}
 
 		bool isValid() {

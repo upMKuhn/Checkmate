@@ -23,6 +23,7 @@ namespace Checkmate {
 
 #ifndef PLATFORM_H_INCLUDED
 #define PLATFORM_H_INCLUDED
+#define MegaByte(x) (x * 1024 * 1024);
 
 #ifdef _MSC_VER
 
@@ -120,5 +121,15 @@ namespace Checkmate {
 #endif
 
 #endif // #ifndef PLATFORM_H_INCLUDED
+	template<typename T>
+	inline T max_limit(T val, T max, T thedefault)
+	{
+		return val > max ? thedefault : val;
+	}
 
+	template<typename T>
+	inline T min_limit(T val, T min, T thedefault)
+	{
+		return val < min ? thedefault : val;
+	}
 }

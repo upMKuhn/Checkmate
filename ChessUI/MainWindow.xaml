@@ -6,29 +6,37 @@
         xmlns:local="clr-namespace:ChessUI"
         mc:Ignorable="d"
         xmlns:view="clr-namespace:ChessUI.View"
+        xmlns:acb="clr-namespace:AttachedCommandBehavior;assembly=AttachedCommandBehavior"
         xmlns:viewmodel="clr-namespace:ChessUI.ViewModel"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="350" Width="525" Closing="Window_Closing">
     <Window.Resources>
         <DataTemplate DataType="{x:Type viewmodel:ChessBoardViewModel}">
             <view:Board/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewmodel:ConsoleViewModel}">
+            <view:Console/>
+        </DataTemplate>
     </Window.Resources>
     <Grid Margin="4">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="25*"/>
-            <ColumnDefinition Width="75*"/>
+            <ColumnDefinition Width="50*"/>
+            <ColumnDefinition Width="20*"/>
         </Grid.ColumnDefinitions>
-        
-        <Border Grid.Column="2" Background="GhostWhite" BorderBrush="LightGray" BorderThickness="1" CornerRadius="5" >
-
-            <ItemsControl ItemsSource="{Binding ViewModels}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Margin="-1,-1,1,1">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <UniformGrid Rows="1"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80*"/>
+            <RowDefinition Height="25*"/>
+        </Grid.RowDefinitions>
+        <!--BOARD-->
+        <Border Background="GhostWhite" BorderBrush="LightGray" BorderThickness="1" CornerRadius="5" Grid.Row="0">
+            <view:Board DataContext="{Binding Chessboard}" HorizontalAlignment="Stretch"/>
         </Border>
-        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Height="1" Margin="41,21,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="34"/>
+        <view:Console DataContext="{Binding Console}" Grid.Row="1"/>
+        <Border Grid.Row="0"  Grid.Column="1" Background="GhostWhite" Margin="5,0,0,0" BorderThickness="1">
+            <UniformGrid >
+                <Button  Style="{StaticResource PanelMenuButton}" Content="Reset"  Command="{Binding ResetBoard}" DataContext="{Binding Chessboard}"/>
+                <Button  Style="{StaticResource PanelMenuButton}" Content="Engine Output" Command="{Binding ToggleSingletonDebugWindow}"/>
+                <Button  Style="{StaticResource PanelMenuButton}" Content="Undo" Command="{Binding UndoMove}" DataContext="{Binding Chessboard}"/>
+            </UniformGrid>
+        </Border>
     </Grid>
 </Window>

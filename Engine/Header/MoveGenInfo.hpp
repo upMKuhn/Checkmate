@@ -3,26 +3,29 @@
 
 namespace Checkmate{
 
-struct MoveGenInfo
+struct Engine_API MoveGenInfo
 {
 	MoveGenInfo()
 	{
-		for (Color c = WHITE; c < NO_COLOR; ++c)
-		{
-			std::fill_n(pinned_from[c], SQUARE_NB, 0ULL);
-			std::fill_n(attacks_from[c], SQUARE_NB, 0ULL);
-			std::fill_n(xray_from[c], SQUARE_NB, 0ULL);
-			std::fill_n(checker_from[c], SQUARE_NB, 0ULL);
+		memset(pinned_from, 0ULL, 64 * sizeof(Bitboard) * 2);
+		memset(attacks_from, 0ULL, 64 * sizeof(Bitboard) * 2);
+		memset(xray_from, 0ULL, 64 * sizeof(Bitboard) * 2);
+		memset(checker_from, 0ULL, 64 * sizeof(Bitboard) * 2);
 
-			std::fill_n(pinned_to[c], SQUARE_NB, 0ULL);
-			std::fill_n(attacks_to[c], SQUARE_NB, 0ULL);
-			std::fill_n(xray_to[c], SQUARE_NB, 0ULL);
-			std::fill_n(checker_to[c], SQUARE_NB, 0ULL);
+		memset(pinned_to, 0ULL, 64 * sizeof(Bitboard) * 2);
+		memset(attacks_to, 0ULL, 64 * sizeof(Bitboard) * 2);
+		memset(xray_to, 0ULL, 64 * sizeof(Bitboard) * 2);
+		memset(checker_to, 0ULL, 64 * sizeof(Bitboard) * 2);
+		memset(attackableSquares, 0ULL, 65 * sizeof(Bitboard) * 2);
 
-			protectPieces[c] = 0ULL;
-			attackableSquares[c] = 0ULL;
-		}
-		move_list = CreateNewMoveList();
+		protectPieces[WHITE] = 0ULL;
+		protectPieces[BLACK] = 0ULL;
+		move_list = new SimpleMoveList();
+	}
+
+	~MoveGenInfo()
+	{
+		SAFE_DELETE(move_list);
 	}
 
 	inline bool is_pinned(Color us, Square s)
@@ -32,8 +35,19 @@ struct MoveGenInfo
 
 	inline void OnGeneratingNewMoves(Move m)
 	{
-		if (m != MOVE_NONE)
-			move_list->OnGeneratingNewMoves(m);
+		memset(pinned_from, 0ULL, 64 * sizeof(Bitboard) * 2);
+		memset(attacks_from, 0ULL, 64 * sizeof(Bitboard) * 2);
+		memset(xray_from, 0ULL, 64 * sizeof(Bitboard) * 2);
+		memset(checker_from, 0ULL, 64 * sizeof(Bitboard) * 2);
+
+		memset(pinned_to, 0ULL, 64 * sizeof(Bitboard) * 2);
+		memset(attacks_to, 0ULL, 64 * sizeof(Bitboard) * 2);
+		memset(xray_to, 0ULL, 64 * sizeof(Bitboard) * 2);
+		memset(checker_to, 0ULL, 64 * sizeof(Bitboard) * 2);
+		memset(attackableSquares, 0ULL, 65 * sizeof(Bitboard) * 2);
+
+		protectPieces[WHITE] = 0ULL;
+		protectPieces[BLACK] = 0ULL;
 	}
 
 
@@ -41,7 +55,7 @@ struct MoveGenInfo
 	MoveListBase* move_list;
 
 	Bitboard protectPieces[NO_COLOR];
-	Bitboard attackableSquares[NO_COLOR];
+	Bitboard attackableSquares[NO_COLOR][SQUARE_NB+1];
 
 	//Usefull information collected through out!
 	Bitboard pinned_from[NO_COLOR][SQUARE_NB];

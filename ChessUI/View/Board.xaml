@@ -3,8 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:view="clr-namespace:ChessUI.View"
-             xmlns:viewmodel="clr-namespace:ChessUI.ViewModel"
              xmlns:local="clr-namespace:ChessUI.View"
              xmlns:project="clr-namespace:ChessUI"
              xmlns:acb="clr-namespace:AttachedCommandBehavior;assembly=AttachedCommandBehavior"

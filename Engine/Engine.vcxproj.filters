@@ -1,135 +1,215 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Engine\Evaluation">
+      <UniqueIdentifier>{39736d25-5242-41ac-a26c-733270d23dc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Board">
+      <UniqueIdentifier>{5137619b-6417-4ac6-b8e1-1c646a62836c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\data">
+      <UniqueIdentifier>{330f84d0-9dbb-45eb-b6b3-6f2767c0e847}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Parsing">
+      <UniqueIdentifier>{2019dcc6-a639-48a8-9b16-3965c32914f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\MoveGen">
+      <UniqueIdentifier>{c949b631-f5b1-4634-aaa6-6d1a8ad256b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Common">
+      <UniqueIdentifier>{d9c33249-0de9-4b33-9a22-58a49232c3af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\math">
+      <UniqueIdentifier>{979cbd60-4d85-453a-841a-a699139adbc3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\UCI">
+      <UniqueIdentifier>{c038c2e0-485b-45d5-8b39-c1727a9a7c81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Search">
+      <UniqueIdentifier>{893980f3-409e-4115-b684-6dcfd3fa5fe9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Search\TranspositionTable">
+      <UniqueIdentifier>{824c780f-3072-40a4-a070-c80cfdd3e320}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Zorbist.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
     <ClCompile Include="src\board\Bitboards.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\board\piecePlacement.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\board\represenation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\util\FEN.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\main.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Engine\data</Filter>
     </ClCompile>
     <ClCompile Include="src\util\BoardParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\LittleHelper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\UCI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MoveGen.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Zorbist.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\tools.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ChachedMoveList.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Engine\Parsing</Filter>
     </ClCompile>
     <ClCompile Include="src\SimpleMoveList.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Engine\MoveGen</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Header\BitBoards.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\FEN.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\main.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\piecePlacement.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\platform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\represenation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\types.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\Engine_inc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\BoardParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\LittleHelper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\EngineMacros.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\UCI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\MoveGen.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\Logger.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\misc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\bitcount.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\Zorbist.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\MoveGenInfo.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\MoveInfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\MoveListBase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\ChachedMoveList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\SimpleMoveList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\MoveList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClCompile Include="src\ChachedMoveList.cpp">
+      <Filter>Engine\MoveGen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\FEN.cpp">
+      <Filter>Engine\Parsing</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LittleHelper.cpp">
+      <Filter>Engine\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Engine\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MidGameEvaluation.cpp">
+      <Filter>Engine\Evaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MoveGen.cpp">
+      <Filter>Engine\MoveGen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\board\piecePlacement.cpp">
+      <Filter>Engine\data</Filter>
+    </ClCompile>
+    <ClCompile Include="src\board\represenation.cpp">
+      <Filter>Engine\data</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tools.cpp">
+      <Filter>Engine\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UCI.cpp">
+      <Filter>Engine\UCI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Evaluation.cpp">
+      <Filter>Engine\Evaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BaseEvaluation.cpp">
+      <Filter>Engine\Evaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EarlyEvaluation.cpp">
+      <Filter>Engine\Evaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HashedStates.cpp">
+      <Filter>Engine\Search\TranspositionTable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SearchBase.cpp">
+      <Filter>Engine\Search</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PrincipleVariationSearch.cpp">
+      <Filter>Engine\Search</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Engine.ruleset" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Header\bitcount.h">
+      <Filter>Engine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\FEN.h">
+      <Filter>Engine\Parsing</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\BoardParser.h">
+      <Filter>Engine\Parsing</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\BitBoards.h">
+      <Filter>Engine\data</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\types.h">
+      <Filter>Engine\data</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\piecePlacement.h">
+      <Filter>Engine\data</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\represenation.h">
+      <Filter>Engine\data</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\LittleHelper.h">
+      <Filter>Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\main.h">
+      <Filter>Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Engine_inc.h">
+      <Filter>Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\EngineMacros.h">
+      <Filter>Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Logger.h">
+      <Filter>Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\platform.h">
+      <Filter>Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\misc.h">
+      <Filter>Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\MidGameEvaluation.h">
+      <Filter>Engine\Evaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\MoveGen.h">
+      <Filter>Engine\MoveGen</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\ChachedMoveList.h">
+      <Filter>Engine\MoveGen</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\MoveGenInfo.hpp">
+      <Filter>Engine\MoveGen</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\MoveList.h">
+      <Filter>Engine\MoveGen</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\MoveInfo.h">
+      <Filter>Engine\MoveGen</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\SimpleMoveList.h">
+      <Filter>Engine\MoveGen</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\MoveListBase.h">
+      <Filter>Engine\MoveGen</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Zorbist.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\UCI.h">
+      <Filter>Engine\UCI</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Evaluation.h">
+      <Filter>Engine\Evaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\BaseEvaluation.h">
+      <Filter>Engine\Evaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\EarlyEvaluation.h">
+      <Filter>Engine\Evaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="Header\stdafx.h">
+      <Filter>Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\HashedStates.h">
+      <Filter>Engine\Search\TranspositionTable</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Transposition.h">
+      <Filter>Engine\Search\TranspositionTable</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\CustomList.h">
+      <Filter>Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\SearchBase.h">
+      <Filter>Engine\Search</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\PrincipleVariationSearch.h">
+      <Filter>Engine\Search</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Engine.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

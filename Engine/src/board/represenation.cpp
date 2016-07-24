@@ -26,20 +26,21 @@ namespace Checkmate {
 
 	Represenation::~Represenation()
 	{		
+		ClearSavedStates();
+		delete state;
 	}
 
 	void Represenation::init()
 	{
-
+		state = new BoardState();
 		sideToMove = WHITE;
 		enPassant = SQUARE_NB;
 		castlingRights = 0;
 		moveClock = 0;
-		state = new BoardState();
-		::std::fill_n(typebb, PIECE_NB, NO_PIECE);
-		::std::fill_n(board, SQUARE_NB, NO_PIECE);
-		::std::fill_n(colorbb, COLOR_NB, NO_PIECE);
-		::std::fill_n(index, SQUARE_NB, PIECE_NB);
+		fill_n(typebb, 16, NO_PIECE);
+		fill_n(board, 64, NO_PIECE);
+		fill_n(colorbb, 2, 0);
+		fill_n(index, 64, 15);
 
 		for (Color c = WHITE; c < NO_COLOR; ++c)
 		{
@@ -60,24 +61,22 @@ namespace Checkmate {
 		PiecePlacement *instruct;
 		init();
 		fen.nextInstruction(instruct);
-		while (instruct != NULL)
+		while (instruct != NULL && instruct->piece != NO_PIECE && instruct->position != SQ_NONE)
 		{
-			if (instruct->piece != NO_PIECE && instruct->position != SQ_NONE) {
-				put_piece(instruct->position, instruct->piece);
-				fen.nextInstruction(instruct);
-			}
+			put_piece(instruct->position, instruct->piece);
+			fen.nextInstruction(instruct);
 		}
 
 		sideToMove = fen.sideToMove;
 		castlingRights = fen.castlingRights;
 		moveClock = fen.FullMoveClock * 2 + fen.halfMoveClock;
 		enPassant = fen.enPassant;
+		ClearSavedStates();
 		makeNextState(MOVE_NONE, NO_PIECE_TYPE);
 	}
 
 	string Represenation::boardToFEN()
 	{
-		CHECKS_ENABLED(assert(areAllBoardsOk()));
 		int jumpFiles = 0; std::string fen = "";
 		char charPieceTypes[] = {'!', 'p', 'n', 'b', 'r', 'q', 'k' };
 		for (Rank r = RANK_8; r >= RANK_1; --r)
@@ -206,9 +205,10 @@ namespace Checkmate {
 
 		if(movingPiece == ROOK)
 		{
-			CastlingRight cr = (CastlingRight)((relative_file(WHITE, from) == FILE_A ? WHITE_OOO
-				: relative_file(WHITE, from) == FILE_H ? WHITE_OO : CASTLING_SIDE_NB) << (2 * us)) ;
-			revoke_castling(us, cr);
+			if (piece_on(relative_square(us, SQ_H8)) != make_piece(us, ROOK))
+				revoke_castling(us, WHITE_OO);
+			if (piece_on(relative_square(us, SQ_A8)) != make_piece(us, ROOK))
+				revoke_castling(us, WHITE_OOO);
 		}else if(movingPiece == KING)
 		{
 			revoke_castling(us);
@@ -228,8 +228,9 @@ namespace Checkmate {
 
 		makeNextState(mv, capture);
 		sideToMove = ~sideToMove;
-
 		CHECKS_ENABLED(assert(state->zorbist != state->next->zorbist));
+		CHECKS_ENABLED(assert(is_board_ok()));
+
 
 		return false;
 	}
@@ -287,9 +288,11 @@ namespace Checkmate {
 		moveClock = oldState->moveClock;
 
 		CHECKS_ENABLED(assert(Zorbist::make_zorbist(this) == oldState->zorbist));
+		CHECKS_ENABLED(assert(is_board_ok()));
 
 		BoardState* bs = state;
 		state = oldState;
+		Zorbist = state->zorbist;
 		delete bs;
 		
 	}
@@ -299,12 +302,12 @@ namespace Checkmate {
 		Bitboard from_to_bb = SquareBB[from] | SquareBB[to];
 		Piece p = make_piece(c, pt);
 
-		typebb[pt] ^= from_to_bb;
+		typebb[p] ^= from_to_bb;
 		typebb[ALL_PIECES] ^= from_to_bb;
 		colorbb[c] ^= from_to_bb;
 		pieceList[c][pt][index[from]] = to;
 		index[to] = index[from];
-		index[from] = PIECE_NB;
+		index[from] = 15;
 
 		board[from] = NO_PIECE;
 		board[to] = p;
@@ -319,7 +322,7 @@ namespace Checkmate {
 	{
 		assert(Checkmate::is_ok(sq));
 		Piece pc = make_piece(c, pt);
-		typebb[pt] |= SquareBB[sq];
+		typebb[pc] |= SquareBB[sq];
 		typebb[ALL_PIECES] |= SquareBB[sq];
 		colorbb[c] |= SquareBB[sq];
 		board[sq] = pc;
@@ -329,6 +332,7 @@ namespace Checkmate {
 		++pieceCount[c][ALL_PIECES];
 	}
 
+
 	inline void Represenation::remove_piece(Square sq, Color c, PieceType pt)
 	{
 		assert(Checkmate::is_ok(sq));
@@ -336,20 +340,20 @@ namespace Checkmate {
 		{
 			int listIndex = index[sq];
 			int lastIndex = --pieceCount[c][pt];
-			typebb[pt] ^= SquareBB[sq];
+			typebb[make_piece(c,pt)] ^= SquareBB[sq];
 			typebb[ALL_PIECES] ^= SquareBB[sq];
 			colorbb[c] ^= SquareBB[sq];
 			board[sq] = NO_PIECE;
-			index[sq] = PIECE_NB;
+			index[sq] = 15;
 			//Replace Piece to be removed with last
 			pieceList[c][pt][listIndex] = pieceList[c][pt][lastIndex];
 			pieceList[c][pt][lastIndex] = SQ_NONE;
+			index[pieceList[c][pt][listIndex]] = listIndex;
 			--pieceCount[c][ALL_PIECES];
 		}
-
+		CHECKS_ENABLED(assert(is_board_ok()));
 	}
 
-#pragma region DebugInfo
 
 	/// <summary>
 	/// A State is a compact representation of the state 
@@ -372,32 +376,37 @@ namespace Checkmate {
 		state->sideToMove = sideToMove;
 		state->next = oldState;
 		state->stateIndex = oldState->stateIndex + 1;
-		
-
+		Zorbist = state->zorbist;
 	}
+
+	void Represenation::ClearSavedStates()
+	{
+		BoardState* stateAt = state; BoardState* next = nullptr;
+		while (state->stateIndex != 0)
+		{
+			next = state->next;
+			delete state;
+		}
+	}
+
+#pragma region DebugInfo
 
 	/// <summary>
 	/// Is_ok check if all variables hold acceptable data
 	/// in this class
 	/// </summary>
 	/// <returns>result</returns>
-	bool Represenation::areAllBoardsOk()
+	bool Represenation::is_board_ok()
 	{
 		bool test = true;
 		Bitboard allPieces = 0;
 		Bitboard Whitebb = colorbb[WHITE], Blackbb = colorbb[BLACK];
 
-		allPieces = allPieces | typebb[PAWN];
-		allPieces = allPieces | typebb[KNIGHT];
-		allPieces = allPieces | typebb[BISHOP];
-		allPieces = allPieces | typebb[ROOK];
-		allPieces = allPieces | typebb[QUEEN];
-		allPieces = allPieces | typebb[KING];
+		for (Piece p = W_PAWN; p < PIECE_NB; ++p)
+			allPieces |= typebb[p];
 
-		allPieces ^= Whitebb;
-		allPieces ^= Blackbb;
-
-		test &= allPieces == 0;
+		test &= (Whitebb | Blackbb) == allPieces;
+		test &= typebb[ALL_PIECES] == allPieces;
 
 		Square sqr = SQ_A1;
 		for each (Piece piece in board)
@@ -407,18 +416,72 @@ namespace Checkmate {
 				Color c = color_of(piece);
 				PieceType pt = type_of(piece);
 				Bitboard bb = board_for(piece);
-				test &= (bb & (1ULL << sqr)) > 0;
+				test &= (bb & SquareBB[sqr]) > 0;
 				test &= pieceList[c][pt][index[sqr]] == sqr;
 			}
 			++sqr;
 		}
 
-		return test;
+		
 
+		test = test && is_ok_Board_Index_PieceList();
+
+		if (!test)
+			std::cout << to_string() << endl;
+
+		return test;
 	}
+
+	bool Represenation::is_ok_Board_Index_PieceList()
+	{
+		bool all_ok = true;
+		const int INDEX_END = 256 , const DEFAULT = -1, const EMPTY_INDEX = PIECE_NB;
+		int indexCheck[INDEX_END];
+		fill_n(indexCheck, INDEX_END, DEFAULT);
+
+
+		for (Square atSqr = SQ_A1; atSqr < SQUARE_NB; ++atSqr)
+		{
+			bool ok = true;
+			int oldEntry = indexCheck[index[atSqr]];
+			PieceType pt = type_of(board[atSqr]);
+			Color c = color_of(board[atSqr]); 
+			int pieceListEntry = pieceList[c][pt][index[atSqr]];
+			int indexInIndexCheck = max(c, WHITE) * (256/2);
+			indexInIndexCheck += (pt - 1) * 16;
+			indexInIndexCheck += index[atSqr];
+
+
+			//CONDITIONS
+			if (pt == NO_PIECE_TYPE)
+				ok &= index[atSqr] == 15;
+			else
+			{
+				ok &= indexCheck[indexInIndexCheck] == DEFAULT; //No duplicate index references
+				ok &= pieceList[c][pt][index[atSqr]] == atSqr;
+				ok &= piece_on(atSqr) == make_piece(c, pt);
+				indexCheck[indexInIndexCheck] = index[atSqr];
+			}
+ 			all_ok &= ok;
+
+		}
+		return all_ok;
+	}
+
+#define AssertMove(test, move) {									\
+		if (test == false)											\
+		{															\
+			std::cout << "Is board ok? " << is_board_ok() << endl;	\
+			std::cout << to_string() << endl;						\
+			std::cout << move_tostring(move) << endl;				\
+			assert(false);											\
+		}															\
+	}																\
+
 
 	void Represenation::checkMove(Move mv)
 	{
+		
 		Square from = from_sq(mv);
 		Square to = to_sq(mv);
 		PieceType movingPiece = moving_type(mv);
@@ -428,27 +491,28 @@ namespace Checkmate {
 		Color us = sideToMove;
 		Color them = ~us;
 
+		AssertMove(piece_on(from) == make_piece(us, movingPiece), mv)
 
-		assert(is_ok(mv));
-		assert((piece_on(from) == make_piece(us, movingPiece)));
+		
+		
 
 		if (mvtype == NORMAL || mvtype == PROMOTION)
 		{
 			//NORMAL && PROMOTION CHECK
-			assert((piece_on(to) == make_piece(them, capture)));
+			AssertMove((piece_on(to) == make_piece(them, capture)), mv);
 		}
 		
 		if(mvtype == CASTLING)
 		{
-			assert((piece_on(to) == make_piece(us, ROOK)));
+			AssertMove((piece_on(to) == make_piece(us, ROOK)), mv);
 		}
 		else if(mvtype == ENPASSANT)
 		{
-			assert(piece_on(enPassant) == make_piece(them, PAWN));
+			AssertMove(piece_on(enPassant) == make_piece(them, PAWN), mv);
 		}
 		else if(mvtype == PROMOTION)
 		{
-			assert(NO_PIECE_TYPE < promotion_type(mv)  && promotion_type(mv) < PIECE_TYPE_NB);
+			AssertMove(NO_PIECE_TYPE < promotion_type(mv)  && promotion_type(mv) < PIECE_TYPE_NB, mv);
 		}
 	}
 	
@@ -458,87 +522,26 @@ namespace Checkmate {
 		return os;
 	}
 
-	string square_toString(Square s)
-	{
-		string st = string();
-		st += file_tochar(file_of(s));
-		st += '0' + rank_of(s)+1;
-		return st;
-	}
-
-	string movetype_tostring(Move m)
-	{
-		string st = string();
-		switch(type_of(m))
-		{
-		case NORMAL:
-			st = "NORMAL";
-			break;
-		case PROMOTION:
-			st = "PROMOTION";
-			break;
-		case CAPTURE:
-			st = "CAPTURE";
-			break;
-		case CASTLING:
-			st = "CASTELING";
-			break;
-		case ENPASSANT:
-			st = "ENPASSANT";
-			break;
-		default:
-			st = "UNDEFINED!";
-			break;
-		}
-		return st;
-	}
-
-	string move_tostring(Move m)
-	{
-		string st = string();
-		st += "Type: " + movetype_tostring(m) + "\n";
-		st += "From: " + square_toString(from_sq(m)) + "\n";
-		st += "To: " + square_toString(to_sq(m)) + "\n";
-
-		Piece capture = make_piece(WHITE, capture_type(m));
-		Piece promotion = make_piece(WHITE, promotion_type(m));
-
-		if(capture != NO_PIECE)
-		{
-			st += "Capture Type: ";
-			st += piece_tochar(capture);
-			st += "\n";
-		}
-
-		if (promotion != NO_PIECE)
-		{
-			st += "Promotion Type: ";
-			st += piece_tochar(promotion);
-			st += "\n";
-		}
-
-		return st;
-	}
-
 	string Represenation::to_string() {
 
-		string os = "\n +---+---+---+---+---+---+---+---+\n";
+		std::string str = "\n +---+---+---+---+---+---+---+---+\n";
 
 		for (Rank r = RANK_8; r >= RANK_1; --r)
 		{
 			for (File f = FILE_A; f <= FILE_H; ++f)
 			{
-				os += " | ";
-				os += piece_tochar(piece_on(make_square(f, r)));
+				str.append(" | ");
+				str += piece_tochar(piece_on(make_square(f, r)));
 			}
 			
-			os += " |\n +---+---+---+---+---+---+---+---+\n";
+			str += " |\n +---+---+---+---+---+---+---+---+\n";
 
 
 		}
-		os += lastMove_tostring();
-		os += "\n\nKey: " + std::to_string(Zorbist::make_zorbist(this)) + "\n";
-		return os;
+		str += lastMove_tostring();
+		str += "\nFEN: " + boardToFEN() + "\n"; 
+		str += "Key: " + std::to_string(Zorbist::make_zorbist(this)) + "\n";
+		return str;
 	}
 
 	string Represenation::lastMove_tostring()
@@ -553,5 +556,6 @@ namespace Checkmate {
 
 
 #pragma endregion
+
 
 }

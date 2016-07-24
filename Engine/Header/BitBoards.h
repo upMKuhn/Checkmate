@@ -164,7 +164,7 @@ namespace Checkmate {
 			inline Bitboard pawn_moves(Square sqr, Color c, Bitboard occupancy)
 			{
 				Bitboard b = shift_bb(SquareBB[sqr], pawn_push(c)) & ~occupancy;
-				return pawn_canjump(c, sqr) ? (b & ~occupancy) | shift_bb(SquareBB[sqr], pawn_push(c) * 2) : b;
+				return pawn_canjump(c, sqr, occupancy) ? (b  | shift_bb(SquareBB[sqr], pawn_push(c) * 2)) & ~occupancy : b;
 			}
 
 			inline Bitboard sliding_attack(Square square, Square delta[], int len, Bitboard occupency)
@@ -191,6 +191,21 @@ namespace Checkmate {
 		inline Bitboard moves_for(PieceType Pt,Square from, Color us, Bitboard occupied)
 		{
 			using namespace Bitboards;
+
+			switch (Pt)
+			{
+				case PAWN:
+					return (stepAttacks[make_piece(us, Pt)][from] & occupied) | pawn_moves(from, us, occupied);
+				case ROOK:
+					return RookAttack[from][magic_index<ROOK>(from, occupied)];
+				case BISHOP:
+					return BishopAttack[from][magic_index<BISHOP>(from, occupied)];
+				case QUEEN:
+					return moves_for(ROOK, from, us, occupied) | moves_for(BISHOP, from, us, occupied);
+				default:
+					return stepAttacks[make_piece(us, Pt)][from];
+			}
+
 			return Pt == ROOK ? RookAttack[from][magic_index<ROOK>(from, occupied)]
 				: Pt == BISHOP ? BishopAttack[from][magic_index<BISHOP>(from, occupied)]
 				: Pt == QUEEN ? moves_for(ROOK,from, us, occupied) | moves_for(BISHOP,from, us, occupied)
@@ -206,8 +221,11 @@ namespace Checkmate {
 
 		namespace Bitboards {
 			void init();
+			void PopPawnIsland(Bitboard& bb, Square at);
+			void initPawnPositions();
 			void initAttacks();
 			const std::string print(Bitboard b);
+					
 		}
 
 		

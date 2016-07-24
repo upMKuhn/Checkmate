@@ -3,12 +3,14 @@
 
 namespace Checkmate {
 
-	MoveGen::MoveGen(const Represenation& rep)
-	: m_rep(*(new Represenation(rep))), m_moveGeninfo(*(new MoveGenInfo())){}
-
-	void MoveGen::resetLookups()
+	MoveGen::MoveGen(Represenation& rep)
+	: m_rep(rep)
 	{
-		
+	}
+
+	MoveGen::~MoveGen()
+	{
+		SAFE_DELETE(m_moveGeninfo);
 	}
 
 	/// <summary>
@@ -18,11 +20,14 @@ namespace Checkmate {
 	/// <param name="from">From square.</param>
 	/// <param name="pt">The piecetype.</param>
 	/// <param name="moves">Bitboard moves.</param>
-	void MoveGen::collectAttackInfoFrom(Color us, Square from, PieceType pt, Bitboard moves)
+	void MoveGen::collectAttackInfoFrom(MoveInfo& mi)
 	{
-		Color them = ~us;
+		PieceType pt = mi.movingPt;
+		Square from = mi.from;
+		Color them = ~mi.Us; Color us = mi.Us;
 		Bitboard xray, pinned,blocker, attacks,check = 0ULL;
 		Bitboard kingbb =  1ULL << m_rep.king_sqr(them);
+		Bitboard moves = mi.destionations;
 		attacks = moves & enemybb;
 		check = attacks  & kingbb;
 
@@ -33,14 +38,16 @@ namespace Checkmate {
 			blocker = (xray & enemybb) & ~pinned;
 			xray &= enemybb;
 			
-			m_moveGeninfo.xray_from[us][from] = xray & check_filter(pt);
-			m_moveGeninfo.pinned_from[us][from] = pinned & check_filter(pt);
-			m_moveGeninfo.blocker_from[us][from] = blocker & check_filter(pt);
+			getMoveGenInfo().xray_from[us][from] = xray & check_filter(pt);
+			getMoveGenInfo().pinned_from[us][from] = pinned & check_filter(pt);
+			getMoveGenInfo().blocker_from[us][from] = blocker & check_filter(pt);
 		}
-		m_moveGeninfo.attackableSquares[us] |=  pt != PAWN ? moves : moves_for(PAWN,from,us,~0ULL);
-		m_moveGeninfo.protectPieces[us] |= (moves & ourbb) & check_filter(pt);
-		m_moveGeninfo.attacks_from[us][from] = attacks & check_filter(pt);
-		m_moveGeninfo.checker_from[us][from] = check & check_filter(pt);
+		getMoveGenInfo().attackableSquares[us][from] =  pt != PAWN 
+			? moves : moves_for(PAWN,from,us,~0ULL);
+		getMoveGenInfo().attackableSquares[us][SQUARE_NB] |= getMoveGenInfo().attackableSquares[us][from];
+		getMoveGenInfo().protectPieces[us] |= (moves & ourbb) & check_filter(pt);
+		getMoveGenInfo().attacks_from[us][from] = attacks & check_filter(pt);
+		getMoveGenInfo().checker_from[us][from] = check & check_filter(pt);
 		
 	}
 	
@@ -51,52 +58,53 @@ namespace Checkmate {
 	/// <param name="from">from square</param>
 	/// <param name="pt">The piece type has to be supplied if append to list && (Set append to list true)</param>
 	/// <param name="appendTolist">(Default false)if set to <c>true</c> [append tolist].</param>
-	void MoveGen::collectAttackInfoTo(Color us, Square from, PieceType pt, bool appendTolist)
+	void MoveGen::collectAttackInfoTo(MoveInfo& mi)
 	{
-		Square to = SQ_NONE; Color them = ~us;
-		MoveInfo& mi = *(new MoveInfo(us, from, pt, NORMAL, m_rep));
+		Square from = mi.from;
+		Square to = SQ_NONE; Color us = mi.Us; Color them = ~us;
 
-		Bitboard Checks = m_moveGeninfo.checker_from[us][from];
-		Bitboard Captures = m_moveGeninfo.attacks_from[us][from];
-		Bitboard pinned = m_moveGeninfo.pinned_from[us][from];
-		Bitboard attacks = m_moveGeninfo.attacks_from[us][from];
-		Bitboard xray = m_moveGeninfo.xray_from[us][from];
-		Bitboard blocker = m_moveGeninfo.blocker_from[us][from];
+		Bitboard Checks = getMoveGenInfo().checker_from[us][from];
+		Bitboard Captures = getMoveGenInfo().attacks_from[us][from];
+		Bitboard pinned = getMoveGenInfo().pinned_from[us][from];
+		Bitboard attacks = getMoveGenInfo().attacks_from[us][from];
+		Bitboard xray = getMoveGenInfo().xray_from[us][from];
+		Bitboard blocker = getMoveGenInfo().blocker_from[us][from];
 
 		while (to = pop_lsb(pinned), to != SQ_NONE)
 		{
-			m_moveGeninfo.pinned_to[them][to] |= SquareBB[from];
+			getMoveGenInfo().pinned_to[them][to] |= SquareBB[from];
 		}
 		
 		while (to = pop_lsb(Checks), to != SQ_NONE)
 		{
-			m_moveGeninfo.checker_to[them][to] |= SquareBB[from];
+			getMoveGenInfo().checker_to[them][to] |= SquareBB[from];
 		}
 
-		mi.movetype = CAPTURE;
 		while (to = pop_lsb(attacks), to != SQ_NONE)
 		{
-			m_moveGeninfo.attacks_to[them][to] |= SquareBB[from];
+			getMoveGenInfo().attacks_to[them][to] |= SquareBB[from];
 		}
-		mi.movetype = NORMAL;
 
 		while (to = pop_lsb(xray), to != SQ_NONE)
 		{
-			m_moveGeninfo.xray_to[them][to] |= SquareBB[from];
+			getMoveGenInfo().xray_to[them][to] |= SquareBB[from];
 		}
 
 		while (to = pop_lsb(blocker), to != SQ_NONE)
 		{
-			m_moveGeninfo.blocker_to[them][to] |= SquareBB[from];
+			getMoveGenInfo().blocker_to[them][to] |= SquareBB[from];
 		}
-		delete &mi;
+	}
+
+	MoveGenInfo& MoveGen::generate_all()
+	{
+		return generate_all(m_rep.sideToMove);
 	}
 
 	MoveGenInfo& MoveGen::generate_all(Color us)
 	{
-		Color them = ~us; 
-		m_moveGeninfo.OnGeneratingNewMoves(m_rep.state->lastMove);
-
+		Color them = ~us;
+		getMoveGenInfo().OnGeneratingNewMoves(MOVE_NONE);
 		//What can my enemy do?
 		switchColorUsTo(them); m_kingCheckfilter = ~0ULL;
 		generate_attacks(them);
@@ -105,38 +113,114 @@ namespace Checkmate {
 		switchColorUsTo(us);
 		
 		generate_normal(us);
-		generate_attacks(us, true);
 		generate_castleing(us);
-		generate_promotion(us);
 		generate_enpassant(us);
-		m_moveGeninfo.isCheck = isCheck;
-
-		return m_moveGeninfo;
+		getMoveGenInfo().isCheck = isCheck;
+		getMoveGenInfo().move_list->ResetGetNext();
+		return getMoveGenInfo();
 	}
 
 	MoveGenInfo& MoveGen::generate_normal(Color us)
 	{
-		MoveListBase* mvls = m_moveGeninfo.move_list;
-		MoveInfo* mi; Square from = SQ_NONE;
+		MoveListBase* mvls = getMoveGenInfo().move_list;
+		Square from = SQ_NONE;
+		MoveInfo mi(us, SQ_NONE, PAWN, NORMAL, m_rep);
 		for (PieceType Pt = PAWN; Pt < PIECE_TYPE_NB; ++Pt)
 		{
-			mi = new MoveInfo(us, SQ_NONE, Pt, NORMAL,m_rep);
 			for (int i = 0; i < 16 && (from = m_rep.pieceList[us][Pt][i], from != SQ_NONE); i++)
 			{
+				mi.from = from;
+				mi.movingPt = Pt;
+				mi.destionations = (moves_for(Pt, from, us, occupancy) & ~occupancy) & check_filter(Pt);
+				collectAttackInfoFrom(mi);
+				collectAttackInfoTo(mi);
+				generate_attacks(mi);
+				if (mi.destionations != 0)
 				{
-					mi->from = from;
-					mi->destionations = (moves_for(Pt, from, us, occupancy) & ~occupancy) & check_filter(Pt);
-					if (mi->destionations != 0)
-					{
+					mi.movetype = NORMAL;
+					mvls->Append(mi);
+					generate_promotion(mi);
+				}
+			}
+		}
+		getMoveGenInfo().move_list = mvls;
+		return getMoveGenInfo();
+	}
 
-						mvls->Append(*mi);
+	void MoveGen::generate_attacks(MoveInfo& mi)
+	{
+		Bitboard moves = 0ULL;
+
+		if (mi.movingPt != PAWN || (mi.movingPt == PAWN && (relative_rank(mi.Us, mi.from) != RANK_7)))
+		{
+			moves = (moves_for(mi.movingPt, mi.from, mi.Us, occupancy) & enemybb) & check_filter(mi.movingPt);
+			if (moves > 0)
+			{
+				
+				MoveListBase* mvls = getMoveGenInfo().move_list;
+
+				if (!getMoveGenInfo().is_pinned(mi.Us, mi.from))
+				{
+					mi.movetype = CAPTURE;
+					mi.destionations = moves;
+					collectAttackInfoFrom(mi);
+					collectAttackInfoTo(mi);
+					mvls->Append(mi);
+				}
+
+			}
+		}
+	}
+
+	void MoveGen::generate_promotion(MoveInfo& mi)
+	{
+		Bitboard moves = 0; 
+		mi.movetype = PROMOTION;
+		if (relative_rank(mi.Us, mi.from) == RANK_7 && (moves > 0))
+		{
+			moves = moves_for(PAWN, mi.from, mi.Us, occupancy) & ~ourbb & check_filter(PAWN);
+			if (moves > 0)
+			{
+				mi.promotion = QUEEN;
+				getMoveGenInfo().move_list->Append(mi);
+				mi.promotion = KNIGHT;
+				mi.destionations = moves;
+				getMoveGenInfo().move_list->Append(mi);
+			}
+		}
+	}
+	
+	void MoveGen::generate_attacks(Color us, bool appendToList)
+	{
+		Square from = SQ_NONE; Bitboard moves = 0ULL;
+		MoveInfo mi(us, SQ_NONE, NO_PIECE_TYPE, CAPTURE, m_rep);
+		for (PieceType pt = PAWN; pt < PIECE_TYPE_NB; ++pt)
+		{
+			for (int i = 0; i < 16 && (from = m_rep.pieceList[us][pt][i], from != SQ_NONE); i++)
+			{
+				if (pt != PAWN || (pt == PAWN && (relative_rank(us, from) != RANK_7)))
+				{
+					mi.from = from;
+					mi.movingPt = pt;
+					mi.destionations = moves_for(pt, from, us, occupancy) & check_filter(pt);
+					collectAttackInfoFrom(mi);
+					collectAttackInfoTo(mi);
+					mi.destionations &= enemybb;
+					if (moves > 0)
+					{
+						mi.from = from;
+						mi.movingPt = pt;
+						mi.destionations = moves;
+						mi.movetype = CAPTURE;
+						if (appendToList)
+						{
+							appendAttacksToMoveList(mi);
+						}
 					}
 				}
 			}
-			delete mi;
 		}
-		m_moveGeninfo.move_list = mvls;
-		return m_moveGeninfo;
+		collectAttackInfoTo(mi);
 	}
 
 	MoveGenInfo& MoveGen::generate_castleing(Color us)
@@ -150,39 +234,45 @@ namespace Checkmate {
 							 | SquareBB[relative_square(us, SQ_C1)]
 							 | SquareBB[relative_square(us, SQ_D1)];
 
-		MoveListBase* mvls = m_moveGeninfo.move_list;
-		MoveInfo* mi = new MoveInfo(us, SQ_NONE, KING, CASTLING, m_rep);
+		MoveListBase* mvls = getMoveGenInfo().move_list;
+		MoveInfo mi(us, SQ_NONE, KING, CASTLING, m_rep);
 
-		mi->from = kingsqr;
-		mi->destionations = 0ULL;
+		mi.from = kingsqr;
+		mi.destionations = 0ULL;
 
-		if ((castlerRights & WHITE_OO) > 0 && (kingSidebb & occupancy) == 0 
-			&& ((SquareBB[relative_square(us, SQ_G1)]) & check_filter(KING)) > 0)
+		if (kingsqr == relative_square(us, SQ_E1))
 		{
-			mi->destionations |= SquareBB[relative_square(us, SQ_H1)];
+			if (m_rep.can_castle(us, KING_SIDE) > 0 && (kingSidebb & occupancy) == 0
+				&& ((SquareBB[relative_square(us, SQ_G1)]) & check_filter(KING)) > 0)
+			{
+				if(m_rep.piece_on(relative_square(us,SQ_H8)) == make_piece(us, ROOK))
+					mi.destionations |= SquareBB[relative_square(us, SQ_H1)];
+			}
+
+			if (m_rep.can_castle(us, QUEEN_SIDE) > 0 && (queenSidebb & occupancy) == 0
+				&& ((SquareBB[relative_square(us, SQ_C1)]) & check_filter(KING)) > 0)
+			{
+				if (m_rep.piece_on(relative_square(us,SQ_A8)) == make_piece(us, ROOK))
+					mi.destionations |= SquareBB[relative_square(us, SQ_A1)];
+			}
 		}
 
-		if ((castlerRights & WHITE_OOO) > 0 && (queenSidebb & occupancy) == 0 
-			&& ((SquareBB[relative_square(us, SQ_C1)]) & check_filter(KING)) > 0)
-		{
-			mi->destionations |= SquareBB[relative_square(us, SQ_A1)];
-		}
-		mvls->Append(*mi);
-		delete mi;
-		m_moveGeninfo.move_list = mvls;
-		return m_moveGeninfo;
+		mvls->Append(mi);
+		getMoveGenInfo().move_list = mvls;
+		return getMoveGenInfo();
 	}
 
 	MoveGenInfo& MoveGen::generate_enpassant(Color us)
 	{
 		Square en = m_rep.enPassant; Color them = ~us;
-		if (en != SQ_NONE)
+		Piece enPiece = m_rep.piece_on(en);
+		if (en != SQ_NONE && color_of(enPiece) == them && type_of(enPiece) == PAWN)
 		{
 			Square from = SQ_NONE;
 			Square to = en + pawn_push(us); 
 			Bitboard moves = SquareBB[en];
-			MoveListBase* mvls = m_moveGeninfo.move_list;
-			moves = (shift_bb(moves, DELTA_W) | shift_bb(moves,DELTA_E)) & ourbb;
+			MoveListBase* mvls = getMoveGenInfo().move_list;
+			moves = (shift_bb(moves, DELTA_W) | shift_bb(moves,DELTA_E)) & m_rep.board_for(make_piece(us,PAWN));
 			
 			while (from = pop_lsb(moves), from != SQ_NONE)
 			{
@@ -193,37 +283,14 @@ namespace Checkmate {
 			}
 		}
 		
-		return m_moveGeninfo;
+		return getMoveGenInfo();
 	}
 
-	MoveGenInfo& MoveGen::generate_promotion(Color us)
-	{
-		Bitboard moves;
-		Square from = SQ_NONE; 
-		MoveInfo* mi;
-		MoveListBase* mvls = m_moveGeninfo.move_list;
-		for (int i = 0; i < 16 && (from = m_rep.pieceList[us][PAWN][i], from != SQ_NONE); i++)
-		{
-			moves = moves_for(PAWN, from, us, occupancy) & ~ourbb & check_filter(PAWN);
-			if (relative_rank(us, from) == RANK_7 && (moves > 0))
-			{
-				mi = new MoveInfo(us, from, moves, PAWN, PROMOTION,m_rep);
-				mi->promotion = QUEEN;
-				mvls->Append(*mi); 
-				mi->promotion = KNIGHT;
-				mi->destionations = moves;
-				mvls->Append(*mi);
-				delete mi;
-			}
-		}
-		m_moveGeninfo.move_list = mvls;
-		return m_moveGeninfo;
-	}
 	
 	void MoveGen::switchColorUsTo(Color us)
 	{
 		Color them = ~us;
-		isCheck = m_moveGeninfo.checker_to[us][m_rep.king_sqr(us)] > 0;
+		isCheck = getMoveGenInfo().checker_to[us][m_rep.king_sqr(us)] > 0;
 		enemybb = m_rep.getColorbb(them);
 		ourbb = m_rep.getColorbb(us);
 		occupancy = enemybb | ourbb;
@@ -243,8 +310,8 @@ namespace Checkmate {
 		{
 			Square rookDelta [4][1] = { {DELTA_E}, {DELTA_W}, {DELTA_N}, {DELTA_S} };
 			Square bishopDelta[4][1] = { { DELTA_NE },{ DELTA_NW },{ DELTA_SE },{ DELTA_SW} };
-			Bitboard rookOrQueenbb = (m_rep.typebb[ROOK] | m_rep.typebb[QUEEN]) & enemybb;
-			Bitboard bishopOrQueenbb = (m_rep.typebb[BISHOP] | m_rep.typebb[QUEEN]) & enemybb;;
+			Bitboard rookOrQueenbb = (m_rep.board_for(ROOK) | m_rep.board_for(QUEEN)) & enemybb;
+			Bitboard bishopOrQueenbb = (m_rep.board_for(BISHOP) | m_rep.board_for(QUEEN)) & enemybb;;
 
 			for (int i = 0; i < 4; i++)
 			{
@@ -255,48 +322,36 @@ namespace Checkmate {
 				m_checkfilter |= (temp & bishopOrQueenbb) > 0 ? temp : 0ULL;
 			}
 
-			m_checkfilter |= m_moveGeninfo.attacks_to[us][kingsqr];
+			m_checkfilter |= getMoveGenInfo().attacks_to[us][kingsqr] & ~ourbb;
 		}
-		m_kingCheckfilter = ~m_moveGeninfo.attackableSquares[them];
+		m_kingCheckfilter = ~getMoveGenInfo().attackableSquares[them][SQUARE_NB] & ~ourbb;
 	}
 
-	void MoveGen::generate_attacks(Color us, bool appendToList)
-	{
-		Square from = SQ_NONE; Bitboard moves = 0ULL;
-		for (PieceType pt = PAWN; pt < PIECE_TYPE_NB; ++pt)
-		{
-			for (int i = 0; i < 16 && (from = m_rep.pieceList[us][pt][i], from != SQ_NONE); i++)
-			{
-				if (pt != PAWN || (pt == PAWN && (relative_rank(us, from) != RANK_7)))
-				{
-					moves = moves_for(pt, from, us, occupancy);
-					collectAttackInfoFrom(us, from, pt, moves);
-					collectAttackInfoTo(us, from, pt, appendToList);
-					if(appendToList)
-					{
-						appendAttacksToMoveList(from);
-					}
-				}
-			}
-		}
-	}
 
-	void MoveGen::appendAttacksToMoveList(Square from)
+	void MoveGen::appendAttacksToMoveList(MoveInfo& mi)
 	{
+		Square from = mi.from;
 		Color us = color_of(m_rep.piece_on(from));
 		PieceType pt = type_of(m_rep.piece_on(from));
-		MoveListBase* mvls = m_moveGeninfo.move_list;
-		Bitboard Checks = m_moveGeninfo.checker_from[us][from];
-		Bitboard Captures = m_moveGeninfo.attacks_from[us][from];
+		MoveListBase* mvls = getMoveGenInfo().move_list;
+		Bitboard Checks = getMoveGenInfo().checker_from[us][from];
+		Bitboard Captures = getMoveGenInfo().attacks_from[us][from];
 
-		if((Checks || Captures) && !m_moveGeninfo.is_pinned(us,from))
+		if((Checks || Captures) && !getMoveGenInfo().is_pinned(us,from))
 		{
-			MoveInfo* mi = new MoveInfo(us, from, pt, NORMAL, m_rep);
-			mi->destionations = Checks | Captures;
-			mi->movetype = CAPTURE;
-			mvls->Append(*mi);
-			delete mi;
+			mi.movingPt = pt;
+			mi.destionations = Checks | Captures;
+			mi.movetype = CAPTURE;
+			mvls->Append(*&mi);
 		}
 	}
+
+	MoveGenInfo& MoveGen::getMoveGenInfo()
+	{
+		if (m_moveGeninfo == nullptr)
+			m_moveGeninfo = new MoveGenInfo();
+		return *m_moveGeninfo;
+	}
+
 
 }

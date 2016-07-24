@@ -125,7 +125,7 @@ namespace ChessUI.DataAccess
                 if (color != Player.NO_PLAYER && pieceType != PieceType.NO_PIECE)
                 {
                     Square square = getSquare(new Position(file,rank));
-                    _pieceList.Add(Piece.createPiece(color, pieceType, square,_board));
+                    _pieceList.Add(new Piece(color, pieceType, square,_board));
                 }
 
                 //next FEN CHAR

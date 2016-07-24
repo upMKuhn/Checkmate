@@ -65,6 +65,7 @@ TEST_F(RepresentationTests, MakeCastelin_CheckMoveWasCarriedOut_UndoMoveVerify_F
 	board.makeMove(mv);
 	EXPECT_EQ(W_KING, board.piece_on(SQ_C1)); //Prove FEN must have changed
 	EXPECT_EQ(W_ROOK, board.piece_on(SQ_D1)); //Prove FEN must have changed
+	EXPECT_EQ(NO_CASTLING, board.can_castle(WHITE));
 	board.undoMove();
 	EXPECT_EQ(fen, board.boardToFEN());
 }
@@ -136,7 +137,7 @@ TEST_F(RepresentationTests, InitiateBoard_CheckAllPieceLocations)
 TEST_F(RepresentationTests, InitiateBoard_CheckBoardAreInSync)
 {
 	Represenation board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-	EXPECT_TRUE(board.areAllBoardsOk());
+	EXPECT_TRUE(board.is_ok());
 }
 
 TEST_F(RepresentationTests, BOARD_TO_FEN_ACCURATE)

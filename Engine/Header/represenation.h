@@ -1,12 +1,13 @@
 #pragma once
 #include "stdafx.h"
 
+
 using std::string;
 namespace Checkmate {
 
 #define NO_CAPTURE_MAX_MOVES 50
 
-	struct BoardState
+	struct Engine_API BoardState
 	{
 		int castlingRights = 0;
 		int moveClock = 0;
@@ -20,12 +21,12 @@ namespace Checkmate {
 		PieceType captrue = NO_PIECE_TYPE;
 		Bitboard WHITE_BB = 0;
 		Bitboard BLACK_BB = 0;
-		BoardState* next;
+		BoardState* next = nullptr;
 	};
 	
 	
 
-	class Represenation
+	class Engine_API Represenation
 	{
 	public: //Fields Exposed
 
@@ -36,6 +37,7 @@ namespace Checkmate {
 		Bitboard colorbb[COLOR_NB]; //BLACK WHITE
 		Bitboard typebb[PIECE_NB]; //WHITE_ROOK BLACK ROOK
 		Piece board[SQUARE_NB];
+		Key Zorbist = 0;
 
 		int pieceCount[COLOR_NB][PIECE_TYPE_NB];
 		int index[SQUARE_NB];
@@ -56,6 +58,7 @@ namespace Checkmate {
 		void undoMove();
 		void fenToBoard(string strFEN);
 		
+
 		int can_castle(Color c);
 		bool makeMove(Move mv);
 
@@ -69,6 +72,8 @@ namespace Checkmate {
 
 		Bitboard getColorbb(Color c);
 		Piece piece_on(Square position);
+	#pragma endregion
+
 		void remove_piece(Square sq, Color c, PieceType pt);
 
 		void put_piece(Square sq, Piece pc);
@@ -79,12 +84,18 @@ namespace Checkmate {
 
 		Piece opposite_color(Piece p);
 		void remove_piece(Square sq, Piece pc);
-
 		void move_piece(Square from, Square to, Color c, PieceType pt);
-		bool areAllBoardsOk();
-	#pragma endregion
 
+		void ClearSavedStates();
+
+		bool is_board_ok();
+
+		int can_castle(Color c, CastlingSide side);
+		int can_castle(CastlingRight cr);
 	private:
+
+		bool is_ok_Board_Index_PieceList();
+
 		#pragma region small_helper
 				void init();
 
@@ -93,7 +104,8 @@ namespace Checkmate {
 
 				void checkMove(Move m);
 
-				int can_castle(CastlingRight cr);
+				
+				
 				int revoke_castling(Color c, CastlingRight cr);
 				int revoke_castling(Color c);
 		#pragma endregion
@@ -119,8 +131,12 @@ namespace Checkmate {
 				return castlingRights & ((WHITE_OO | WHITE_OOO) << (2 * c));
 			}
 
+			inline int Represenation::can_castle(Color c, CastlingSide side) {
+				return castlingRights & (side << (2 * c));
+			}
+
 			inline int Represenation::revoke_castling(Color c, CastlingRight cr) {
-				return castlingRights &= ~cr;
+				return castlingRights &= ~cr << (2*c);
 			}
 
 			inline int Represenation::revoke_castling(Color c) {
@@ -130,16 +146,18 @@ namespace Checkmate {
 
 			inline Bitboard Represenation::board_for(Piece pc)
 			{
-				return board_for(color_of(pc), type_of(pc));
+				return typebb[pc];
 			}
 			inline Bitboard Represenation::board_for(PieceType pt)
 			{
-				return this->typebb[pt];
+				return typebb[make_piece(WHITE, pt)] | typebb[make_piece(BLACK, pt)];
 			}
-			inline Bitboard Represenation::board_for(Color c,PieceType pt)
+			
+			inline Bitboard Represenation::board_for(Color us,PieceType pt)
 			{
-				return this->typebb[pt] & colorbb[c];
+				return typebb[make_piece(us, pt)];
 			}
+			
 
 			inline Bitboard Represenation::getColorbb(Color c)
 			{
@@ -172,6 +190,7 @@ namespace Checkmate {
 			{
 				return pieceCount[c][ALL_PIECES];
 			}
+
 
 	#pragma endregion
 }

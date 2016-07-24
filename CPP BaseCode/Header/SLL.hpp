@@ -19,6 +19,7 @@ namespace DataStructs {
 			nnode->index = index + 1;
 			return nnode;
 		}
+
 		SinglyLL<NodeValue>* clear()
 		{
 			SinglyLL* ml = node;

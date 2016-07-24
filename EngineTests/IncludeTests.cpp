@@ -40,12 +40,5 @@ TEST(BoostLog, TestForLinkerErrors)
 
 
 
-TEST(FormatLib, TestForLinkerErrors)
-{
-	std::string s = fmt::format("{0}{1}{0}", "abra", "cad");
-	EXPECT_EQ("abracadabra", s);
-}
-
-
 
 

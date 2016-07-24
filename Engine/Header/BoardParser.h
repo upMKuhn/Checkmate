@@ -2,7 +2,7 @@
 #include "stdafx.h"
 namespace Checkmate {
 
-	class BoardParser
+	class Engine_API BoardParser
 	{
 	public:
 		BoardParser(::std::string fen);

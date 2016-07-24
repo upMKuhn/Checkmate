@@ -3,6 +3,8 @@
 
 using namespace Checkmate;
 
+#define Engine_API __declspec(dllimport)
+
 struct FEN_TEST_DATA
 {
 	FEN_TEST_DATA(::std::string str)

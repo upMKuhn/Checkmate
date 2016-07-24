@@ -59,8 +59,9 @@ class ChachedMoveList : public MoveListBase{
 
 		ChachedMoveList();
 		virtual void Append(MoveInfo& mi) override;
+		virtual void Clear() override;
 
-		virtual Move getNextOrDefault(Color c) override;
+		virtual Move getNextOrDefault() override;
 		virtual void ResetGetNext() override;
 		virtual void OnGeneratingNewMoves(Move m) abstract;
 		virtual bool hasNext() override;

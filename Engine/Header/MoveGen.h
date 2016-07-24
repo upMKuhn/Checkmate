@@ -4,7 +4,7 @@
 namespace Checkmate {
 	
 
-class MoveGen
+class  Engine_API MoveGen
 {
 private:
 	
@@ -19,27 +19,31 @@ private:
 	bool isCheck = false;
 public:
 	
-	MoveGenInfo& m_moveGeninfo;
+	MoveGenInfo* m_moveGeninfo = nullptr;
 	Represenation& m_rep;
 public:
 
-	MoveGen(const Represenation& rep);
+	MoveGen(Represenation& rep);
+	~MoveGen();
 
+	MoveGenInfo& generate_all();
 	MoveGenInfo& generate_all(Color us);
+
 	MoveGenInfo& generate_normal(Color us);
+	void generate_attacks(MoveInfo& mi);
+	void generate_attacks(Color us, bool appendToList = false);
+	void generate_promotion(MoveInfo& mi);
 	MoveGenInfo& generate_castleing(Color us);
 	MoveGenInfo& generate_enpassant(Color us);
-	MoveGenInfo& generate_promotion(Color us);
-	void generate_attacks(Color us, bool appendToList = false);
+	MoveGenInfo& getMoveGenInfo();
 
 private:
 	void resetLookups();
 	void switchColorUsTo(Color us);
 	void makeCheckFilter(Color us);
-	void collectAttackInfoFrom(Color us,Square from,PieceType pt ,Bitboard moves);
-	void collectAttackInfoTo(Color us, Square from, PieceType pt = PAWN, bool appendTolist = false);
-	void appendAttacksToMoveList(Square from);
-
+	void collectAttackInfoFrom(MoveInfo& mi);
+	void collectAttackInfoTo(MoveInfo& mi);
+	void appendAttacksToMoveList(MoveInfo& mi);
 	Bitboard inline check_filter(PieceType pt)
 	{
 		return pt == KING ? m_kingCheckfilter : m_checkfilter;

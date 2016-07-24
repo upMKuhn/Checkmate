@@ -39,8 +39,8 @@ namespace DataStructs {
 			DoubleLinkedListNode<NodeValue>::DoubleLinkedListNode(NodeValue val)
 			{
 				this->value = val;
-				if (successor != NULL) { successor->predecessor = NULL; }
-				if (predecessor != NULL) { predecessor->successor = NULL; }
+				//if (successor != NULL) { successor->predecessor = NULL; }
+				//if (predecessor != NULL) { predecessor->successor = NULL; }
 				successor = NULL;
 				predecessor = NULL;
 			}

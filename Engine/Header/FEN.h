@@ -7,7 +7,7 @@ namespace Checkmate {
 	/// Instructions to place piece on board
 	/// </summary>
 
-	class FEN_Parser
+	class Engine_API FEN_Parser
 	{
 
 	private:

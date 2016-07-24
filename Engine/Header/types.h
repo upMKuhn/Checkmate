@@ -1,5 +1,5 @@
 #pragma once
-
+#include <string.h>
 
 namespace Checkmate { 
 	/*
@@ -23,6 +23,8 @@ namespace Checkmate {
 
 #ifndef TYPES_H_INCLUDED
 #define TYPES_H_INCLUDED
+
+#define SAFE_DELETE(a) if( (a) != nullptr ) delete (a); (a) = nullptr;
 
 	/// When compiling with provided Makefile (e.g. for Linux and OSX), configuration
 	/// is done automatically. To get started type 'make help'.
@@ -98,8 +100,9 @@ namespace Checkmate {
 	const bool Is64Bit = false;
 #endif
 
-	typedef uint64_t Key;
-	typedef uint64_t Bitboard;
+	typedef unsigned long long Key;
+	typedef unsigned long long Bitboard;
+	typedef unsigned long long Position;
 
 	const int MAX_MOVES = 256;
 	const int MAX_PLY = 128;
@@ -112,6 +115,7 @@ namespace Checkmate {
 	/// bit 17-21: Capture piece
 	/// bit 22 - 26: Capture piece
 	/// bit 27-30: special move flag: promotion (1), en passant (2), castling (3) Capture(4)
+	/// MAX MOVE VALUE = 
 	/// NOTE: EN-PASSANT bit is set only when a pawn can be captured
 	///
 	/// Special cases are MOVE_NONE and MOVE_NULL. We can sneak these in because in
@@ -120,7 +124,8 @@ namespace Checkmate {
 
 	enum Move {
 		MOVE_NONE,
-		MOVE_NULL = 65
+		MOVE_NULL = 65,
+		ALL_MOVE_BITS = 0x7fffffffULL
 	};
 
 	enum MoveType {
@@ -136,7 +141,7 @@ namespace Checkmate {
 	};
 
 	enum CastlingSide {
-		KING_SIDE, QUEEN_SIDE, CASTLING_SIDE_NB = 2
+		KING_SIDE = 1, QUEEN_SIDE = 1 << 1, CASTLING_SIDE_NB = 3
 	};
 
 	enum CastlingRight {
@@ -158,7 +163,9 @@ namespace Checkmate {
 	enum Phase {
 		PHASE_ENDGAME,
 		PHASE_MIDGAME = 128,
-		MG = 0, EG = 1, PHASE_NB = 2
+		PHASE_START = 200,
+		EG = 0, MG = 1, LG = 2, PHASE_NB = 3
+
 	};
 
 	enum ScaleFactor {
@@ -169,11 +176,22 @@ namespace Checkmate {
 		SCALE_FACTOR_NONE = 255
 	};
 
-	enum Bound {
+	enum SearchNodeType {
 		BOUND_NONE,
 		BOUND_UPPER,
 		BOUND_LOWER,
 		BOUND_EXACT = BOUND_UPPER | BOUND_LOWER
+	};
+
+	enum EvaluationType
+	{
+		MOBILLITY,
+		CENTRE_CONTROLL,
+		MATERIAL,
+		PAIRED_PICES,
+		SECURITY,
+		EVALUATION_TYPE_NB
+
 	};
 
 	enum Value {
@@ -184,8 +202,8 @@ namespace Checkmate {
 		VALUE_INFINITE = 32001,
 		VALUE_NONE = 32002,
 
-		VALUE_MATE_IN_MAX_PLY = VALUE_MATE - 2 * MAX_PLY,
-		VALUE_MATED_IN_MAX_PLY = -VALUE_MATE + 2 * MAX_PLY,
+		VALUE_MATE_IN_MAX_PLY = 32000 - 2 * MAX_PLY,
+		VALUE_MATED_IN_MAX_PLY = -32000 + 2 * MAX_PLY,
 
 		VALUE_ENSURE_INTEGER_SIZE_P = INT_MAX,
 		VALUE_ENSURE_INTEGER_SIZE_N = INT_MIN,
@@ -266,11 +284,7 @@ namespace Checkmate {
 	/// the upper 16 bits are used to store the middlegame value. The compiler
 	/// is free to choose the enum type as long as it can store the data, so we
 	/// ensure that Score is an integer type by assigning some big int values.
-	enum Score {
-		SCORE_ZERO,
-		SCORE_ENSURE_INTEGER_SIZE_P = INT_MAX,
-		SCORE_ENSURE_INTEGER_SIZE_N = INT_MIN
-	};
+	enum Score : int { SCORE_ZERO };
 
 	
 	inline Score make_score(int mg, int eg) {
@@ -291,6 +305,29 @@ namespace Checkmate {
 		union { uint16_t u; int16_t s; } eg = { uint16_t(unsigned(s)) };
 		return Value(eg.s);
 	}
+	
+	struct ScoredMove
+	{
+		Move parentMove;
+		Move move;
+		Score score;
+		
+		ScoredMove(Move m, Score s)
+		{
+			move = m;
+			score = s;
+			parentMove = MOVE_NONE;
+		}
+
+		ScoredMove(Move m, Move parent, Score s)
+		{
+			move = m;
+			parentMove = parent;
+			score = s;
+		}
+	};
+
+	
 
 	ENABLE_FULL_OPERATORS_ON(Value)
 		ENABLE_FULL_OPERATORS_ON(PieceType)
@@ -323,6 +360,14 @@ namespace Checkmate {
 
 	inline Color operator~(Color c) {
 		return Color(c ^ BLACK);
+	}
+
+	static inline const std::string color_tostring(Color c)
+	{
+		using namespace std;
+		if (c == WHITE) return "WHITE";
+		if (c == BLACK) return "BLACK";
+		return "NO_COLOR";
 	}
 
 	inline Square operator~(Square s) {
@@ -364,8 +409,7 @@ namespace Checkmate {
 	}
 
 	inline Color color_of(Piece pc) {
-		assert(pc != NO_PIECE);
-		return Color(pc >> 3);
+		return  pc == NO_PIECE ? NO_COLOR : Color(pc >> 3);
 	}
 
 	inline bool is_ok(Square s) {
@@ -423,6 +467,16 @@ namespace Checkmate {
 		return relative_file(c, file_of(s));
 	}
 
+	inline bool operator<(const ScoredMove& lhs, const ScoredMove& rhs)
+	{
+		return lhs.score < rhs.score;
+	}
+
+	inline bool operator>(const ScoredMove& lhs, const ScoredMove& rhs)
+	{
+		return lhs.score > rhs.score;
+	}
+
 	inline bool opposite_colors(Square s1, Square s2) {
 		int s = int(s1) ^ int(s2);
 		return ((s >> 3) ^ s) & 1;
@@ -432,8 +486,10 @@ namespace Checkmate {
 		return c == WHITE ? DELTA_N : DELTA_S;
 	}
 
-	inline bool pawn_canjump(Color c,Square s) {
-		return c == WHITE ? rank_of(s) == RANK_2 : rank_of(s) == RANK_7;
+	inline bool pawn_canjump(Color c,Square s, Bitboard occupancy) {
+		Bitboard bb = ((1ULL << (s + pawn_push(c))) | (1ULL << (s + 2 * pawn_push(c))));
+		bool test = (c == WHITE ? rank_of(s) == RANK_2 : rank_of(s) == RANK_7);
+		return test && (bb & occupancy) == 0;
 	}
 
 	inline Square from_sq(Move m) {
@@ -488,7 +544,20 @@ namespace Checkmate {
 		return from_sq(m) != to_sq(m); // Catch MOVE_NULL and MOVE_NONE
 	}
 
-	
-	
+	inline Score extract_score(Position p)
+	{
+		return Score(p >> 32);
+	}
+
+	inline Move extract_move(Position p)
+	{
+		return Move(p & ALL_MOVE_BITS);
+	}
+
+	inline Position make_position(Score score, Move m)
+	{
+		return ((unsigned)score << 31) | m;
+	}
+
 #endif // #ifndef TYPES_H_INCLUDED
 }

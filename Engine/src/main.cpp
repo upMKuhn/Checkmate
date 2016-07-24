@@ -9,67 +9,27 @@ void init()
 
 }
 
-
-
-void performanceTest()
-{
-	string startFen = "rnbqkbnr/P7/8/5PpP/8/4p3/4pP1P/RNBQK2R w KQkq G5 0 1";
-	Represenation board(startFen);
-	
-	MoveGen movegen = MoveGen(board);
-	MoveListBase* mvlist;
-
-	long long time = 0;
-	UINT64 count = 0;
-	UINT64 total = 0;
-
-	const UINT64 stoppAt = 0xffffffffffffffffULL;
-	Color tomove = WHITE;
-	Move m = MOVE_NONE;
-	while (count < stoppAt)
-	{
-		
-		if(Checkmate::system_time_to_msec() - time >= 1000)
-		{
-			total += count;
-			std::cout << "per sec: " << count << " total: " << total << std::endl;
-			time = Checkmate::system_time_to_msec();
-			count = 0;
-		}
-
-		movegen.generate_all(tomove);
-		mvlist = movegen.m_moveGeninfo.move_list;
-		count += mvlist->length();
-		
-		while (m = mvlist->getNextOrDefault(tomove), m != MOVE_NONE)
-		{
-			board.makeMove(m);
-			board.undoMove();
-		}
-
-		tomove = ~tomove;
-		board.sideToMove = ~(board.sideToMove);
-	}
-	std::cout << "END PERFORMANCE TEST " << std::endl;
-}
-
-
 void ShowBoard(Color c, string fen)
 {
 	using namespace Checkmate; using namespace DataStructs; using namespace std;
 	Represenation& board = *(new Represenation(fen));
 	MoveGen& movgen = *(new MoveGen(board));
 	MoveListBase* mvlist = CreateNewMoveList();
+	Evaluation eval = Evaluation(&board, &movgen.getMoveGenInfo());
+	Score our, their;
 	string token, cmd;
 	Move m;
 
 	mvlist = movgen.generate_all(c).move_list;
 	
-	while(m = mvlist->getNextOrDefault(c), m != MOVE_NONE)
+	while(m = mvlist->getNextOrDefault(), m != MOVE_NONE)
 	{
 		board.makeMove(m);
 		std::cout << board.to_string() << std::endl;
 		std::cout << "to move: " << (c == WHITE ? "WHITE" : "BLACK") << std::endl;
+		our = eval.Evaluate(c);
+		their = eval.Evaluate(~c);
+		std::cout << "Score: " << our - their << std::endl;
 		board.undoMove();
 		getline(cin, cmd);
 	}
@@ -77,28 +37,15 @@ void ShowBoard(Color c, string fen)
 
 }
 
+
+#ifndef UNIT_TEST
+
 int main(int argc, char* argv[]) {
-	
 	init();
-	using namespace Checkmate; using namespace DataStructs; using namespace std;
-	string token, cmd;
-	Represenation board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-	
-	performanceTest();
-	
-	ShowBoard(BLACK, "rnbqkbnr/P7/8/5PpP/4Q3/4p3/4pP1P/RNBQK2R b KQkq G5 0 1");
-	ShowBoard(WHITE, "rnbqkbnr/P7/8/5PpP/8/4p3/4pP1P/RNBQK2R w KQkq G5 0 1");
-	
-	std::cout << board.to_string() << std::endl;
-	system("PAUSE");
-	for (int i = 1; i < argc; ++i)
-		cmd += string(argv[i]) + " ";
 
-	if (argc == 1 && !getline(cin, cmd)) // Block here waiting for input or EOF
-		cmd = "quit";
-
-	std::cout << cmd << endl;
-
-	system("PAUSE");
+	UCI uci;
+	uci.Start();
 	return 0;
 }
+
+#endif

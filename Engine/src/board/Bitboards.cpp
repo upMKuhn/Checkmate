@@ -40,6 +40,7 @@ namespace Checkmate {
 
 		void Bitboards::initAttacks()
 		{
+			
 			//isRook = 1 -> delta 1
 			Square deltas[][RANK_NB] = {
 				{DELTA_NE,DELTA_NW, DELTA_SE, DELTA_SW},
@@ -168,4 +169,40 @@ namespace Checkmate {
 		}
 	}
 	
+	namespace Bitboards {
+
+		///Expect 
+		void PopPawnIsland(Bitboard& bb, Square at)
+		{
+			Square deltas[] = { DELTA_N, DELTA_S,
+				DELTA_W, DELTA_E, DELTA_NE, DELTA_NW,
+				DELTA_SE, DELTA_SW };
+
+			std::stack<Bitboard> path;
+			Bitboard sqat = SquareBB[at];
+			path.push(sqat);
+			while (!path.empty())
+			{
+				Bitboard bbAt = path.top(); 
+				path.pop();
+				bb &= ~bbAt;
+
+				for (int i = 0; i < 7; i++)
+					if (bb & shift_bb(bbAt, deltas[i]) > 0)
+						path.push(shift_bb(bbAt, deltas[i]));
+			}
+		}
+
+
+		void initPawnPositions()
+		{
+
+			Bitboard bb = Rank2BB;
+
+			for (Square at = SQ_A2; at <= SQ_H7; ++at)
+			{
+			}
+		}
+
+	}
 }

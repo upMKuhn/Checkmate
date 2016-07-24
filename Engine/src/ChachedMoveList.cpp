@@ -26,7 +26,7 @@ namespace Checkmate {
 
 
 //Public functions 
-
+	void ChachedMoveList::Clear() {}
 	void ChachedMoveList::Append(MoveInfo& mi)
 	{
 		Move m;
@@ -79,10 +79,10 @@ namespace Checkmate {
 		return !(specialListDone || casualListDone);
 	}
 
-	Move ChachedMoveList::getNextOrDefault(Color c )
+	Move ChachedMoveList::getNextOrDefault()
 	{
 		Move m = MOVE_NONE;
-		
+		Color c = WHITE;
 		if(ListAt != nullptr && ListAt->getIndex() <= 0)
 		{
 			ListAt = nullptr;
