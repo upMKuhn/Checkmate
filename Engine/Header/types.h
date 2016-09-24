@@ -56,8 +56,6 @@ namespace Checkmate {
 #  define IS_64BIT
 #endif
 
-#  define USE_BSFQ
-#  define USE_POPCNT 
 
 #if defined(USE_POPCNT) && defined(__INTEL_COMPILER) && defined(_MSC_VER)
 #  include <nmmintrin.h> // Intel header for _mm_popcnt_u64() intrinsic
@@ -308,22 +306,25 @@ namespace Checkmate {
 	
 	struct ScoredMove
 	{
-		Move parentMove;
-		Move move;
-		Score score;
+		Move move = MOVE_NONE;
+		Value score = VALUE_ZERO;
 		
-		ScoredMove(Move m, Score s)
+
+		ScoredMove()
+		{}
+
+		ScoredMove(Move m, Value s)
 		{
 			move = m;
 			score = s;
-			parentMove = MOVE_NONE;
 		}
 
-		ScoredMove(Move m, Move parent, Score s)
+
+		operator Move() const { return move; }
+
+		void operator=(Move m)
 		{
-			move = m;
-			parentMove = parent;
-			score = s;
+			this->move = m;
 		}
 	};
 

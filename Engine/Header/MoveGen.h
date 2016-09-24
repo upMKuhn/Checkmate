@@ -4,6 +4,9 @@
 namespace Checkmate {
 	
 
+
+
+
 class  Engine_API MoveGen
 {
 private:

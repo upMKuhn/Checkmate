@@ -24,6 +24,6 @@ namespace Checkmate {
 		CustomList<Move>* allLists[3];
 	};
 
-	
+
 }
 

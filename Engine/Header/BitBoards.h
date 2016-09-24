@@ -2,7 +2,7 @@
 #include "stdafx.h"
 
 namespace Checkmate {
-
+	
 
 		const Bitboard DarkSquares = 0xAA55AA55AA55AA55ULL;
 		const Bitboard FileABB = 0x0101010101010101ULL;
@@ -98,11 +98,11 @@ namespace Checkmate {
 		FORCE_INLINE unsigned magic_index(Square s, Bitboard occupied) 
 		{
 			Bitboard* const Masks = Pt == ROOK ? RookMask : BishopMask;
-			Bitboard* const Magics = Pt == ROOK ? RookMagics : BishopMagics;
-			unsigned* const Shifts = Pt == ROOK ? RookShifts : BishopShifts;
-
 			if (HasPext)
 				return unsigned(pext(occupied, Masks[s]));
+			
+			Bitboard* const Magics = Pt == ROOK ? RookMagics : BishopMagics;
+			unsigned* const Shifts = Pt == ROOK ? RookShifts : BishopShifts;
 
 			if (Is64Bit)
 				return unsigned(((occupied & Masks[s]) * Magics[s]) >> Shifts[s]);
@@ -113,6 +113,15 @@ namespace Checkmate {
 		}
 		
 		inline Bitboard shift_bb(Bitboard b,Square Delta) {
+			return  Delta == DELTA_N ? b << 8 : Delta == DELTA_S ? b >> 8
+				: Delta == DELTA_NN ? b << 16 : Delta == DELTA_SS ? b >> 16
+				: Delta == DELTA_NE ? (b & ~FileHBB) << 9 : Delta == DELTA_SE ? (b & ~FileHBB) >> 7
+				: Delta == DELTA_NW ? (b & ~FileABB) << 7 : Delta == DELTA_SW ? (b & ~FileABB) >> 9
+				: Delta == DELTA_E ? (b & ~FileHBB) << 1 : Delta == DELTA_W ? (b & ~FileABB) >> 1
+				: 0ULL;
+		}
+
+		inline Bitboard shift_bb(Bitboard b, int Delta) {
 			return  Delta == DELTA_N ? b << 8 : Delta == DELTA_S ? b >> 8
 				: Delta == DELTA_NN ? b << 16 : Delta == DELTA_SS ? b >> 16
 				: Delta == DELTA_NE ? (b & ~FileHBB) << 9 : Delta == DELTA_SE ? (b & ~FileHBB) >> 7
@@ -188,7 +197,7 @@ namespace Checkmate {
 
 		}
 
-		inline Bitboard moves_for(PieceType Pt,Square from, Color us, Bitboard occupied)
+		FORCE_INLINE Bitboard moves_for(PieceType Pt,Square from, Color us, Bitboard occupied)
 		{
 			using namespace Bitboards;
 
@@ -201,7 +210,7 @@ namespace Checkmate {
 				case BISHOP:
 					return BishopAttack[from][magic_index<BISHOP>(from, occupied)];
 				case QUEEN:
-					return moves_for(ROOK, from, us, occupied) | moves_for(BISHOP, from, us, occupied);
+					return BishopAttack[from][magic_index<BISHOP>(from, occupied)] | RookAttack[from][magic_index<ROOK>(from, occupied)];
 				default:
 					return stepAttacks[make_piece(us, Pt)][from];
 			}
@@ -293,14 +302,16 @@ namespace Checkmate {
 		/// pop_lsb() finds and clears the least significant bit in a non-zero bitboard
 
 		FORCE_INLINE Square pop_lsb(Bitboard& b) {
-			const Square s = b > 0 ?lsb(b): SQ_NONE;
-			b &= ~(1ULL << s);
+			if (b == 0) 
+				return SQ_NONE;
+			Square s = lsb(b);
+			b ^= 1ULL << s;
 			return s;
 		}
 
 		FORCE_INLINE Square pop_msb(Bitboard& b) {
 			const Square s = b > 0 ? msb(b) : SQ_NONE;
-			b &= ~(1ULL << s);
+			b ^= 1ULL << s;
 			return s;
 		}
 
@@ -322,3 +333,8 @@ namespace Checkmate {
 		inline Square  backmost_sq(Color c, Bitboard b) { return c == WHITE ? lsb(b) : msb(b); }
 
 }
+
+
+
+#include <amp.h>
+

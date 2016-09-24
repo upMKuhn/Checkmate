@@ -1,21 +1,15 @@
 #include "stdafx.h"
 using namespace Checkmate;
 
-		
+	Bitboard Zorbist::SquareKeys[SQUARE_NB];
 
-		const Key PieceKey[] = { 0x0ULL, 0x02564561245636ULL,0x123556113053400ULL,0x4132156455641ULL, 0x054321561653123ULL, 0x3652436541265ULL, 0x0564897345221ULL,
-		0x0ULL, 0x983216575121385ULL, 0x7890423890785ULL, 0x25155661565ULL, 0x15464545601ABC5ULL, 0xA89121243342123ULL, 0x068312131234562ULL };
-
-		Key SquareKey[SQUARE_NB];
-
-
-		void Zorbist::init()
+	void Zorbist::init()
 		{
-
+			
 			for (Square s = SQ_A1; s < SQUARE_NB; ++s)
 			{
 				PRNG rng((rank_of(s)+1 * 0xE4591) ^ file_of(s)+1 * 0xA82F31);
-				SquareKey[s] = rng.sparse_rand<uint64_t>();
+				SquareKeys[s] = rng.sparse_rand<uint64_t>();
 				//contains identical
 				bool test = true;
 				while (test)
@@ -23,30 +17,33 @@ using namespace Checkmate;
 					test = false;
 					for (Square sqr = SQ_A1; sqr < s; ++sqr)
 					{
-						if (SquareKey[s] == SquareKey[sqr])
+						if (SquareKeys[s] == SquareKeys[sqr])
 						{
 							test = true;
-							SquareKey[s] ^= rng.sparse_rand<uint64_t>();
+							SquareKeys[s] ^= rng.sparse_rand<uint64_t>();
 						}
 					}
 				}
 			}
 		}
 
-		Key Zorbist::make_zorbist(Represenation* rep)
+	Key Zorbist::make_zorbist(Represenation* rep, BoardState* state)
 		{
 			Key key = 0;
 			#if MAKE_ZORBIST
 				Square s = SQ_NONE;
-				Bitboard bb = rep->colorbb[BLACK] | rep->colorbb[WHITE];
-				while (s = pop_lsb(bb), is_ok(s))
-				{
-					key ^= SquareKey[s];
-					key ^= PieceKey[rep->piece_on(s)];
-				}
+				Bitboard bb = rep->typebb[ALL_PIECES];
+				while (s = pop_lsb(bb), bb > 0)
+					key = key ^ SquareKeys[s] ^ PieceKey[rep->board[s]];
 			#endif
+			rep->zorbist = key;
+			state->zorbist = key;
 			return key;
 		}
+
+
+		
+
 
 
 		

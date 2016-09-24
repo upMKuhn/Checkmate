@@ -47,6 +47,9 @@ void UCI::loop() {
 			TestCmd(removeWord(cmd, "test"));
 		if (isCommand(cmd, "movegen"))
 			Movegen(removeWord(cmd, "test"));
+
+		if (isCommand(cmd, "perft"))
+			Perft(removeWord(cmd, "perft"));
 	}
 
 }
@@ -123,6 +126,28 @@ void UCI::Movegen(string commandLine)
 
 }
 
+void UCI::Perft(string commandLine)
+{
+	int depth;
+	try
+	{
+		depth = boost::lexical_cast<int>(commandLine);
+	}
+	catch (boost::bad_lexical_cast& e)
+	{
+		depth = 6;
+	}
+	
+	PrincipleVariationSearch pv(board, depth);
+	INT64 startAt = system_time_to_msec();
+	INT64 nodes = pv.Perft(depth);
+	INT64 timeTaken = system_time_to_msec() - startAt;
+	cout << "=======================" << endl;
+	cout << "Total time(ms) " << timeTaken << endl;
+	cout << "Nodes searched: " << nodes << endl;
+	cout << "Nodes / second: " << 1000 * nodes / timeTaken << endl;
+
+}
 
 void UCI::TestCmd(string commandLine)
 {

@@ -7,37 +7,25 @@ namespace Checkmate {
 
 #define NO_CAPTURE_MAX_MOVES 50
 
-	struct Engine_API BoardState
-	{
-		int castlingRights = 0;
-		int moveClock = 0;
-		int stateIndex = 0;
-
-		Key zorbist = 0;
-
-		Color sideToMove = NO_COLOR;
-		Square enPassant = SQ_NONE;
-		Move lastMove = MOVE_NONE;
-		PieceType captrue = NO_PIECE_TYPE;
-		Bitboard WHITE_BB = 0;
-		Bitboard BLACK_BB = 0;
-		BoardState* next = nullptr;
-	};
+	
 	
 	
 
-	class Engine_API Represenation
+	class Represenation
 	{
 	public: //Fields Exposed
 
+		BoardStatePool boardStatePool;
 		BoardState* state;
 		Color sideToMove;
 		Square enPassant;
 		Square pieceList[COLOR_NB][PIECE_TYPE_NB][16];
 		Bitboard colorbb[COLOR_NB]; //BLACK WHITE
 		Bitboard typebb[PIECE_NB]; //WHITE_ROOK BLACK ROOK
+		Bitboard pinnedbb = 0ULL;
+		Bitboard Checkersbb = 0ULL;
 		Piece board[SQUARE_NB];
-		Key Zorbist = 0;
+		Key zorbist = 0;
 
 		int pieceCount[COLOR_NB][PIECE_TYPE_NB];
 		int index[SQUARE_NB];
@@ -58,10 +46,9 @@ namespace Checkmate {
 		void undoMove();
 		void fenToBoard(string strFEN);
 		
-
 		int can_castle(Color c);
 		bool makeMove(Move mv);
-
+		
 
 	public:
 		#pragma region Properties
@@ -100,7 +87,7 @@ namespace Checkmate {
 				void init();
 
 				void flipSideToMove();
-				void makeNextState(Move mv, PieceType captrue);
+				void makeNextState(Move mv, PieceType captrue, Key changes);
 
 				void checkMove(Move m);
 
@@ -108,10 +95,33 @@ namespace Checkmate {
 				
 				int revoke_castling(Color c, CastlingRight cr);
 				int revoke_castling(Color c);
+
+
+
+				inline Bitboard GenerateChecker()
+				{
+					Color us = sideToMove; Color them = ~us; 
+					return moves_for(KNIGHT, king_sqr(us), ~us, 0) & board_for(them, KNIGHT)
+						| moves_for(BISHOP, king_sqr(us), ~us, colorbb[0] | colorbb[1]) & (board_for(them, BISHOP) | board_for(them, QUEEN))
+						| moves_for(ROOK, king_sqr(us), ~us, colorbb[0] | colorbb[1]) & (board_for(them, ROOK) | board_for(them, QUEEN));
+
+				}
+
+				inline Bitboard GeneratePinned()
+				{
+					Color us = sideToMove; Color them = ~us;
+					//#define Xray (moves_for(QUEEN, king_sqr(us), ~us, colorbb[0] | colorbb[1]) ^ colorbb[us])
+					Bitboard Xray(moves_for(QUEEN, king_sqr(us), ~us, colorbb[0] | colorbb[1]) ^ colorbb[us]);
+					return moves_for(BISHOP, king_sqr(us), ~us, Xray) & (board_for(them, BISHOP) | board_for(them, QUEEN))
+						| moves_for(ROOK, king_sqr(us), ~us, Xray) & (board_for(them, ROOK) | board_for(them, QUEEN));
+				}
 		#pragma endregion
 };
 	
 	#pragma region inline_helper
+
+
+			
 
 			inline void Represenation::flipSideToMove()
 			{
@@ -155,7 +165,7 @@ namespace Checkmate {
 			
 			inline Bitboard Represenation::board_for(Color us,PieceType pt)
 			{
-				return typebb[make_piece(us, pt)];
+				return typebb[(us << 3) | pt];
 			}
 			
 

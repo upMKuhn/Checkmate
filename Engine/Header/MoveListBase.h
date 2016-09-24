@@ -15,4 +15,7 @@ namespace Checkmate
 		virtual bool hasNext() abstract;
 		virtual int  length() abstract;
 	};
+
+	MoveListBase* CreateNewMoveList();
+
 }

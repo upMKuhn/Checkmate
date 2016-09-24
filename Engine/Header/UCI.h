@@ -32,6 +32,8 @@ namespace Checkmate {
 
 		void Movegen(string commandLine);
 
+		void Perft(string commandLine);
+
 		void ShowBoard();
 
 

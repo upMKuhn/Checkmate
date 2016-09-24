@@ -1,12 +1,7 @@
 #include "stdafx.h"
-
+ 
 //Representation of the GameBoard
 
-#ifdef CHECKS_ENABLED
-#define DEBUG_CHECK_MOVE(x) checkMove(x)
-#else
-#define DEBUG_CHECK_MOVE(x)
-#endif
 
 namespace Checkmate {
 	
@@ -32,7 +27,8 @@ namespace Checkmate {
 
 	void Represenation::init()
 	{
-		state = new BoardState();
+		Zorbist::init();
+		state = boardStatePool.GetFree();
 		sideToMove = WHITE;
 		enPassant = SQUARE_NB;
 		castlingRights = 0;
@@ -72,7 +68,8 @@ namespace Checkmate {
 		moveClock = fen.FullMoveClock * 2 + fen.halfMoveClock;
 		enPassant = fen.enPassant;
 		ClearSavedStates();
-		makeNextState(MOVE_NONE, NO_PIECE_TYPE);
+		makeNextState(MOVE_NONE, NO_PIECE_TYPE, 0);
+		Zorbist::make_zorbist(this, state);
 	}
 
 	string Represenation::boardToFEN()
@@ -162,7 +159,7 @@ namespace Checkmate {
 
 	bool Represenation::makeMove(Move mv)
 	{
-		DEBUG_CHECK_MOVE(mv);
+		CHECKS_ENABLED(checkMove(mv));
 		Square from = from_sq(mv);
 		Square to = to_sq(mv);
 		PieceType movingPiece = moving_type(mv);
@@ -171,6 +168,8 @@ namespace Checkmate {
 
 		Color us = sideToMove;
 		Color them = ~us;
+		Key changesToKey = Checkmate::Zorbist::SquareKeys[from] | Checkmate::Zorbist::SquareKeys[to];
+
 
 		if (mvtype == CASTLING)
 		{
@@ -180,16 +179,19 @@ namespace Checkmate {
 			to = relative_square(us, kingSide ? SQ_C1 : SQ_G1);
 			move_piece(rfrom, rto, us, ROOK);
 			capture = NO_PIECE_TYPE;
+			changesToKey ^= MoveZorbist(rfrom, rto);
 		}
 
 		if (capture != NO_PIECE_TYPE)
 		{
-			remove_piece(to, ~us, capture);
+			remove_piece(to, them, capture);
+			changesToKey ^= Zorbist::PieceKey[(them << 3) | capture];
 		}
 
 		if (mvtype == ENPASSANT)
 		{
 			remove_piece(enPassant, make_piece(them, PAWN));
+			changesToKey ^= PieceZorbist(enPassant, make_piece(them, PAWN));
 		}
 
 		if (mvtype == PROMOTION)
@@ -197,6 +199,7 @@ namespace Checkmate {
 			//Make Promotion
 			remove_piece(from, make_piece(us, PAWN));
 			put_piece(to, make_piece(us, promotion_type(mv)));
+			changesToKey ^= PieceZorbist(from, make_piece(us, PAWN)) ^ PieceZorbist(to, promotion_type(mv));
 		}
 		else{
 			//Handle other move types
@@ -226,8 +229,9 @@ namespace Checkmate {
 			moveClock++;
 		}
 
-		makeNextState(mv, capture);
+		makeNextState(mv, capture, changesToKey);
 		sideToMove = ~sideToMove;
+		
 		CHECKS_ENABLED(assert(state->zorbist != state->next->zorbist));
 		CHECKS_ENABLED(assert(is_board_ok()));
 
@@ -263,7 +267,7 @@ namespace Checkmate {
 
 		if (mvtype == ENPASSANT)
 		{
-			put_piece(oldState->enPassant, make_piece(them, PAWN));
+			put_piece(oldState->enPassant, them, PAWN);
 		}
 
 		if (mvtype == PROMOTION)
@@ -284,20 +288,20 @@ namespace Checkmate {
 		castlingRights = oldState->castlingRights;
 		enPassant = oldState->enPassant;
 		sideToMove = oldState->sideToMove;
-
+		Checkersbb = oldState->CheckerBB;
+		pinnedbb = oldState->PinnedPices;
 		moveClock = oldState->moveClock;
 
-		CHECKS_ENABLED(assert(Zorbist::make_zorbist(this) == oldState->zorbist));
+		//CHECKS_ENABLED(assert(Zorbist::make_zorbist(this, state) == oldState->zorbist));
 		CHECKS_ENABLED(assert(is_board_ok()));
 
 		BoardState* bs = state;
 		state = oldState;
-		Zorbist = state->zorbist;
-		delete bs;
-		
+		zorbist = state->zorbist;
+		boardStatePool.MarkFree(bs);
 	}
 
-	void Represenation::move_piece(Square from, Square to, Color c, PieceType pt)
+	inline void Represenation::move_piece(Square from, Square to, Color c, PieceType pt)
 	{
 		Bitboard from_to_bb = SquareBB[from] | SquareBB[to];
 		Piece p = make_piece(c, pt);
@@ -313,12 +317,12 @@ namespace Checkmate {
 		board[to] = p;
 	}
 
-	void Represenation::put_piece(Square sq, Piece pc)
+	inline void Represenation::put_piece(Square sq, Piece pc)
 	{
 		put_piece(sq, color_of(pc), type_of(pc));
 	}
 
-	void Represenation::put_piece(Square sq, Color c, PieceType pt)
+	inline void Represenation::put_piece(Square sq, Color c, PieceType pt)
 	{
 		assert(Checkmate::is_ok(sq));
 		Piece pc = make_piece(c, pt);
@@ -331,7 +335,6 @@ namespace Checkmate {
 		++pieceCount[c][pt];
 		++pieceCount[c][ALL_PIECES];
 	}
-
 
 	inline void Represenation::remove_piece(Square sq, Color c, PieceType pt)
 	{
@@ -360,23 +363,25 @@ namespace Checkmate {
 	/// positions and rights in a game position. This function 
 	/// makes a snapshot and appends the state SLL
 	/// </summary>
-	void Represenation::makeNextState(Move mv, PieceType captrue)
+	inline void Represenation::makeNextState(Move mv, PieceType captrue, Key changes)
 	{
 		BoardState* oldState = state;
 		oldState->lastMove = mv;
 		oldState->captrue = captrue;
 		oldState->sideToMove = sideToMove;
-		state = new BoardState();
-		state->zorbist = Zorbist::make_zorbist(this);
-		state->BLACK_BB = getColorbb(BLACK);
-		state->WHITE_BB = getColorbb(WHITE);
+		state = boardStatePool.GetFree();
 		state->castlingRights = castlingRights;
 		state->enPassant = enPassant;
 		state->moveClock = moveClock;
-		state->sideToMove = sideToMove;
+		state->sideToMove = ~sideToMove;
 		state->next = oldState;
+		//state->CheckerBB = GenerateChecker();
+		//state->PinnedPices = GeneratePinned();
 		state->stateIndex = oldState->stateIndex + 1;
-		Zorbist = state->zorbist;
+		state->zorbist = oldState->zorbist ^ changes;
+		zorbist = state->zorbist;
+		Checkersbb = state->CheckerBB;
+		pinnedbb = state->PinnedPices;
 	}
 
 	void Represenation::ClearSavedStates()
@@ -493,9 +498,6 @@ namespace Checkmate {
 
 		AssertMove(piece_on(from) == make_piece(us, movingPiece), mv)
 
-		
-		
-
 		if (mvtype == NORMAL || mvtype == PROMOTION)
 		{
 			//NORMAL && PROMOTION CHECK
@@ -540,7 +542,7 @@ namespace Checkmate {
 		}
 		str += lastMove_tostring();
 		str += "\nFEN: " + boardToFEN() + "\n"; 
-		str += "Key: " + std::to_string(Zorbist::make_zorbist(this)) + "\n";
+		str += "Key: " + std::to_string(Zorbist::make_zorbist(this, state)) + "\n";
 		return str;
 	}
 
