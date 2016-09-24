@@ -13,18 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="String">
+      <UniqueIdentifier>{5c21ba41-782b-436f-8069-481a38f364b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lists">
+      <UniqueIdentifier>{ef39e4fc-42cc-48f8-af10-4dd4eef34d9c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\DoubleLinkedListNode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Header\Stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\DoubleLinkedList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Header\macros.h">
@@ -33,11 +30,23 @@
     <ClInclude Include="Header\CppBaseCode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Header\SLL.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\tools.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\DoubleLinkedList.h">
+      <Filter>Lists</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\DoubleLinkedListNode.h">
+      <Filter>Lists</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\StringUtil.hpp">
+      <Filter>String</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\AssemblyInfo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

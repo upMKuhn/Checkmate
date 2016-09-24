@@ -23,14 +23,19 @@ namespace ChessUI.Model
 
     public class Piece
     {
-
-        public static Piece  createPiece(Player color, PieceType piece_Type, Square square,Board myBoard)
-        {
-            return new Piece(color, piece_Type, square,myBoard);
-        }
-        
         private Board _board;
+
         public Piece(Player color, PieceType pieceType, Square square,Board board)
+        {
+            init(color, pieceType, square, board);
+        }
+
+        public Piece(Player color, PieceType pieceType, Square square)
+        {
+            init(color, pieceType, square, null);
+        }
+
+        private void init(Player color, PieceType pieceType, Square square, Board board)
         {
             if (color == Player.NO_PLAYER)
             {
@@ -56,8 +61,70 @@ namespace ChessUI.Model
         public PieceType myPieceType { get; set; }
         public Board MyBoard { get { return _board; } }
 
-
         public Square mySquare { get; set; }
-        
+
+        public int GetFile()
+        {
+            return mySquare.Position.File;
+        }
+
+        public int GetRank()
+        {
+            return mySquare.Position.Rank;
+        }
+
+        public static bool operator== (Piece left, Piece right)
+        {
+            if (object.ReferenceEquals(left, null) && object.ReferenceEquals(right, null))
+                return true;
+            if (object.ReferenceEquals(left, null) || object.ReferenceEquals(right, null))
+                return false;
+            return left.myPieceType == right.myPieceType
+                   && left.Color == right.Color;
+        }
+
+        public static bool operator!=(Piece left, Piece right)
+        {
+            if (object.ReferenceEquals(left, null) && object.ReferenceEquals(right, null))
+                return false;
+            if (object.ReferenceEquals(left, null) || object.ReferenceEquals(right, null))
+                return true;
+            return left.myPieceType != right.myPieceType
+                   && left.Color != right.Color;
+        }
+        public static bool operator!=(Piece left, object right)
+        { return !Object.Equals(left, right); }
+        public static bool operator==(Piece left, object right)
+        { return Object.Equals(left, right); }
+
+        public override string ToString()
+        {
+            char c = '-';
+
+            switch (myPieceType)
+            {
+                case PieceType.Pawn:
+                    c = 'P';
+                    break;
+                case PieceType.Queen:
+                    c = 'Q';
+                    break;
+                case PieceType.Rook:
+                    c = 'R';
+                    break;
+                case PieceType.Bishop:
+                    c = 'B';
+                    break;
+                case PieceType.King:
+                    c = 'K';
+                    break;
+                case PieceType.Knight:
+                    c = 'N';
+                    break;
+            }
+            c = Color == Player.WHITE ? c : char.ToLower(c);
+            return c.ToString();
+        }
+
     }
 }

@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include <string.h>
 
 namespace Checkmate { 
 	/*
@@ -23,6 +23,8 @@ namespace Checkmate {
 
 #ifndef TYPES_H_INCLUDED
 #define TYPES_H_INCLUDED
+
+#define SAFE_DELETE(a) if( (a) != nullptr ) delete (a); (a) = nullptr;
 
 	/// When compiling with provided Makefile (e.g. for Linux and OSX), configuration
 	/// is done automatically. To get started type 'make help'.
@@ -52,8 +54,10 @@ namespace Checkmate {
 #if defined(_WIN64) && !defined(IS_64BIT) // Last condition means Makefile is not used
 #  include <intrin.h> // MSVC popcnt and bsfq instrinsics
 #  define IS_64BIT
-#  define USE_BSFQ
 #endif
+
+#  define USE_BSFQ
+#  define USE_POPCNT 
 
 #if defined(USE_POPCNT) && defined(__INTEL_COMPILER) && defined(_MSC_VER)
 #  include <nmmintrin.h> // Intel header for _mm_popcnt_u64() intrinsic
@@ -96,8 +100,9 @@ namespace Checkmate {
 	const bool Is64Bit = false;
 #endif
 
-	typedef uint64_t Key;
-	typedef uint64_t Bitboard;
+	typedef unsigned long long Key;
+	typedef unsigned long long Bitboard;
+	typedef unsigned long long Position;
 
 	const int MAX_MOVES = 256;
 	const int MAX_PLY = 128;
@@ -106,8 +111,11 @@ namespace Checkmate {
 	///
 	/// bit  0- 5: destination square (from 0 to 63)
 	/// bit  6-11: origin square (from 0 to 63)
-	/// bit 12-13: promotion piece type - 2 (from KNIGHT-2 to QUEEN-2)
-	/// bit 14-15: special move flag: promotion (1), en passant (2), castling (3)
+	/// bit 12-16: Moving piece
+	/// bit 17-21: Capture piece
+	/// bit 22 - 26: Capture piece
+	/// bit 27-30: special move flag: promotion (1), en passant (2), castling (3) Capture(4)
+	/// MAX MOVE VALUE = 
 	/// NOTE: EN-PASSANT bit is set only when a pawn can be captured
 	///
 	/// Special cases are MOVE_NONE and MOVE_NULL. We can sneak these in because in
@@ -116,14 +124,16 @@ namespace Checkmate {
 
 	enum Move {
 		MOVE_NONE,
-		MOVE_NULL = 65
+		MOVE_NULL = 65,
+		ALL_MOVE_BITS = 0x7fffffffULL
 	};
 
 	enum MoveType {
 		NORMAL,
-		PROMOTION = 1 << 14,
-		ENPASSANT = 2 << 14,
-		CASTLING = 3 << 14
+		PROMOTION = 1 << 27,
+		ENPASSANT = 2 << 27,
+		CASTLING = 3 << 27,
+		CAPTURE = 4 << 27
 	};
 
 	enum Color {
@@ -131,7 +141,7 @@ namespace Checkmate {
 	};
 
 	enum CastlingSide {
-		KING_SIDE, QUEEN_SIDE, CASTLING_SIDE_NB = 2
+		KING_SIDE = 1, QUEEN_SIDE = 1 << 1, CASTLING_SIDE_NB = 3
 	};
 
 	enum CastlingRight {
@@ -153,7 +163,9 @@ namespace Checkmate {
 	enum Phase {
 		PHASE_ENDGAME,
 		PHASE_MIDGAME = 128,
-		MG = 0, EG = 1, PHASE_NB = 2
+		PHASE_START = 200,
+		EG = 0, MG = 1, LG = 2, PHASE_NB = 3
+
 	};
 
 	enum ScaleFactor {
@@ -164,11 +176,22 @@ namespace Checkmate {
 		SCALE_FACTOR_NONE = 255
 	};
 
-	enum Bound {
+	enum SearchNodeType {
 		BOUND_NONE,
 		BOUND_UPPER,
 		BOUND_LOWER,
 		BOUND_EXACT = BOUND_UPPER | BOUND_LOWER
+	};
+
+	enum EvaluationType
+	{
+		MOBILLITY,
+		CENTRE_CONTROLL,
+		MATERIAL,
+		PAIRED_PICES,
+		SECURITY,
+		EVALUATION_TYPE_NB
+
 	};
 
 	enum Value {
@@ -179,8 +202,8 @@ namespace Checkmate {
 		VALUE_INFINITE = 32001,
 		VALUE_NONE = 32002,
 
-		VALUE_MATE_IN_MAX_PLY = VALUE_MATE - 2 * MAX_PLY,
-		VALUE_MATED_IN_MAX_PLY = -VALUE_MATE + 2 * MAX_PLY,
+		VALUE_MATE_IN_MAX_PLY = 32000 - 2 * MAX_PLY,
+		VALUE_MATED_IN_MAX_PLY = -32000 + 2 * MAX_PLY,
 
 		VALUE_ENSURE_INTEGER_SIZE_P = INT_MAX,
 		VALUE_ENSURE_INTEGER_SIZE_N = INT_MIN,
@@ -194,6 +217,7 @@ namespace Checkmate {
 		MidgameLimit = 15581, EndgameLimit = 3998
 	};
 
+	#define isSlidingPiece(x) (x > KNIGHT && x != KING)
 	enum PieceType {
 		NO_PIECE_TYPE, PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING,
 		ALL_PIECES = 0,
@@ -253,19 +277,16 @@ namespace Checkmate {
 	enum Rank {
 		RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8, RANK_NB
 	};
-
+	
 
 	/// Score enum stores a middlegame and an endgame value in a single integer.
 	/// The least significant 16 bits are used to store the endgame value and
 	/// the upper 16 bits are used to store the middlegame value. The compiler
 	/// is free to choose the enum type as long as it can store the data, so we
 	/// ensure that Score is an integer type by assigning some big int values.
-	enum Score {
-		SCORE_ZERO,
-		SCORE_ENSURE_INTEGER_SIZE_P = INT_MAX,
-		SCORE_ENSURE_INTEGER_SIZE_N = INT_MIN
-	};
+	enum Score : int { SCORE_ZERO };
 
+	
 	inline Score make_score(int mg, int eg) {
 		return Score((mg << 16) + eg);
 	}
@@ -284,24 +305,29 @@ namespace Checkmate {
 		union { uint16_t u; int16_t s; } eg = { uint16_t(unsigned(s)) };
 		return Value(eg.s);
 	}
+	
+	struct ScoredMove
+	{
+		Move parentMove;
+		Move move;
+		Score score;
+		
+		ScoredMove(Move m, Score s)
+		{
+			move = m;
+			score = s;
+			parentMove = MOVE_NONE;
+		}
 
-#define ENABLE_BASE_OPERATORS_ON(T)                             \
-inline T operator+(T d1, T d2) { return T(int(d1) + int(d2)); } \
-inline T operator-(T d1, T d2) { return T(int(d1) - int(d2)); } \
-inline T operator*(int i, T d) { return T(i * int(d)); }        \
-inline T operator*(T d, int i) { return T(int(d) * i); }        \
-inline T operator-(T d) { return T(-int(d)); }                  \
-inline T& operator+=(T& d1, T d2) { return d1 = d1 + d2; }      \
-inline T& operator-=(T& d1, T d2) { return d1 = d1 - d2; }      \
-inline T& operator*=(T& d, int i) { return d = T(int(d) * i); }
+		ScoredMove(Move m, Move parent, Score s)
+		{
+			move = m;
+			parentMove = parent;
+			score = s;
+		}
+	};
 
-#define ENABLE_FULL_OPERATORS_ON(T)                             \
-ENABLE_BASE_OPERATORS_ON(T)                                     \
-inline T& operator++(T& d) { return d = T(int(d) + 1); }        \
-inline T& operator--(T& d) { return d = T(int(d) - 1); }        \
-inline T operator/(T d, int i) { return T(int(d) / i); }        \
-inline int operator/(T d1, T d2) { return int(d1) / int(d2); }  \
-inline T& operator/=(T& d, int i) { return d = T(int(d) / i); }
+	
 
 	ENABLE_FULL_OPERATORS_ON(Value)
 		ENABLE_FULL_OPERATORS_ON(PieceType)
@@ -311,14 +337,12 @@ inline T& operator/=(T& d, int i) { return d = T(int(d) / i); }
 		ENABLE_FULL_OPERATORS_ON(Square)
 		ENABLE_FULL_OPERATORS_ON(File)
 		ENABLE_FULL_OPERATORS_ON(Rank)
-
 		ENABLE_BASE_OPERATORS_ON(Score)
 
-#undef ENABLE_FULL_OPERATORS_ON
-#undef ENABLE_BASE_OPERATORS_ON
 
-		/// Additional operators to add integers to a Value
-		inline Value operator+(Value v, int i) { return Value(int(v) + i); }
+
+	/// Additional operators to add integers to a Value
+	inline Value operator+(Value v, int i) { return Value(int(v) + i); }
 	inline Value operator-(Value v, int i) { return Value(int(v) - i); }
 	inline Value& operator+=(Value& v, int i) { return v = v + i; }
 	inline Value& operator-=(Value& v, int i) { return v = v - i; }
@@ -338,8 +362,20 @@ inline T& operator/=(T& d, int i) { return d = T(int(d) / i); }
 		return Color(c ^ BLACK);
 	}
 
+	static inline const std::string color_tostring(Color c)
+	{
+		using namespace std;
+		if (c == WHITE) return "WHITE";
+		if (c == BLACK) return "BLACK";
+		return "NO_COLOR";
+	}
+
 	inline Square operator~(Square s) {
 		return Square(s ^ SQ_A8); // Vertical flip SQ_A1 -> SQ_A8
+	}
+	
+	inline Piece operator~(Piece p) {
+		return Piece(p ^ (BLACK << 3)); // Vertical flip SQ_A1 -> SQ_A8
 	}
 
 	inline CastlingRight operator|(Color c, CastlingSide s) {
@@ -358,8 +394,14 @@ inline T& operator/=(T& d, int i) { return d = T(int(d) / i); }
 		return Square((r << 3) | f);
 	}
 
+	inline Bitboard setSquare(Square at)
+	{
+		return Bitboard(1ULL << at);
+	}
+
 	inline Piece make_piece(Color c, PieceType pt) {
-		return Piece((c << 3) | pt);
+		return pt != NO_PIECE_TYPE ? 
+			Piece((c << 3) | pt) : NO_PIECE;
 	}
 
 	inline PieceType type_of(Piece pc) {
@@ -367,8 +409,7 @@ inline T& operator/=(T& d, int i) { return d = T(int(d) / i); }
 	}
 
 	inline Color color_of(Piece pc) {
-		assert(pc != NO_PIECE);
-		return Color(pc >> 3);
+		return  pc == NO_PIECE ? NO_COLOR : Color(pc >> 3);
 	}
 
 	inline bool is_ok(Square s) {
@@ -377,6 +418,29 @@ inline T& operator/=(T& d, int i) { return d = T(int(d) / i); }
 
 	inline File file_of(Square s) {
 		return File(s & 7);
+	}
+
+	inline char file_tochar(File f)
+	{
+		const char files[] = { 'A','B','C','D','E','F','G','H' };
+		return files[f];
+	}
+
+	inline bool is_our(Color us, Piece p)
+	{
+		return us == color_of(p);
+	}
+
+	inline char piece_tochar(Piece p)
+	{
+		if (p != NO_PIECE)
+		{
+			const char pieces[] = { ' ', 'p' , 'n', 'b','r','q','k' };
+			return color_of(p) == WHITE ? toupper(pieces[type_of(p)]) : pieces[type_of(p)];
+		}else
+		{
+			return ' ';
+		}
 	}
 
 	inline Rank rank_of(Square s) {
@@ -395,6 +459,24 @@ inline T& operator/=(T& d, int i) { return d = T(int(d) / i); }
 		return relative_rank(c, rank_of(s));
 	}
 
+	inline File relative_file(Color c, File r) {
+		return File(r ^ (c * 7));
+	}
+
+	inline File relative_file(Color c, Square s) {
+		return relative_file(c, file_of(s));
+	}
+
+	inline bool operator<(const ScoredMove& lhs, const ScoredMove& rhs)
+	{
+		return lhs.score < rhs.score;
+	}
+
+	inline bool operator>(const ScoredMove& lhs, const ScoredMove& rhs)
+	{
+		return lhs.score > rhs.score;
+	}
+
 	inline bool opposite_colors(Square s1, Square s2) {
 		int s = int(s1) ^ int(s2);
 		return ((s >> 3) ^ s) & 1;
@@ -402,6 +484,12 @@ inline T& operator/=(T& d, int i) { return d = T(int(d) / i); }
 
 	inline Square pawn_push(Color c) {
 		return c == WHITE ? DELTA_N : DELTA_S;
+	}
+
+	inline bool pawn_canjump(Color c,Square s, Bitboard occupancy) {
+		Bitboard bb = ((1ULL << (s + pawn_push(c))) | (1ULL << (s + 2 * pawn_push(c))));
+		bool test = (c == WHITE ? rank_of(s) == RANK_2 : rank_of(s) == RANK_7);
+		return test && (bb & occupancy) == 0;
 	}
 
 	inline Square from_sq(Move m) {
@@ -413,24 +501,62 @@ inline T& operator/=(T& d, int i) { return d = T(int(d) / i); }
 	}
 
 	inline MoveType type_of(Move m) {
-		return MoveType(m & (3 << 14));
+		return MoveType(m & (7 << 27));
+	}
+
+	inline PieceType moving_type(Move m) {
+		return PieceType((m >> 12) & 7);
+	}
+	
+	inline PieceType capture_type(Move m) {
+		return PieceType((m >> 17) & 7);
 	}
 
 	inline PieceType promotion_type(Move m) {
-		return PieceType(((m >> 12) & 3) + 2);
+		return PieceType((m >> 22) & 7);
 	}
+
 
 	inline Move make_move(Square from, Square to) {
 		return Move(to | (from << 6));
 	}
 
 	template<MoveType T>
-	inline Move make(Square from, Square to, PieceType pt = KNIGHT) {
-		return Move(to | (from << 6) | T | ((pt - KNIGHT) << 12));
+	inline Move make(Square from, Square to, PieceType movingPt, PieceType capture = NO_PIECE_TYPE) {
+		return Move(to | (from << 6) | T | (movingPt << 12) | (capture << 17));
+	}
+	
+	template<>
+	inline Move make<PROMOTION>(Square from, Square to, PieceType movingPt, PieceType promotion) {
+		return Move(to | (from << 6) | PROMOTION | (movingPt << 12) | (promotion << 22));
+	}
+
+	template<>
+	inline Move make<CAPTURE>(Square from, Square to, PieceType movingPt, PieceType capture) {
+		return Move(to | (from << 6) | CAPTURE | (movingPt << 12) | (capture << 17));
+	}
+
+	inline Move make_promotion_withCapture_move(Square from, Square to, PieceType movingPt, PieceType promotion, PieceType capture) {
+		return Move(to | (from << 6) | PROMOTION | (movingPt << 12) | (promotion << 22) | (capture << 17));
 	}
 
 	inline bool is_ok(Move m) {
 		return from_sq(m) != to_sq(m); // Catch MOVE_NULL and MOVE_NONE
+	}
+
+	inline Score extract_score(Position p)
+	{
+		return Score(p >> 32);
+	}
+
+	inline Move extract_move(Position p)
+	{
+		return Move(p & ALL_MOVE_BITS);
+	}
+
+	inline Position make_position(Score score, Move m)
+	{
+		return ((unsigned)score << 31) | m;
 	}
 
 #endif // #ifndef TYPES_H_INCLUDED

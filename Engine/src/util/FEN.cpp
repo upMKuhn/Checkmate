@@ -6,134 +6,151 @@
 /// Castleing rights
 /// </summary>
 namespace Checkmate {
-#define NEXT_RANK '/'
-#define JUMP_FILES(x) isdigit(x)
-#define END_OF_BOARD ' '
+
 	
 	
-	FEN_Phraser::FEN_Phraser(::std::string FEN)
+	FEN_Parser::FEN_Parser(::std::string FEN)
 	{
 		this->m_FEN = FEN;
-		this->m_squareAt = SQ_A8;
-		this->m_charAt = 0;
-
+		m_boardParser = new BoardParser(m_FEN);
 		process();
 	}
 
-	FEN_Phraser::~FEN_Phraser()
+	FEN_Parser::~FEN_Parser()
 	{
+		delete m_boardParser;
 	}
 
-	void FEN_Phraser::process()
+	void FEN_Parser::init()
 	{
-		extractBoard();
+		sideToMove = NO_COLOR;
+		enPassant = SQ_NONE;
+		halfMoveClock = -1;
+		FullMoveClock = -1;
+		castlingRights = 0;
 	}
 
-	void FEN_Phraser::nextInstruction(PiecePlacement *&pTemp)
+	void FEN_Parser::nextInstruction(PiecePlacement *&pTemp)
 	{
-		if (hasNextInstruction())
+		m_boardParser->nextInstruction(pTemp);
+	}
+
+
+	void FEN_Parser::process()
+	{
+		if (m_boardParser == NULL)
 		{
-			using DataStructs::DoubleLinkedListNode;
-
-			DoubleLinkedListNode<PiecePlacement>* 
-			node = m_boardInstruction.getNode(instructionAt);
-			pTemp = &(node->getValue());
-			instructionAt++;
+			m_boardParser = new BoardParser(m_FEN);
 		}
-		else {
-			pTemp = NULL;
-		}
-			
+		init();
+		m_boardParser->extractBoard();
+		extractStates();
 	}
 
-	void FEN_Phraser::extractBoard()
+	void FEN_Parser::extractStates()
 	{
-		while (hasPiece())
+		int startOfState = getEndOfRepresenation();
+
+		extractSideToMove(startOfState);
+		extractCastelingRights(startOfState);
+		extractEnPassant(startOfState);
+		extractMoveCounter(startOfState);
+
+	}
+
+	void FEN_Parser::extractSideToMove(int& index)
+	{
+		if(tolower(m_FEN[index]) == 'w')
 		{
-			PiecePlacement temp = nextPiece();
-			m_boardInstruction.appendHead(temp);
+			sideToMove = WHITE;
 		}
-	}
-
-	void FEN_Phraser::jumpFile(int jmp)
-	{
-		File currentFile = file_of(m_squareAt);
-		Rank currentRank = rank_of(m_squareAt);
-
-		currentFile += ((File)(jmp-1));
-		assert((currentFile <= FILE_H));
-		m_squareAt = make_square(currentFile, currentRank);
-	}
-
-	void FEN_Phraser::nextRank()
-	{
-		--m_squareAt;
-		Rank currentRank = rank_of(m_squareAt);
-		m_squareAt = make_square(FILE_A, --currentRank);
-		assert(!(m_squareAt > SQ_H8 || m_squareAt < SQ_A1));
-	}
-
-	bool FEN_Phraser::hasPiece()
-	{
-		return (bool)(m_FEN.size() > m_charAt && m_FEN.at(m_charAt) != END_OF_BOARD);
-	}
-
-	PieceType FEN_Phraser::toPiece(char piece)
-	{
-		piece = tolower(piece);
-		switch ( piece)
+		if (tolower(m_FEN[index]) == 'b')
 		{
-			case 'r':
-				return ROOK;
-			case 'n':
-				return KNIGHT;
-			case 'b':
-				return BISHOP;
-			case 'q':
-				return QUEEN;
+			sideToMove = BLACK;
+		}
+		jumpSpaceChars(++index);
+	}
+
+	void FEN_Parser::extractCastelingRights(int& index)
+	{
+		bool Casteling = true;
+		//While End Of
+		while (m_FEN[index] != ' ' && index < m_FEN.length() && Casteling)
+		{
+			switch (m_FEN[index])
+			{
 			case 'k':
-				return KING;
-			case 'p':
-				return PAWN;
-		default:
-			return NO_PIECE_TYPE;
+				castlingRights |= WHITE_OO;
+				break;
+			case 'q':
+				castlingRights |= WHITE_OOO;
+				break;
+			case 'K':
+				castlingRights |= BLACK_OO;
+				break;
+			case 'Q':
+				castlingRights |= BLACK_OOO;
+				break;
+			default:
+				Casteling = false;
+			}
+			index++;
 		}
+		jumpSpaceChars(index);
 	}
 
-	PiecePlacement FEN_Phraser::nextPiece()
+	void FEN_Parser::extractEnPassant(int& index)
 	{
-		char currentChar = m_FEN.at(m_charAt);
-		PiecePlacement phrase;
-			
-		if(NEXT_RANK == currentChar)
+		char file = tolower(m_FEN[index++]);
+		if(file != '-' && ('a' <= file && file <= 'h'))
 		{
-			nextRank();
-			m_charAt++;
-			phrase = nextPiece();
-		}
-
-		if (JUMP_FILES(currentChar) )
+			int rank = std::stoi(m_FEN.substr(index,1))-1;
+			File myFile = (File)(file - 'a');
+			enPassant = make_square(myFile, (Rank)rank);
+		}else
 		{
-			jumpFile(currentChar - '0');
-			m_charAt++;
-			phrase = nextPiece();
+			enPassant = SQ_NONE;
 		}
-
-		if (toPiece(currentChar) != NO_PIECE_TYPE)
-		{
-			Color c = isupper(currentChar) ? WHITE : BLACK;
-			phrase.piece = make_piece(c, toPiece(currentChar));
-			phrase.position = m_squareAt;
-			++m_squareAt;
-			m_charAt++;
-		}
-		return phrase;
+		jumpSpaceChars(++index);
 	}
-
-	bool FEN_Phraser::hasNextInstruction()
+	
+	void FEN_Parser::extractMoveCounter(int& index)
 	{
-		return m_boardInstruction.Length() > instructionAt;
+		
+		int endOfNumber = m_FEN.find_first_of(' ', index);
+		if (endOfNumber > 0) {
+			halfMoveClock = std::stoi(m_FEN.substr(index, endOfNumber - index));
+			index = endOfNumber + 1;
+		}
+		
+		FullMoveClock = std::stoi(m_FEN.substr(index, m_FEN.length()));
+		jumpSpaceChars(index);
 	}
+
+
+	int FEN_Parser::getEndOfRepresenation()
+	{
+		
+		for (int i = 0; i < m_FEN.length()-1; i++)
+		{
+			if(m_FEN[i] == ' ')
+			{
+				return i+1;
+			}
+		}
+		return -1;
+	}
+
+	void FEN_Parser::jumpSpaceChars(int& index)
+	{
+		while (m_FEN[index] == ' ' && index < m_FEN.length())
+		{
+			index++;
+		}
+	}
+	
+
+	
 
 	
 

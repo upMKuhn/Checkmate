@@ -1,5 +1,7 @@
-﻿using System;
+﻿using ChessUI.Common;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +25,11 @@ namespace ChessUI
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            ThreadRegistry.ShutDownAllThreads();
         }
     }
 }

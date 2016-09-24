@@ -5,6 +5,30 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="EngineDLL|Win32">
+      <Configuration>EngineDLL</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="EngineDLL|x64">
+      <Configuration>EngineDLL</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="PerformanceTest|Win32">
+      <Configuration>PerformanceTest</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="PerformanceTest|x64">
+      <Configuration>PerformanceTest</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_Managed|Win32">
+      <Configuration>Release_Managed</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_Managed|x64">
+      <Configuration>Release_Managed</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -15,6 +39,22 @@
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="UI_UnitTest|Win32">
+      <Configuration>UI_UnitTest</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="UI_UnitTest|x64">
+      <Configuration>UI_UnitTest</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="UnitTests|Win32">
+      <Configuration>UnitTests</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="UnitTests|x64">
+      <Configuration>UnitTests</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
@@ -29,6 +69,35 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>false</CLRSupport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EngineDLL|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>false</CLRSupport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UI_UnitTest|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>false</CLRSupport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnitTests|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>false</CLRSupport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='PerformanceTest|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>false</CLRSupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -36,12 +105,50 @@
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>false</CLRSupport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Managed|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>false</CLRSupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <CLRSupport>false</CLRSupport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EngineDLL|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>true</CLRSupport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UI_UnitTest|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>true</CLRSupport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnitTests|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>false</CLRSupport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='PerformanceTest|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>true</CLRSupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -49,6 +156,15 @@
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>false</CLRSupport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Managed|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>true</CLRSupport>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -58,35 +174,198 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='EngineDLL|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='UI_UnitTest|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='UnitTests|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='PerformanceTest|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_Managed|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='EngineDLL|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='UI_UnitTest|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='UnitTests|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='PerformanceTest|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_Managed|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)</OutDir>
+    <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)\</OutDir>
+    <IncludePath>$(SolutionDir)CPP BaseCode\Header\;$(SolutionDir)\Dependencies\Header\;$(IncludePath)</IncludePath>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <IntDir>$(SolutionDir)Build\InterMidDir\$(ProjectName)\</IntDir>
+    <LibraryPath>$(SolutionDir)Dependencies\$(Platform)\;$(SolutionDir)Dependencies\$(Platform)\boost\;$(OutDir);$(LibraryPath)</LibraryPath>
+    <EnableManagedIncrementalBuild>false</EnableManagedIncrementalBuild>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EngineDLL|x64'">
+    <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)\</OutDir>
+    <IncludePath>$(SolutionDir)CPP BaseCode\Header\;$(SolutionDir)\Dependencies\Header\;$(IncludePath)</IncludePath>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <IntDir>$(SolutionDir)Build\InterMidDir\$(ProjectName)\</IntDir>
+    <LibraryPath>$(SolutionDir)Dependencies\$(Platform)\;$(SolutionDir)Dependencies\$(Platform)\boost\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UI_UnitTest|x64'">
+    <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)\</OutDir>
+    <IncludePath>$(SolutionDir)CPP BaseCode\Header\;$(SolutionDir)\Dependencies\Header\;$(IncludePath)</IncludePath>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <IntDir>$(SolutionDir)Build\InterMidDir\$(ProjectName)\</IntDir>
+    <LibraryPath>$(SolutionDir)Dependencies\$(Platform)\;$(SolutionDir)Dependencies\$(Platform)\boost\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnitTests|x64'">
+    <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)\</OutDir>
+    <IncludePath>$(SolutionDir)CPP BaseCode\Header\;$(SolutionDir)\Dependencies\Header\;$(IncludePath)</IncludePath>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <IntDir>$(SolutionDir)Build\InterMidDir\$(ProjectName)\</IntDir>
+    <SourcePath>$(ProjectDir)src\util\;$(SourcePath)</SourcePath>
+    <LibraryPath>$(SolutionDir)Dependencies\$(Platform)\;$(SolutionDir)Dependencies\$(Platform)\boost\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='PerformanceTest|x64'">
+    <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)\</OutDir>
+    <IncludePath>$(SolutionDir)CPP BaseCode\Header\;$(SolutionDir)\Dependencies\Header\;$(IncludePath)</IncludePath>
+    <CodeAnalysisRuleSet>MixedRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <IntDir>$(SolutionDir)Build\InterMidDir\$(ProjectName)\</IntDir>
+    <SourcePath>$(ProjectDir)src\util\;$(SourcePath)</SourcePath>
+    <LibraryPath>$(SolutionDir)Dependencies\$(Platform)\;$(SolutionDir)Dependencies\$(Platform)\boost\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)</OutDir>
+    <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)\</OutDir>
+    <IncludePath>$(SolutionDir)CPP BaseCode\Header\;$(SolutionDir)\Dependencies\Header\;$(IncludePath)</IncludePath>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <IntDir>$(SolutionDir)Build\InterMidDir\$(ProjectName)\</IntDir>
+    <LibraryPath>$(SolutionDir)Dependencies\$(Platform)\;$(SolutionDir)Dependencies\$(Platform)\boost\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Managed|x64'">
+    <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)\</OutDir>
+    <IncludePath>$(SolutionDir)CPP BaseCode\Header\;$(SolutionDir)\Dependencies\Header\;$(IncludePath)</IncludePath>
+    <CodeAnalysisRuleSet>MixedRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <IntDir>$(SolutionDir)Build\InterMidDir\$(ProjectName)\</IntDir>
+    <LibraryPath>$(SolutionDir)Dependencies\$(Platform)\;$(SolutionDir)Dependencies\$(Platform)\boost\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)</OutDir>
+    <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)\</OutDir>
+    <IncludePath>$(SolutionDir)CPP BaseCode\Header\;$(SolutionDir)\Dependencies\Header\;$(IncludePath)</IncludePath>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EngineDLL|Win32'">
+    <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)\</OutDir>
+    <IncludePath>$(SolutionDir)CPP BaseCode\Header\;$(SolutionDir)\Dependencies\Header\;$(IncludePath)</IncludePath>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UI_UnitTest|Win32'">
+    <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)\</OutDir>
+    <IncludePath>$(SolutionDir)CPP BaseCode\Header\;$(SolutionDir)\Dependencies\Header\;$(IncludePath)</IncludePath>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnitTests|Win32'">
+    <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)\</OutDir>
+    <IncludePath>$(SolutionDir)CPP BaseCode\Header\;$(SolutionDir)\Dependencies\Header\;$(IncludePath)</IncludePath>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='PerformanceTest|Win32'">
+    <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)\</OutDir>
+    <IncludePath>$(SolutionDir)CPP BaseCode\Header\;$(SolutionDir)\Dependencies\Header\;$(IncludePath)</IncludePath>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)</OutDir>
+    <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)\</OutDir>
+    <IncludePath>$(SolutionDir)CPP BaseCode\Header\;$(SolutionDir)\Dependencies\Header\;$(IncludePath)</IncludePath>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Managed|Win32'">
+    <OutDir>$(SolutionDir)Build\$(Configuration)\$(Platform)\</OutDir>
+    <IncludePath>$(SolutionDir)CPP BaseCode\Header\;$(SolutionDir)\Dependencies\Header\;$(IncludePath)</IncludePath>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir)CPP BaseCode\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Create</PrecompiledHeader>
+      <AdditionalOptions>-Zm250 %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>Engine_CORE_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='EngineDLL|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir)CPP BaseCode\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <AdditionalOptions>-Zm250 %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>Engine_CORE_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='UI_UnitTest|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir)CPP BaseCode\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <AdditionalOptions>-Zm250 %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>Engine_CORE_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='UnitTests|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir)CPP BaseCode\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <AdditionalOptions>-Zm250 %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>Engine_CORE_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='PerformanceTest|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir)CPP BaseCode\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <AdditionalOptions>-Zm250 %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>Engine_CORE_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -96,9 +375,80 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <SDLCheck>false</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir)CPP BaseCode\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Create</PrecompiledHeader>
+      <AdditionalOptions>-Zm250 %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>Engine_CORE_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAsManaged>false</CompileAsManaged>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>CPP BaseCode.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <FullProgramDatabaseFile>false</FullProgramDatabaseFile>
+      <GenerateMapFile>false</GenerateMapFile>
+      <StripPrivateSymbols>
+      </StripPrivateSymbols>
+      <AssemblyDebug>true</AssemblyDebug>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='EngineDLL|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir)CPP BaseCode\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <AdditionalOptions>-Zm250 %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>Engine_CORE_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='UI_UnitTest|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir)CPP BaseCode\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <AdditionalOptions>-Zm250 %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>Engine_CORE_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='UnitTests|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir)CPP BaseCode\Header;$(SolutionDir)Boost\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalOptions>-Zm250 %(AdditionalOptions)</AdditionalOptions>
+      <AssemblerOutput>NoListing</AssemblerOutput>
+      <PreprocessorDefinitions>Engine_CORE_DLL;UNIT_TEST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='PerformanceTest|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir)CPP BaseCode\Header;$(SolutionDir)Boost\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <AssemblerOutput>All</AssemblerOutput>
+      <PreprocessorDefinitions>Engine_CORE_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -111,8 +461,28 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir)CPP BaseCode\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Create</PrecompiledHeader>
+      <AdditionalOptions>-Zm250 %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>Engine_CORE_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Managed|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir)CPP BaseCode\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <AdditionalOptions>-Zm250 %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>Engine_CORE_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -127,8 +497,30 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir)CPP BaseCode\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Create</PrecompiledHeader>
+      <AdditionalOptions>-Zm250 %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>Engine_CORE_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Managed|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)Header;$(SolutionDir)CPP BaseCode\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <AdditionalOptions>-Zm250 %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>Engine_CORE_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -137,28 +529,68 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\PrincipleVariationSearch.cpp" />
+    <ClCompile Include="src\SearchBase.cpp" />
+    <ClCompile Include="src\HashedStates.cpp" />
+    <ClCompile Include="src\BaseEvaluation.cpp" />
+    <ClCompile Include="src\EarlyEvaluation.cpp" />
+    <ClCompile Include="src\Evaluation.cpp" />
+    <ClCompile Include="src\MidGameEvaluation.cpp" />
+    <ClCompile Include="src\SimpleMoveList.cpp" />
+    <ClCompile Include="src\ChachedMoveList.cpp" />
+    <ClCompile Include="src\MoveGen.cpp" />
     <ClCompile Include="src\board\Bitboards.cpp" />
     <ClCompile Include="src\board\piecePlacement.cpp" />
     <ClCompile Include="src\board\represenation.cpp" />
+    <ClCompile Include="src\LittleHelper.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\tools.cpp" />
+    <ClCompile Include="src\util\BoardParser.cpp" />
     <ClCompile Include="src\util\FEN.cpp" />
+    <ClCompile Include="src\UCI.cpp" />
+    <ClCompile Include="src\Zorbist.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CPP BaseCode\CPP BaseCode.vcxproj">
-      <Project>{9488b884-c9ae-48fc-a88a-e1706a152d91}</Project>
-    </ProjectReference>
+    <None Include="Engine.ruleset" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Header\CustomList.h" />
+    <ClInclude Include="Header\HashedStates.h" />
+    <ClInclude Include="Header\EarlyEvaluation.h" />
+    <ClInclude Include="Header\BaseEvaluation.h" />
+    <ClInclude Include="Header\Evaluation.h" />
     <ClInclude Include="Header\BitBoards.h" />
-    <ClInclude Include="Header\BitOperations.h" />
-    <ClInclude Include="Header\Board.h" />
+    <ClInclude Include="Header\bitcount.h" />
+    <ClInclude Include="Header\BoardParser.h" />
+    <ClInclude Include="Header\ChachedMoveList.h" />
+    <ClInclude Include="Header\EngineMacros.h" />
+    <ClInclude Include="Header\Engine_inc.h" />
     <ClInclude Include="Header\FEN.h" />
+    <ClInclude Include="Header\LittleHelper.h" />
+    <ClInclude Include="Header\Logger.h" />
     <ClInclude Include="Header\main.h" />
+    <ClInclude Include="Header\MidGameEvaluation.h" />
+    <ClInclude Include="Header\misc.h" />
+    <ClInclude Include="Header\MoveGen.h" />
+    <ClInclude Include="Header\MoveGenInfo.hpp" />
+    <ClInclude Include="Header\MoveInfo.h" />
+    <ClInclude Include="Header\MoveList.h" />
+    <ClInclude Include="Header\MoveListBase.h" />
     <ClInclude Include="Header\piecePlacement.h" />
     <ClInclude Include="Header\platform.h" />
     <ClInclude Include="Header\represenation.h" />
+    <ClInclude Include="Header\SimpleMoveList.h" />
     <ClInclude Include="Header\stdafx.h" />
     <ClInclude Include="Header\types.h" />
+    <ClInclude Include="Header\UCI.h" />
+    <ClInclude Include="Header\Zorbist.h" />
+    <ClInclude Include="Header\PrincipleVariationSearch.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="Header\Transposition.h" />
+    <ClInclude Include="Header\SearchBase.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Engine.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

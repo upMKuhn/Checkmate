@@ -7,7 +7,16 @@
 
 #include "targetver.h"
 
-// Headers for CppUnitTest
-#include "CppUnitTest.h"
+#include <stdio.h>
+#include <tchar.h>
 
 // TODO: reference additional headers your program requires here
+#include <gmock\gmock.h>
+#include <gtest/gtest.h>
+#include <Engine_inc.h>
+
+#include "TestingTools.h"
+
+
+#undef ENABLE_CHECKS
+#define ENABLE_CHECKS true
